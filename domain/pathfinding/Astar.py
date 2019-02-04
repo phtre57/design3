@@ -1,4 +1,5 @@
 from .Cell import Cell
+from domain.image_path_analysis.ImageToGridConverter import *
 
 ROWS = 10
 COLUMNS = 10
@@ -13,18 +14,22 @@ class Astar(object):
         self.starting_cell = 0
         self.ending_cell = 0
 
+        #unreachable cell are marked with a 1
+        #empty cell is marked with a 0
         for i in range(ROWS):
             for j in range(COLUMNS):
-                self.cells.append(0)
+                self.cells.append(EMPTY_MARKER)
 
+        #ending cell is marked with a 3
         for i in range(ROWS):
             for j in range(COLUMNS):
-                if grid[i][j] == 3:
+                if grid[i][j] == ENDING_MARKER:
                     self.ending_cell = Cell(i, j, True, True, 0)
 
+        #starting cell is marked with a 2
         for i in range(ROWS):
             for j in range(COLUMNS):
-                if grid[i][j] == 2:
+                if grid[i][j] == STARTING_MARKER:
                     self.starting_cell = Cell(i, j, True, False, self.__calculate_cost(i, j))
 
         self.__init_cells(grid)
@@ -33,10 +38,10 @@ class Astar(object):
     def __init_cells(self, grid):
         for i in range(ROWS):
             for j in range(COLUMNS):
-                if grid[i][j] == 0 or grid[i][j] == 2:
+                if grid[i][j] == EMPTY_MARKER or grid[i][j] == STARTING_MARKER:
                     reachable = True
                     end = False
-                elif grid[i][j] == 3:
+                elif grid[i][j] == ENDING_MARKER:
                     reachable = True
                     end = True
                 else:
