@@ -1,3 +1,4 @@
+import math
 from .Cell import Cell
 from domain.image_path_analysis.ImageToGridConverter import *
 
@@ -55,7 +56,8 @@ class Astar(object):
         return abs(self.ending_cell.x - i) + abs(self.ending_cell.y - j)
 
     def __calculate_heuristic(self, i, j):
-        return abs(i - self.ending_cell.x) + abs(j - self.ending_cell.y)
+        #return abs(i - self.ending_cell.x) + abs(j - self.ending_cell.y)
+        return math.sqrt((i - self.ending_cell.x) ** 2 + (j - self.ending_cell.y) ** 2)
 
     def __find_cell(self, i, j):
         return self.cells[i * self.number_of_columns + j]
