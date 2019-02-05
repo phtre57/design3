@@ -36,14 +36,14 @@ class AstarTest(unittest.TestCase):
                          Cell(9, 8, True, False, 1),
                          Cell(9, 9, True, True, 0)]
 
-        astar = Astar(self.test2_grid)
+        astar = Astar(self.test2_grid, 10, 10)
         astar.find_path()
         self.assertEqual(astar.path, expected_path)
 
     def test_givenGridFullExceptLeftAndRightColumnsAndUpRow_whenFindingPath_thenPathFound(self):
-            for u in range(ROWS):
-                for w in range(COLUMNS):
-                    if u != 0 and u != ROWS and w != 0 and w != COLUMNS - 1:
+            for u in range(10):
+                for w in range(10):
+                    if u != 0 and u != 10 and w != 0 and w != 10 - 1:
                         self.test2_grid[u][w] = 1
 
             expected_path = [Cell(0, 1, True, False, 17),
@@ -65,7 +65,7 @@ class AstarTest(unittest.TestCase):
                              Cell(8, 9, True, False, 1),
                              Cell(9, 9, True, True, 0)]
 
-            astar = Astar(self.test2_grid)
+            astar = Astar(self.test2_grid, 10, 10)
             astar.find_path()
             self.assertEqual(astar.path, expected_path)
 

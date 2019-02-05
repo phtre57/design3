@@ -1,34 +1,34 @@
 from .Cell import Cell
 from domain.image_path_analysis.ImageToGridConverter import *
 
-ROWS = 10
-COLUMNS = 10
 INFINITE_WEIGHT = 9999999
 
 
 class Astar(object):
-    def __init__(self, grid):
+    def __init__(self, grid, number_of_rows, nb_of_columns):
         self.cells = []
         self.path = []
         self.visited_cells = set()
         self.starting_cell = 0
         self.ending_cell = 0
+        self.number_of_rows = number_of_rows
+        self.number_of_columns = nb_of_columns
 
         #unreachable cell are marked with a 1
         #empty cell is marked with a 0
-        for i in range(ROWS):
-            for j in range(COLUMNS):
+        for i in range(self.number_of_rows):
+            for j in range(self.number_of_columns):
                 self.cells.append(EMPTY_MARKER)
 
         #ending cell is marked with a 3
-        for i in range(ROWS):
-            for j in range(COLUMNS):
+        for i in range(self.number_of_rows):
+            for j in range(self.number_of_columns):
                 if grid[i][j] == ENDING_MARKER:
                     self.ending_cell = Cell(i, j, True, True, 0)
 
         #starting cell is marked with a 2
-        for i in range(ROWS):
-            for j in range(COLUMNS):
+        for i in range(self.number_of_rows):
+            for j in range(self.number_of_columns):
                 if grid[i][j] == STARTING_MARKER:
                     self.starting_cell = Cell(i, j, True, False, self.__calculate_cost(i, j))
 
@@ -36,8 +36,8 @@ class Astar(object):
         self.current_cell = self.starting_cell
 
     def __init_cells(self, grid):
-        for i in range(ROWS):
-            for j in range(COLUMNS):
+        for i in range(self.number_of_rows):
+            for j in range(self.number_of_columns):
                 if grid[i][j] == EMPTY_MARKER or grid[i][j] == STARTING_MARKER:
                     reachable = True
                     end = False
@@ -49,7 +49,7 @@ class Astar(object):
                     end = False
 
                 cost = self.__calculate_cost(i, j)
-                self.cells[i * COLUMNS + j] = Cell(i, j, reachable, end, cost)
+                self.cells[i * self.number_of_columns + j] = Cell(i, j, reachable, end, cost)
 
     def __calculate_cost(self, i, j):
         return abs(self.ending_cell.x - i) + abs(self.ending_cell.y - j)
@@ -58,10 +58,10 @@ class Astar(object):
         return abs(i - self.ending_cell.x) + abs(j - self.ending_cell.y)
 
     def __find_cell(self, i, j):
-        return self.cells[i * COLUMNS + j]
+        return self.cells[i * self.number_of_columns + j]
 
     def __set_cell(self, i, j, cell):
-        self.cells[i * COLUMNS + j] = cell
+        self.cells[i * self.number_of_columns + j] = cell
 
     def find_path(self):
         while not self.current_cell.end:
@@ -109,20 +109,20 @@ class Astar(object):
             up_cell = self.__find_cell(self.current_cell.x - 1, self.current_cell.y)
             neighbour_cells.append(up_cell)
 
-        if self.current_cell.y < ROWS - 1:
+        if self.current_cell.y < self.number_of_columns - 1:
             right_cell = self.__find_cell(self.current_cell.x, self.current_cell.y + 1)
             neighbour_cells.append(right_cell)
 
-        if self.current_cell.x < COLUMNS - 1:
+        if self.current_cell.x < self.number_of_rows - 1:
             bottom_cell = self.__find_cell(self.current_cell.x + 1, self.current_cell.y)
             neighbour_cells.append(bottom_cell)
 
         return neighbour_cells
 
     def print_cells(self):
-        for i in range(ROWS):
+        for i in range(self.number_of_rows):
             print("")
-            for j in range(COLUMNS):
+            for j in range(self.number_of_columns):
                 if self.__find_cell(i, j).reachable:
                     print(self.__find_cell(i, j).cost, end=" ")
                 else:
@@ -136,9 +136,9 @@ class Astar(object):
             cell = Cell(self.path[i].x, self.path[i].y, False, False, 0)
             cell.path = True
             self.__set_cell(self.path[i].x, self.path[i].y, cell)
-        for i in range(ROWS):
+        for i in range(self.number_of_rows):
             print("")
-            for j in range(COLUMNS):
+            for j in range(self.number_of_columns):
                 if self.__find_cell(i, j).path:
                     print("0", end=" ")
                 elif self.__find_cell(i, j).reachable:
