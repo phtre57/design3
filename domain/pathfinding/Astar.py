@@ -42,7 +42,6 @@ class Astar(object):
 
     def __calculate_heuristic(self, i, j):
         return abs(i - self.ending_cell.i) + abs(j - self.ending_cell.j)
-        #return math.sqrt((i - self.ending_cell.i) ** 2 + (j - self.ending_cell.j) ** 2)
 
     def __find_cell(self, i, j):
         return self.cells[i * self.number_of_columns + j]
@@ -59,7 +58,6 @@ class Astar(object):
     def __rewind_path(self):
         cell = self.ending_cell
         while cell.parent is not self.starting_cell:
-            # storing the parents in list from end to start
             self.path.append(cell)
             cell = cell.parent
         self.path.reverse()
