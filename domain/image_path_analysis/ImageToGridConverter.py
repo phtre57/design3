@@ -3,8 +3,8 @@ import sys
 import cv2
 np.set_printoptions(threshold=sys.maxsize)
 
-LENGTH = 640
-WIDTH = 400
+LENGTH = 320
+WIDTH = 200
 
 OBSTACLE_MARKER = 1
 EMPTY_MARKER = 0
