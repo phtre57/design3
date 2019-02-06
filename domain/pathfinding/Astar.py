@@ -1,4 +1,3 @@
-import math
 import heapq
 from .Cell import Cell
 from domain.image_path_analysis.ImageToGridConverter import *
@@ -57,42 +56,6 @@ class Astar(object):
         selected_cell.parent = current_cell
         selected_cell.net_cost = selected_cell.cost + selected_cell.heuristic
 
-    def find_path(self):
-        while not self.current_cell.end:
-            if self.current_cell == self.starting_cell:
-                self.path.clear()
-
-            neighbour_cell = self.__find_neighbour_cell()
-            heuristic = INFINITE_WEIGHT
-            cost = INFINITE_WEIGHT
-
-            for i in range(len(neighbour_cell)):
-                examined_cell = neighbour_cell[i]
-                calculated_heuristic = self.__calculate_heuristic(examined_cell.i, examined_cell.j)
-                examined_net_cost = examined_cell.cost + calculated_heuristic
-                if examined_net_cost <= heuristic + cost and examined_cell.reachable \
-                        and examined_cell not in self.visited_cells:
-                    heuristic = calculated_heuristic
-                    next_cell = neighbour_cell[i]
-                    cost = examined_cell.cost
-
-            if next_cell.i == self.current_cell.i and next_cell.j == self.current_cell.j:
-                cell = Cell(self.current_cell.i, self.current_cell.j, False, False, INFINITE_WEIGHT)
-                self.__set_cell(self.current_cell.i, self.current_cell.j, cell)
-                self.current_cell = self.path.pop()
-                next_cell = self.current_cell
-            else:
-                if self.current_cell == self.starting_cell:
-                    self.current_cell = next_cell
-                else:
-                    self.visited_cells.add(self.current_cell)
-                    self.path.append(self.current_cell)
-                    self.current_cell = next_cell
-                    if next_cell == self.ending_cell:
-                        self.path.append(next_cell)
-
-        return self.path
-
     def __rewind_path(self):
         cell = self.ending_cell
         while cell.parent is not self.starting_cell:
@@ -100,29 +63,6 @@ class Astar(object):
             self.path.append(cell)
             cell = cell.parent
         self.path.reverse()
-
-    def other_find_path(self):
-        heapq.heapify(self.open)
-        heapq.heappush(self.open, (self.starting_cell.net_cost, self.starting_cell))
-
-        while len(self.open):
-            net_cost, cell = heapq.heappop(self.open)
-            self.current_cell = cell
-            self.visited_cells.add(cell)
-
-            if cell.i == self.ending_cell.i and cell.j == self.ending_cell.j:
-                self.__rewind_path()
-                break
-
-            neighbours = self.__find_neighbour_cell()
-            for neighbour in neighbours:
-                if neighbour.reachable and neighbour not in self.visited_cells:
-                    if (neighbour.net_cost, neighbour) in self.open:
-                        if neighbour.cost > cell.cost + 1:
-                            self.__update_cell(neighbour, cell)
-                    else:
-                        self.__update_cell(neighbour, cell)
-                        heapq.heappush(self.open, (neighbour.net_cost, neighbour))
 
     def __find_neighbour_cell(self):
         neighbour_cells = []
@@ -145,31 +85,26 @@ class Astar(object):
 
         return neighbour_cells
 
-    def print_cells(self):
-        for i in range(self.number_of_rows):
-            print("")
-            for j in range(self.number_of_columns):
-                if self.__find_cell(i, j).reachable:
-                    print(self.__find_cell(i, j).cost, end=" ")
-                else:
-                    print("X", end=" ")
+    def find_path(self):
+        heapq.heapify(self.open)
+        heapq.heappush(self.open, (self.starting_cell.net_cost, self.starting_cell))
 
-        print("")
-        print("")
+        while len(self.open):
+            net_cost, cell = heapq.heappop(self.open)
+            self.current_cell = cell
+            self.visited_cells.add(cell)
 
-    def print_path(self):
-        for i in range(len(self.path)):
-            cell = Cell(self.path[i].i, self.path[i].j, False, False, 0)
-            cell.path = True
-            self.__set_cell(self.path[i].x, self.path[i].y, cell)
-        for i in range(self.number_of_rows):
-            print("")
-            for j in range(self.number_of_columns):
-                if self.__find_cell(i, j).path:
-                    print("0", end=" ")
-                elif self.__find_cell(i, j).reachable:
-                    print("-", end=" ")
-                else:
-                    print("X", end=" ")
+            if cell.i == self.ending_cell.i and cell.j == self.ending_cell.j:
+                self.__rewind_path()
+                break
 
-        print("")
+            neighbours = self.__find_neighbour_cell()
+            for neighbour in neighbours:
+                if neighbour.reachable and neighbour not in self.visited_cells:
+                    if (neighbour.net_cost, neighbour) in self.open:
+                        if neighbour.cost > cell.cost + 1:
+                            self.__update_cell(neighbour, cell)
+                    else:
+                        self.__update_cell(neighbour, cell)
+                        heapq.heappush(self.open, (neighbour.net_cost, neighbour))
+

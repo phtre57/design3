@@ -7,7 +7,7 @@ def test_astar_on_image(image_path):
     test_image = ImageToGridConverter(img)
 
     astar = Astar(test_image.grid, WIDTH, LENGTH)
-    astar.other_find_path()
+    astar.find_path()
 
     for point in astar.path:
         cv2.circle(test_image.image, (point.j, point.i), 1, [0, 0, 0])
