@@ -1,6 +1,8 @@
 import cv2
+import time
 from domain.image_path_analysis.ImageToGridConverter import *
 from domain.pathfinding.Astar import Astar
+
 
 def test_astar_on_image(image_path):
     img = cv2.imread(image_path)
@@ -15,6 +17,8 @@ def test_astar_on_image(image_path):
     return test_image.image
 
 if __name__ == "__main__":
+    start = time.time()
+
     #test 1
     path1 = test_astar_on_image("../../image_samples/test_table.png")
 
@@ -38,6 +42,10 @@ if __name__ == "__main__":
 
     #test8
     path9 = test_astar_on_image("../../image_samples/test_image_9.png")
+
+    end = time.time()
+    print(end - start)
+    print((end - start)/8)
 
     cv2.imshow("path1", path1)
     cv2.imshow("path2", path2)
