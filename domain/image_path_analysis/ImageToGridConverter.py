@@ -16,7 +16,7 @@ OBSTACLE_BORDER = 35
 
 YELLOW_HSV_LOW = np.array([20, 100, 100])
 YELLOW_HSV_HIGH = np.array([30, 255, 255])
-RED_HSV_LOW = np.array([160, 100, 100])
+RED_HSV_LOW = np.array([150, 100, 100])
 RED_HSV_HIGH = hsv_high = np.array([180, 255, 255])
 BLUE_HSV_LOW = np.array([100, 120, 0])
 BLUE_HSV_HIGH = hsv_high = np.array([140, 255, 255])

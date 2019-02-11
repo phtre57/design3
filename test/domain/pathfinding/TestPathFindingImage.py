@@ -57,7 +57,7 @@ def test_on_real_image():
     start = time.time()
 
     # test 1
-    #path1 = test_astar_on_image("../../image_samples/real_image/c1.png", True)
+    path1 = test_astar_on_image("../../image_samples/real_image/c1.png", True)
 
     path3 = test_astar_on_image("../../image_samples/real_image/c3.png", True)
 
@@ -75,7 +75,7 @@ def test_on_real_image():
     print("Total time: ", end - start)
     print("Average time: ", (end - start) / 7)
 
-    #cv2.imshow("path1", path1)
+    cv2.imshow("path1", path1)
     cv2.imshow("path3", path3)
     cv2.imshow("path4", path4)
     cv2.imshow("path5", path5)
