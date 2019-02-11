@@ -9,9 +9,8 @@ class Cell(object):
         self.net_cost = 0
         self.parent = None
 
-
     def __lt__(self, other):
-        return self.cost < other.cost
+        return self.net_cost < other.net_cost
 
     def __eq__(self, other):
         return self.i == other.i and self.j == other.j
