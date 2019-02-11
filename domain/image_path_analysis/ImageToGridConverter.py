@@ -20,12 +20,14 @@ RED_HSV_LOW = np.array([150, 100, 100])
 RED_HSV_HIGH = hsv_high = np.array([180, 255, 255])
 BLUE_HSV_LOW = np.array([100, 120, 0])
 BLUE_HSV_HIGH = hsv_high = np.array([140, 255, 255])
+BLUR_TUPLE = (7, 7)
 
 
 class ImageToGridConverter(object):
     def __init__(self, image, end_x, end_y):
         self.image = image
         self.image = cv2.resize(self.image, (LENGTH, HEIGHT))
+        self.image = cv2.GaussianBlur(self.image, BLUR_TUPLE, 0)
         self.grid = np.zeros((HEIGHT, LENGTH))
         self.mark_starting_point()
         self.mark_ending_point(end_x, end_y)

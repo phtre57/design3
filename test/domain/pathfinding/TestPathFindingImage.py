@@ -7,7 +7,7 @@ from domain.pathfinding.Astar import Astar
 def test_astar_on_image(image_path, blur=False):
     img = cv2.imread(image_path)
     if blur:
-        img = cv2.GaussianBlur(img, (21, 21), 0)
+        img = cv2.GaussianBlur(img, (9, 9), 0)
 
     test_image = ImageToGridConverter(img, LENGTH - 1, HEIGHT - 1)
 
@@ -57,19 +57,19 @@ def test_on_real_image():
     start = time.time()
 
     # test 1
-    path1 = test_astar_on_image("../../image_samples/real_image/c1.png", True)
+    path1 = test_astar_on_image("../../image_samples/real_image/c1.png", False)
 
-    path3 = test_astar_on_image("../../image_samples/real_image/c3.png", True)
+    path3 = test_astar_on_image("../../image_samples/real_image/c3.png", False)
 
-    path4 = test_astar_on_image("../../image_samples/real_image/c4.png", True)
+    path4 = test_astar_on_image("../../image_samples/real_image/c4.png", False)
 
-    path5 = test_astar_on_image("../../image_samples/real_image/c5.png", True)
+    path5 = test_astar_on_image("../../image_samples/real_image/c5.png", False)
 
-    path6 = test_astar_on_image("../../image_samples/real_image/c6.png", True)
+    path6 = test_astar_on_image("../../image_samples/real_image/c6.png", False)
 
-    path7 = test_astar_on_image("../../image_samples/real_image/c7.png", True)
+    path7 = test_astar_on_image("../../image_samples/real_image/c7.png", False)
 
-    path8 = test_astar_on_image("../../image_samples/real_image/c8.png", True)
+    path8 = test_astar_on_image("../../image_samples/real_image/c8.png", False)
 
     end = time.time()
     print("Total time: ", end - start)
