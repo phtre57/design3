@@ -9,7 +9,7 @@ def test_astar_on_image(image_path, blur=False):
     if blur:
         img = cv2.GaussianBlur(img, (21, 21), 0)
 
-    test_image = ImageToGridConverter(img)
+    test_image = ImageToGridConverter(img, LENGTH - 1, WIDTH - 1)
 
     astar = Astar(test_image.grid, WIDTH, LENGTH)
     astar.find_path()
@@ -19,99 +19,48 @@ def test_astar_on_image(image_path, blur=False):
 
     return test_image.image
 
-def test_on_clear_created_image():
+def test_on_robot_discovery_and_path_finding_with_blur():
     start = time.time()
 
     # test 1
-    path1 = test_astar_on_image("../../image_samples/test_table.png")
+    path1 = test_astar_on_image("../../image_samples/path_finding/test_image_0.png", True)
 
-    # test 2
-    path2 = test_astar_on_image("../../image_samples/test_image_2.png")
+    #test 2
+    path2 = test_astar_on_image("../../image_samples/path_finding/test_image_1.png", True)
 
-    # test3
-    path3 = test_astar_on_image("../../image_samples/test_image_3.png")
+    #test 3
+    path3 = test_astar_on_image("../../image_samples/path_finding/test_image_2.png", True)
 
-    # test4
-    path4 = test_astar_on_image("../../image_samples/test_image_4.png")
+    # test 4
+    path4 = test_astar_on_image("../../image_samples/path_finding/test_image_3.png", True)
 
-    # test5
-    path5 = test_astar_on_image("../../image_samples/test_image_5.png")
+    # test 5
+    path5 = test_astar_on_image("../../image_samples/path_finding/test_image_4.png", True)
 
-    # test6
-    path7 = test_astar_on_image("../../image_samples/test_image_7.png")
-
-    # test7
-    path8 = test_astar_on_image("../../image_samples/test_image_8.png")
-
-    # test8
-    path9 = test_astar_on_image("../../image_samples/test_image_9.png")
+    # test 6
+    path6 = test_astar_on_image("../../image_samples/path_finding/test_image_5.png", True)
 
     end = time.time()
-    print(end - start)
-    print((end - start) / 8)
+    print("Total time: ", end - start)
+    print("Average time: ", (end - start) / 6)
 
     cv2.imshow("path1", path1)
     cv2.imshow("path2", path2)
     cv2.imshow("path3", path3)
     cv2.imshow("path4", path4)
     cv2.imshow("path5", path5)
-    cv2.imshow("path7", path7)
-    cv2.imshow("path8", path8)
-    cv2.imshow("path9", path9)
-    cv2.waitKey(0)
-
-
-def test_on_blurred_created_image():
-    start = time.time()
-
-    # test 1
-    path1 = test_astar_on_image("../../image_samples/test_table.png", True)
-
-    # test 2
-    path2 = test_astar_on_image("../../image_samples/test_image_2.png", True)
-
-    # test3
-    path3 = test_astar_on_image("../../image_samples/test_image_3.png", True)
-
-    # test4
-    path4 = test_astar_on_image("../../image_samples/test_image_4.png", True)
-
-    # test5
-    path5 = test_astar_on_image("../../image_samples/test_image_5.png", True)
-
-    # test6
-    path7 = test_astar_on_image("../../image_samples/test_image_7.png", True)
-
-    # test7
-    path8 = test_astar_on_image("../../image_samples/test_image_8.png", True)
-
-    # test8
-    path9 = test_astar_on_image("../../image_samples/test_image_9.png", True)
-
-    end = time.time()
-    print(end - start)
-    print((end - start) / 8)
-
-    cv2.imshow("path1", path1)
-    cv2.imshow("path2", path2)
-    cv2.imshow("path3", path3)
-    cv2.imshow("path4", path4)
-    cv2.imshow("path5", path5)
-    cv2.imshow("path7", path7)
-    cv2.imshow("path8", path8)
-    cv2.imshow("path9", path9)
+    cv2.imshow("path6", path6)
     cv2.waitKey(0)
 
 if __name__ == "__main__":
     # test_switch: 0 = created with no blur
     # test_switch: 1 = created with blur
 
-    test_switch = 1
+    test_switch = 0
 
     if test_switch == 0:
-        test_on_clear_created_image()
-    elif test_switch == 1:
-        test_on_blurred_created_image()
+        test_on_robot_discovery_and_path_finding_with_blur()
+
 
 
 
