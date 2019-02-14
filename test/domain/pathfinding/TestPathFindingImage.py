@@ -57,31 +57,40 @@ def test_on_real_image():
     start = time.time()
 
     # test 1
-    path1 = test_astar_on_image("../../image_samples/real_image/c1.png", False)
+    path1 = test_astar_on_image("../../image_samples/real_image/globalmonde.jpg", False)
 
-    path3 = test_astar_on_image("../../image_samples/real_image/c3.png", False)
+    path2 = test_astar_on_image("../../image_samples/real_image/globalmonde1.jpg", False)
 
-    path4 = test_astar_on_image("../../image_samples/real_image/c4.png", False)
+    path3 = test_astar_on_image("../../image_samples/real_image/globalmonde2.jpg", False)
 
-    path5 = test_astar_on_image("../../image_samples/real_image/c5.png", False)
+    path4 = test_astar_on_image("../../image_samples/real_image/globalmonde3.jpg", False)
 
-    path6 = test_astar_on_image("../../image_samples/real_image/c6.png", False)
+    path5 = test_astar_on_image("../../image_samples/real_image/globalmonde4.jpg", False)
 
-    path7 = test_astar_on_image("../../image_samples/real_image/c7.png", False)
+    path6 = test_astar_on_image("../../image_samples/real_image/globalmonde5.jpg", False)
 
-    path8 = test_astar_on_image("../../image_samples/real_image/c8.png", False)
+    path7 = test_astar_on_image("../../image_samples/real_image/globalmonde6.jpg", False)
+
+    path8 = test_astar_on_image("../../image_samples/real_image/globalmonde7.jpg", False)
+
+    path9 = test_astar_on_image("../../image_samples/real_image/globalmonde8.jpg", False)
+
+    path10 = test_astar_on_image("../../image_samples/real_image/globalmonde9.jpg", False)
 
     end = time.time()
     print("Total time: ", end - start)
-    print("Average time: ", (end - start) / 7)
+    print("Average time: ", (end - start) / 10)
 
     cv2.imshow("path1", path1)
+    cv2.imshow("path2", path2)
     cv2.imshow("path3", path3)
     cv2.imshow("path4", path4)
     cv2.imshow("path5", path5)
     cv2.imshow("path6", path6)
     cv2.imshow("path7", path7)
     cv2.imshow("path8", path8)
+    cv2.imshow("path9", path9)
+    cv2.imshow("path10", path10)
     cv2.waitKey(0)
 
 if __name__ == "__main__":

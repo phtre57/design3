@@ -1,6 +1,7 @@
 import numpy as np
 import sys
 import cv2
+import imutils
 np.set_printoptions(threshold=sys.maxsize)
 
 LENGTH = 320
@@ -14,13 +15,13 @@ HSV_IN_RANGE_MARKER = 255
 
 OBSTACLE_BORDER = 35
 
-YELLOW_HSV_LOW = np.array([20, 100, 100])
+YELLOW_HSV_LOW = np.array([20, 100, 160])
 YELLOW_HSV_HIGH = np.array([30, 255, 255])
 RED_HSV_LOW = np.array([150, 100, 100])
 RED_HSV_HIGH = hsv_high = np.array([180, 255, 255])
-BLUE_HSV_LOW = np.array([100, 120, 0])
+BLUE_HSV_LOW = np.array([100, 100, 120])
 BLUE_HSV_HIGH = hsv_high = np.array([140, 255, 255])
-BLUR_TUPLE = (7, 7)
+BLUR_TUPLE = (3, 3)
 
 
 class ImageToGridConverter(object):
@@ -74,27 +75,33 @@ class ImageToGridConverter(object):
         self.grid[y_starting_pt][x_starting_pt] = STARTING_MARKER
 
     def __find_center_of_contour(self, mask):
-        blurred = cv2.GaussianBlur(mask, (5, 5), 0)
-        ret, thresh = cv2.threshold(blurred, 60, 255, cv2.THRESH_BINARY)
+        ret, thresh = cv2.threshold(mask, 60, 255, cv2.THRESH_BINARY)
         contours, hierarchy = cv2.findContours(thresh, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
 
         for contour in contours:
-            M = cv2.moments(contour)
-            x_center_of_contour = int(M["m10"] / M["m00"])
-            y_center_of_contour = int(M["m01"] / M["m00"])
-            return x_center_of_contour, y_center_of_contour
+            (x, y), radius = cv2.minEnclosingCircle(contour)
+
+            if radius > 1:
+                M = cv2.moments(contour)
+                x_center_of_contour = int(M["m10"] / M["m00"])
+                y_center_of_contour = int(M["m01"] / M["m00"])
+                return x_center_of_contour, y_center_of_contour
+
+        raise Exception("Could not find yellow marker")
 
     def __find_center_of_obstacle(self, mask):
-        blurred = cv2.GaussianBlur(mask, (5, 5), 0)
-        ret, thresh = cv2.threshold(blurred, 60, 255, cv2.THRESH_BINARY)
+        ret, thresh = cv2.threshold(mask, 60, 255, cv2.THRESH_BINARY)
         contours, hierarchy = cv2.findContours(thresh, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
         coord_array = []
 
         for contour in contours:
-            M = cv2.moments(contour)
-            x_center_of_contour = int(M["m10"] / M["m00"])
-            y_center_of_contour = int(M["m01"] / M["m00"])
-            coord_array.append((x_center_of_contour, y_center_of_contour))
+            try:
+                M = cv2.moments(contour)
+                x_center_of_contour = int(M["m10"] / M["m00"])
+                y_center_of_contour = int(M["m01"] / M["m00"])
+                coord_array.append((x_center_of_contour, y_center_of_contour))
+            except Exception:
+                continue
 
         return coord_array
 
