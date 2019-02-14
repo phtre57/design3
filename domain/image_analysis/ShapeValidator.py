@@ -16,5 +16,4 @@ class ShapeValidator:
             self.shape = "pentagon"
         else:
             self.shape = "circle"
-        
         return self.shape
