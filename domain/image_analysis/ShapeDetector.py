@@ -1,7 +1,12 @@
 import cv2
 import imutils
 
+from domain.image_analysis.ShapeValidator import ShapeValidator
+
+"""
 from ShapeValidator import ShapeValidator
+"""
+
 
 class ShapeDetector:
 

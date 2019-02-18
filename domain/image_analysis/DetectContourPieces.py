@@ -1,10 +1,14 @@
 import cv2
-import numpy as np
-import imutils
 
+from domain.image_analysis.ShapeDetector import ShapeDetector
+from domain.image_analysis.Canny import canny
+
+"""
 from ShapeValidator import ShapeValidator
 from ShapeDetector import ShapeDetector
 from Canny import canny, dilate_mask, erode_mask
+"""
+
 
 def detect_contour_pieces(frame):
     edges = canny(frame, dilate_mask)

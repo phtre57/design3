@@ -1,10 +1,13 @@
 import cv2
-import numpy as np
-import imutils
 
+from domain.image_analysis.ShapeDetector import ShapeDetector
+from domain.image_analysis.Canny import canny, dilate_mask_zone_dep
+
+"""
 from ShapeValidator import ShapeValidator
 from ShapeDetector import ShapeDetector
 from Canny import canny, dilate_mask_zone_dep
+"""
 
 def detect_zone_dep(frame):
     edges = canny(frame, dilate_mask_zone_dep)

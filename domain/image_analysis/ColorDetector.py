@@ -6,6 +6,7 @@ from ShapeValidator import ShapeValidator
 from ShapeDetector import ShapeDetector
 from Canny import canny, dilate_mask, erode_mask
 
+
 def color_detector(frame):
     edges = canny(frame, dilate_mask)
     shapeDetector = ShapeDetector(True, True, True)

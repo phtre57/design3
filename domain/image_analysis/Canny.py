@@ -1,6 +1,7 @@
 import cv2
 import numpy as np
 
+
 def canny(frame, func):
     frame = cv2.GaussianBlur(frame, (5, 5), 1)
     frame = cv2.cvtColor(frame,cv2.COLOR_BGR2RGB)
