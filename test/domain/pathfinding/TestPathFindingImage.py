@@ -9,7 +9,7 @@ def test_astar_on_image(image_path, blur=False):
     if blur:
         img = cv2.GaussianBlur(img, (9, 9), 0)
 
-    test_image = ImageToGridConverter(img, LENGTH - 1, HEIGHT - 1)
+    test_image = ImageToGridConverter(img, 50, 50)
 
     astar = Astar(test_image.grid, HEIGHT, LENGTH)
     astar.find_path()

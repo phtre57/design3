@@ -14,7 +14,8 @@ ENDING_MARKER = 3
 HSV_IN_RANGE_MARKER = 255
 
 OBSTACLE_BORDER = 35
-WALL_BORDER = 50
+HORIZONTAL_WALL_BORDER = 150
+VERTICAL_WALL_BORDER = 50
 
 YELLOW_HSV_LOW = np.array([20, 100, 160])
 YELLOW_HSV_HIGH = np.array([30, 255, 255])
@@ -22,7 +23,7 @@ RED_HSV_LOW = np.array([150, 100, 100])
 RED_HSV_HIGH = hsv_high = np.array([180, 255, 255])
 BLUE_HSV_LOW = np.array([100, 100, 120])
 BLUE_HSV_HIGH = hsv_high = np.array([140, 255, 255])
-BLUR_TUPLE = (3, 3)
+BLUR_TUPLE = (5, 5)
 
 
 class ImageToGridConverter(object):
@@ -30,6 +31,7 @@ class ImageToGridConverter(object):
         self.image = image
         self.image = cv2.resize(self.image, (LENGTH, HEIGHT))
         self.grid = np.zeros((HEIGHT, LENGTH))
+        self.__mark_obstacle_border()
         self.__mark_border_of_table()
         self.__mark_starting_point()
         self.__mark_ending_point(end_x, end_y)
@@ -140,7 +142,8 @@ class ImageToGridConverter(object):
                 cv2.circle(self.image, (start_x, start_y + i), 1, [255, 51, 51])
 
     def __mark_border_of_table(self):
-        shape = detect_table(self.image)
+        image = self.image.copy()
+        shape = detect_table(image)
         x_center_of_contour = 0
         y_center_of_contour = 0
 
@@ -152,4 +155,30 @@ class ImageToGridConverter(object):
             except Exception:
                 continue
 
-        cv2.circle(self.image, (x_center_of_contour, y_center_of_contour), 2, [0, 0, 0])
+        #bottom border
+        for i in range(HORIZONTAL_WALL_BORDER * 2):
+            start_y = y_center_of_contour + VERTICAL_WALL_BORDER
+            start_x = x_center_of_contour - HORIZONTAL_WALL_BORDER
+
+            cv2.circle(self.image, (start_x + i, start_y), 1, [255, 51, 51])
+
+        #Upper border
+        for i in range(HORIZONTAL_WALL_BORDER * 2):
+            start_y = y_center_of_contour - VERTICAL_WALL_BORDER
+            start_x = x_center_of_contour - HORIZONTAL_WALL_BORDER
+
+            cv2.circle(self.image, (start_x + i, start_y), 1, [255, 51, 51])
+
+        #rigth border
+        for i in range(VERTICAL_WALL_BORDER * 2):
+            start_y = y_center_of_contour - VERTICAL_WALL_BORDER
+            start_x = x_center_of_contour + HORIZONTAL_WALL_BORDER
+
+            cv2.circle(self.image, (start_x, start_y + i), 1, [255, 51, 51])
+
+        #left border
+        for i in range(VERTICAL_WALL_BORDER * 2):
+            start_y = y_center_of_contour - VERTICAL_WALL_BORDER
+            start_x = x_center_of_contour - HORIZONTAL_WALL_BORDER
+
+            cv2.circle(self.image, (start_x, start_y + i), 1, [255, 51, 51])
