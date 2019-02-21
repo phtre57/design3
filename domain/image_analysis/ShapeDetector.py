@@ -82,7 +82,7 @@ class ShapeDetector:
             filler = cv2.convexHull(c)
             cv2.fillConvexPoly(frame, filler, 255)
             
-        return Shape(self.shapes, cnts, approx)
+        return Shape(self.shapes, cnts)
 
     def set_peri_limiter(self, peri_lower, peri_upper):
         self.peri_lower = peri_lower
