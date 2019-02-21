@@ -21,7 +21,7 @@ class ColorDetectorTest(unittest.TestCase):
 
         rtnShape = color_detector(frame)
         cv2.imshow('EDGES', frame)
-        print(rtnShape.shapes)
+        print(rtnShape.approx)
         self.assertEqual(rtnShape.shapes, ['circle', 'rectangle', 'circle', 'pentagon'])
 
 if __name__ == '__main__':
