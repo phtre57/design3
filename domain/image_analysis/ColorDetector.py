@@ -2,10 +2,8 @@ import cv2
 import numpy as np
 import imutils
 
-from ShapeValidator import ShapeValidator
-from ShapeDetector import ShapeDetector
-from Canny import canny, dilate_mask, erode_mask
-
+from domain.image_analysis.ShapeDetector import ShapeDetector
+from domain.image_analysis.Canny import canny, dilate_mask
 
 def color_detector(frame):
     edges = canny(frame, dilate_mask)
@@ -28,13 +26,13 @@ def color_detector(frame):
     mask = cv2.erode(mask,kernelerode,iterations = 1)
 
     output = mask
-    # print(shape)
-    return output
+
+    return shape
 
 
-frame = cv2.imread("../../image_samples/real_image/pieces.jpg")
-output = color_detector(frame)
-cv2.imshow('EDGES', output)
+# frame = cv2.imread("../../image_samples/real_image/pieces.jpg")
+# output = color_detector(frame)
+# cv2.imshow('EDGES', output)
 
-cv2.waitKey()
+# cv2.waitKey()
 

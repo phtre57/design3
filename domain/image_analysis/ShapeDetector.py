@@ -2,11 +2,7 @@ import cv2
 import imutils
 
 from domain.image_analysis.ShapeValidator import ShapeValidator
-
-"""
-from ShapeValidator import ShapeValidator
-"""
-
+from domain.image_analysis.Shape import Shape
 
 class ShapeDetector:
 
@@ -86,10 +82,7 @@ class ShapeDetector:
             filler = cv2.convexHull(c)
             cv2.fillConvexPoly(frame, filler, 255)
             
-            # cv2.imshow('DEBUG', frame)
-            # cv2.waitKey()
-
-        return self.shapes
+        return Shape(self.shapes, cnts, approx)
 
     def set_peri_limiter(self, peri_lower, peri_upper):
         self.peri_lower = peri_lower
@@ -114,4 +107,3 @@ class ShapeDetector:
         
     # 1500, 0, 0.02, 90, 90, 100, False
     # def detectObstacle(self, frame, second):
-        

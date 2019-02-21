@@ -27,12 +27,11 @@ def detect_table(frame):
 
     output = cv2.bitwise_and(frame, frame, mask=edges)
 
-    print(shape)
-    return output
+    return shape
     
-frame = cv2.imread("../../image_samples/real_image/globalmonde.jpg")
-output = detect_table(frame)
+# frame = cv2.imread("../../image_samples/real_image/globalmonde.jpg")
+# output = detect_table(frame)
 
-cv2.imshow('EDGES', output)
+# cv2.imshow('EDGES', output)
 
-cv2.waitKey()
+# cv2.waitKey()

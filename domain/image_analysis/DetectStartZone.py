@@ -42,12 +42,10 @@ def detect_start_zone(frame):
 
     output = cv2.bitwise_and(frame, frame, mask=output)
 
-    print(shape)
+    return shape
 
-    return output
+# frame = cv2.imread("../../image_samples/real_image/globalmonde.jpg")
+# output = detect_start_zone(frame)
 
-frame = cv2.imread("../../image_samples/real_image/globalmonde.jpg")
-output = detect_start_zone(frame)
-
-cv2.imshow('EDGES', output)
-cv2.waitKey()
+# cv2.imshow('EDGES', output)
+# cv2.waitKey()

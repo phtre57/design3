@@ -13,15 +13,15 @@ def decode(im) :
         print('Data : ', obj.data,'\n')
         return obj
 
-# Main 
-if __name__ == '__main__':
+# # Main 
+# if __name__ == '__main__':
  
-  # Read image
-  im = cv2.imread('../../image_samples/real_image/qr.jpg')
+#   # Read image
+#   im = cv2.imread('../../image_samples/real_image/qr.jpg')
  
-  obj = decode(im)
-  cv2.imshow('QR', im)
+#   obj = decode(im)
+#   cv2.imshow('QR', im)
 
-  cv2.waitKey()
+#   cv2.waitKey()
 
      

@@ -2,13 +2,13 @@ import cv2
 import numpy as np
 
 
-def canny(frame, func):
+def canny(frame, maskFunc):
     frame = cv2.GaussianBlur(frame, (5, 5), 1)
     frame = cv2.cvtColor(frame,cv2.COLOR_BGR2RGB)
     kernel = np.ones((9, 9), np.uint8)
     kernelerode = np.ones((2,2),np.uint8)
     
-    mask = func(frame)
+    mask = maskFunc(frame)
 
     return cv2.Canny(mask,100,200)
 

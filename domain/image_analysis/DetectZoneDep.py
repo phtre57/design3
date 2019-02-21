@@ -18,11 +18,11 @@ def detect_zone_dep(frame):
 
     shape = shapeDetector.detect(edges, True)
 
-    print(shape)
+    return shape
 
-    cv2.imshow('EDGES', edges)
 
-    cv2.waitKey()
+# frame = cv2.imread("../../image_samples/real_image/zonedep.jpg")
+# detect_zone_dep(frame)
+# cv2.imshow('EDGES', frame)
 
-frame = cv2.imread("../../image_samples/real_image/zonedep.jpg")
-detect_zone_dep(frame)
+# cv2.waitKey()
