@@ -20,6 +20,7 @@ class ColorDetectorTest(unittest.TestCase):
         frame = cv2.imread(path)
 
         shape = color_detector(frame)
+
         cv2.imshow('EDGES', shape.frame)
         cv2.waitKey()
 
