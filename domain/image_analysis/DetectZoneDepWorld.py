@@ -4,13 +4,9 @@ import numpy as np
 from domain.image_analysis.ShapeDetector import ShapeDetector
 from domain.image_analysis.Canny import canny, erode_mask
 
-"""
-from ShapeValidator import ShapeValidator
-from ShapeDetector import ShapeDetector
-from Canny import canny, dilate_mask, erode_mask
-"""
-
 def detect_zone_dep_world(frame):
+    frame = frame.copy()
+
     edges = canny(frame, erode_mask)
     shapeDetector = ShapeDetector(True, True, False)
     shapeDetector.set_peri_limiter(1000, 100000)
@@ -41,10 +37,6 @@ def detect_zone_dep_world(frame):
 
     output = cv2.bitwise_and(frame, frame, mask=output)
 
+    shape.set_frame(output)
+
     return shape
-
-# frame = cv2.imread("../../image_samples/real_image/globalmonde.jpg")
-# output = detect_zone_dep_world(frame)
-
-# cv2.imshow('EDGES', output)
-# cv2.waitKey()

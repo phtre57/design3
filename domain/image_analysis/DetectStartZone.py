@@ -11,6 +11,8 @@ from Canny import canny, dilate_mask, erode_mask
 """
 
 def detect_start_zone(frame):
+    frame.copy()
+
     edges = canny(frame, erode_mask)
     shapeDetector = ShapeDetector(True, True, False)
     shapeDetector.set_peri_limiter(1000, 100000)
@@ -42,10 +44,6 @@ def detect_start_zone(frame):
 
     output = cv2.bitwise_and(frame, frame, mask=output)
 
+    shape.set_frame(output)
+
     return shape
-
-# frame = cv2.imread("../../image_samples/real_image/globalmonde.jpg")
-# output = detect_start_zone(frame)
-
-# cv2.imshow('EDGES', output)
-# cv2.waitKey()

@@ -1,4 +1,4 @@
-from domain.image_analysis.ColorDetector import *
+from domain.image_analysis.DetectContourPieces import *
 from image_samples.real_image import *
 import unittest
 import numpy as np
@@ -6,7 +6,7 @@ import cv2
 import os
 import inspect
 
-class ColorDetectorTest(unittest.TestCase):
+class DetectContourPiecesTest(unittest.TestCase):
 
     def setUp(self):
         self.dumb = 0
@@ -19,8 +19,7 @@ class ColorDetectorTest(unittest.TestCase):
 
         frame = cv2.imread(path)
 
-        shape = color_detector(frame)
-
+        shape = detect_contour_pieces(frame)
         cv2.imshow('EDGES', shape.frame)
         cv2.waitKey()
 

@@ -19,7 +19,6 @@ class ShapeDetector:
         self.radius_positive = True
         self.shape_only = None
 
-    # 700, 150, 0.02, 10, 10, 90, True
     def detect(self, frame, second):
         self.shapes = []
 
@@ -98,12 +97,3 @@ class ShapeDetector:
 
     def set_shape_only(self, shape):
         self.shape_only = shape
-
-    # 100000, 1000, 0.02, 90, 90, 100, False
-    # def detectTable(self, frame, second):
-        
-    # 1500, 0, 0.02, 90, 90, 100, False
-    # def detectStart(self, frame, second):
-        
-    # 1500, 0, 0.02, 90, 90, 100, False
-    # def detectObstacle(self, frame, second):
