@@ -92,3 +92,5 @@ dependency-reduced-pom.xml
 # node
 node_modules
 trading-api/.factorypath
+
+.vscode
