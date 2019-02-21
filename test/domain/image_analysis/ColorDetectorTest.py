@@ -19,10 +19,10 @@ class ColorDetectorTest(unittest.TestCase):
 
         frame = cv2.imread(path)
 
-        rtnShape = color_detector(frame)
+        shape = color_detector(frame)
         cv2.imshow('EDGES', frame)
-        print(rtnShape.shapes)
-        self.assertEqual(rtnShape.shapes, ['circle', 'rectangle', 'circle', 'pentagon'])
+        print(shape.shapes)
+        self.assertEqual(shape.shapes, ['circle', 'rectangle', 'circle', 'pentagon'])
 
 if __name__ == '__main__':
     unittest.main()
