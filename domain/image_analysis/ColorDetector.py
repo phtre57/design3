@@ -6,6 +6,8 @@ from domain.image_analysis.ShapeDetector import ShapeDetector
 from domain.image_analysis.Canny import canny, dilate_mask
 
 def color_detector(frame):
+    frame = frame.copy()
+    
     edges = canny(frame, dilate_mask)
     shapeDetector = ShapeDetector(True, True, True)
     shapeDetector.set_peri_limiter(150, 700)
@@ -25,14 +27,7 @@ def color_detector(frame):
     mask = cv2.morphologyEx(mask, cv2.MORPH_CLOSE, cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (10,10)))
     mask = cv2.erode(mask,kernelerode,iterations = 1)
 
-    output = mask
+    shape.set_frame(mask)
 
     return shape
-
-
-# frame = cv2.imread("../../image_samples/real_image/pieces.jpg")
-# output = color_detector(frame)
-# cv2.imshow('EDGES', output)
-
-# cv2.waitKey()
 
