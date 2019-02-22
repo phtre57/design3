@@ -5,11 +5,15 @@ import './App.css';
 import openSocket from 'socket.io-client';
 
 class App extends Component {
-  state = { main: "", img: "", socket: openSocket('http://localhost:4000?token=UI')}
+  state = { 
+    main: "",
+    img: "",
+    socket: openSocket('http://localhost:4000?token=UI')
+  }
 
   componentDidMount() {
-    this.state.socket.on('event', data => {
-      this.setState({ [data.type]: data.data });
+    this.state.socket.on('event', resp => {
+      this.setState({ [resp.dest]: resp.data });
     });
   }
   
@@ -18,25 +22,16 @@ class App extends Component {
   }
 
   render() {
-    let imgR = "data:image/png;base64, " + this.state.img 
+    let imgR = "data:image/png;base64, " + this.state.img;
+    if (this.state.img === "") {
+      imgR = logo;
+    }
+
     return (
       <div className="App">
         <header className="App-header">
-          <img src={logo} className="App-logo" alt="logo" />
-          <p>
-            Edit <code>src/App.js</code> {this.state.main} and save to reload.
-          </p>
-          
           <button onClick={this.alloSocket}>ALLO</button>
-          <img src={imgR} alt="flip flip ok"/>
-          <a
-            className="App-link"
-            href="https://reactjs.org"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Learn React
-          </a>
+          <img src={imgR} width="200" alt="logo"/>
         </header>
       </div>
     );
