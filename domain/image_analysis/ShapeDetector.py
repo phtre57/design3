@@ -19,7 +19,9 @@ class ShapeDetector:
         self.radius_positive = True
         self.shape_only = None
 
-    def detect(self, frame, second):
+    def detect(self, frame):
+        frame = frame.copy()
+
         self.shapes = []
 
         cnts = cv2.findContours(frame.copy(), cv2.RETR_EXTERNAL,
@@ -30,6 +32,11 @@ class ShapeDetector:
             return None
 
         c = max(cnts, key=cv2.contourArea)
+
+        frameWithText = frame.copy()
+        frameCnts = frame.copy()
+
+        shapes_with_approx = []
 
         for c in cnts:
             shape = "unidentified"
@@ -70,18 +77,19 @@ class ShapeDetector:
                     continue
                     
             self.shapes.append(shape)
+            shapes_with_approx.append([shape, approx])
 
-            if (second):
-                cv2.drawContours(frame, [c], -1, (70,0,255), 10)
-                cv2.putText(frame, shape, (int(x-radius),int(y-radius)), cv2.FONT_HERSHEY_SIMPLEX,
-                    0.5, (70, 0, 255), 2)
-            else:
-                cv2.drawContours(frame, [c], -1, (100,0,255), 1)
+            cv2.drawContours(frameWithText, [c], -1, (70,0,255), 10)
+            cv2.putText(frameWithText, shape, (int(x-radius),int(y-radius)), cv2.FONT_HERSHEY_SIMPLEX,
+                0.5, (70, 0, 255), 2)
+
+            cv2.drawContours(frameCnts, [c], -1, (100,0,255), 1)
 
             filler = cv2.convexHull(c)
-            cv2.fillConvexPoly(frame, filler, 255)
+            cv2.fillConvexPoly(frameWithText, filler, 255)
+            cv2.fillConvexPoly(frameCnts, filler, 255)
             
-        return Shape(self.shapes, cnts, approx)
+        return Shape(self.shapes, cnts, shapes_with_approx, frameWithText, frameCnts)
 
     def set_peri_limiter(self, peri_lower, peri_upper):
         self.peri_lower = peri_lower

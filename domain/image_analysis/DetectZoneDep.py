@@ -12,10 +12,9 @@ def detect_zone_dep(frame):
     shapeDetector = ShapeDetector(True, False, True)
     shapeDetector.set_peri_limiter(700, 7000)
     shapeDetector.set_radius_limiter(230, True)
-    shape = shapeDetector.detect(edges, False)
-
-    shape = shapeDetector.detect(edges, True)
-
-    shape.set_frame(edges)
+    
+    shape = shapeDetector.detect(edges)
+    shape = shapeDetector.detect(shape.frameCnts)
+    shape.set_frame(shape.frameWithText)
 
     return shape
