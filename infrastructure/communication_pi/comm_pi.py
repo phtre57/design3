@@ -16,8 +16,6 @@ s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 def main():
 	connectToPi()
 	time.sleep(2)
-	# readySignal()
-	time.sleep(2)
 	getImage()
 	time.sleep(2)
 	sendCoordinates("2")

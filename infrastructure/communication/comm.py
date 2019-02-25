@@ -1,5 +1,6 @@
 import socketio
 import base64
+import cv2
 
 def InitConn():
     sio = socketio.Client()

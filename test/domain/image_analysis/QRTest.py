@@ -15,13 +15,13 @@ class QRTest(unittest.TestCase):
         path = os.path.normpath(os.path.join(os.path.dirname(__file__), os.pardir))
         path = os.path.normpath(os.path.join(path, os.pardir))
         path = os.path.normpath(os.path.join(path, os.pardir))
-        path = os.path.join(path, "./image_samples/real_image/qr.jpg")
+        path = os.path.join(path, "./image_samples/real_image/qr.png")
 
         frame = cv2.imread(path)
 
         obj = decode(frame)
 
-        self.assertEqual(str(obj.data), "b'advertising'")
+        self.assertEqual(str(obj.data), "b'0-rouge-Zone0'")
 
 if __name__ == '__main__':
     unittest.main()

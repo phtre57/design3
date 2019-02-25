@@ -29,9 +29,11 @@ def pathfinding(path, x, y):
 def main_sequence():
     pathfinding("./image_samples/real_image/globalmonde1.jpg", 240, 135)
 
-    path = "./image_samples/real_image/qr.jpg"
+    path = "./image_samples/real_image/qr.png"
     frame = cv2.imread(path)
     obj = decode(frame)
+
+    SendText(obj.data, "qrcode")
 
     pathfinding("./image_samples/real_image/globalmonde1QR.jpg", 235, 60)
 
