@@ -1,8 +1,9 @@
 const server = require("http").createServer()
 const io = require("socket.io")(server)
 
-robotClient = {}
-UIClient = {}
+let robotMainClient = {}
+
+let UIClient = {}
 
 io.on("connection", client => {
   onConnect(client)
@@ -11,10 +12,15 @@ io.on("connection", client => {
     UIClient.emit("event", { data: "chocolat" })
   })
 
+  //event from UI for the start signal
+  client.on("start", resp => { 
+    console.log("start");
+    robotMainClient.emit("start", "started")
+  })
+
   client.on("eventFromRobot", data => {
     if (data.type === "img") {
       console.log(">> Img");
-      
       data.data = String.fromCharCode.apply(null, new Uint16Array(data.data));
     }
     
@@ -36,8 +42,8 @@ function onConnect(client) {
     UIClient = client
     UIClient.emit("event", { data: "Bienvenue toé" })
     console.log("Hi UI");
-  } else {
-    robotClient = client
-    console.log("Hi Robot");
+  } else if(client.handshake.query.token === "MainRobot") {
+    robotMainClient = client
+    console.log("Hi Main Robot");
   }
 }
