@@ -8,6 +8,7 @@ from domain.image_analysis.QR import decode
 from domain.image_analysis.DetectContourPieces import *
 from domain.image_analysis.DetectZoneDep import *
 from infrastructure.communication_pi.comm_pi import connectToPi
+from infrastructure.communication.comm import SendImage, SendText
 
 def pathfinding(path, x, y):
     frame = cv2.imread(path)
@@ -20,6 +21,8 @@ def pathfinding(path, x, y):
         cv2.circle(test_image.image, (point.j, point.i), 1, [0, 0, 0])
 
     frame = test_image.image
+    SendImage(frame, "optpath")
+    SendImage(frame, "actualpath")
     cv2.imshow("main", frame)
     cv2.waitKey()
 
