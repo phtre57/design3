@@ -1,4 +1,5 @@
 import socketio
+import argparse
 
 from domain.image_analysis.DetectTable import *
 from domain.image_path_analysis.ImageToGridConverter import *
@@ -7,8 +8,12 @@ from test.domain.pathfinding.TestPathFindingImage import test_astar_on_image
 from domain.image_analysis.QR import decode
 from domain.image_analysis.DetectContourPieces import *
 from domain.image_analysis.DetectZoneDep import *
-from infrastructure.communication_pi.comm_pi import connectToPi
+from infrastructure.communication_pi.comm_pi import *
 from infrastructure.communication.comm import SendImage, SendText
+
+parser = argparse.ArgumentParser(description='Process some integers.')
+parser.add_argument('--d', dest='debug', type=bool, default=False, help='debug mode')
+args = parser.parse_args()
 
 def pathfinding(path, x, y):
     frame = cv2.imread(path)
@@ -42,7 +47,7 @@ def main_sequence():
     frame = cv2.imread(path)
     shape = detect_contour_pieces(frame)
 
-    SendImage(frame, "actualimg")
+    SendImage(shape.frame, "actualimg")
 
     cv2.imshow('EDGES', shape.frame)
     cv2.waitKey()
@@ -53,7 +58,7 @@ def main_sequence():
     frame = cv2.imread(path)
     shape = detect_zone_dep(frame)
 
-    SendImage(frame, "actualimg")
+    SendImage(shape.frame, "actualimg")
 
     cv2.imshow('EDGES', shape.frame)
     cv2.waitKey()
@@ -80,7 +85,11 @@ def init_conn():
         main_sequence()
 
 def main():
-    init_conn()
+    if (args.debug):
+        # connectToPi()
+        # sendCoordinates('200 0\n')
+    else:
+        init_conn()
 
 
 
