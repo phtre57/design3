@@ -1,3 +1,5 @@
+import socketio
+
 from domain.image_analysis.DetectTable import *
 from domain.image_path_analysis.ImageToGridConverter import *
 from domain.pathfinding.Astar import Astar
@@ -5,6 +7,7 @@ from test.domain.pathfinding.TestPathFindingImage import test_astar_on_image
 from domain.image_analysis.QR import decode
 from domain.image_analysis.DetectContourPieces import *
 from domain.image_analysis.DetectZoneDep import *
+from infrastructure.communication_pi.comm_pi import connectToPi
 
 def pathfinding(path, x, y):
     frame = cv2.imread(path)
@@ -20,10 +23,7 @@ def pathfinding(path, x, y):
     cv2.imshow("main", frame)
     cv2.waitKey()
 
-def main():
-    # WAIT FOR START UI
-    # socketio wait 
-
+def main_sequence():
     pathfinding("./image_samples/real_image/globalmonde1.jpg", 240, 135)
 
     path = "./image_samples/real_image/qr.jpg"
@@ -47,5 +47,29 @@ def main():
     cv2.waitKey()
 
     pathfinding("./image_samples/real_image/globalmonde1ZoneBlanche.jpg", 75, 100)
+
+    print("Sequence done")
+
+    init_conn()
+
+def init_conn():
+    print("Waiting start signal")
+    sio = socketio.Client()
+    sio.connect('http://localhost:4000?token=MainRobot')
+
+    @sio.on('validation')
+    def on_validation(v):
+        sio.disconnect()
+
+    @sio.on('start')
+    def on_start(v):
+        print('Start signal')
+        sio.emit("eventFromRobot", {'data': 'Started', 'type': 'text', 'dest': 'phase' })
+        main_sequence()
+
+def main():
+    init_conn()
+
+
 
 main()
