@@ -2,13 +2,14 @@ import React, { Component } from 'react';
 import logo from './logo.svg';
 import './App.css';
 
-import Button from '@material-ui/core/Button';
 import AppBar from "@material-ui/core/AppBar";
 import Toolbar from "@material-ui/core/Toolbar";
 import Typography from "@material-ui/core/Typography";
 import Paper from '@material-ui/core/Paper';
 
 import openSocket from 'socket.io-client';
+
+import Timer from './Timer';
 
 class App extends Component {
   state = { 
@@ -25,6 +26,11 @@ class App extends Component {
   
   startSignal = () => {
     this.state.socket.emit("start", "start");
+    console.log("start signal sent");
+  }
+
+  resetSignal = () => {
+    console.log("reset signal sent");
   }
 
   render() {
@@ -44,29 +50,28 @@ class App extends Component {
           </AppBar>
           <div style={mainPaper}>
           <Paper elevation={15}>
-          <div style={mainDock}>
-              <Paper elevation={4}>
+          <div style={{...container, ...morePadding}}>
+              <Paper elevation={4} style={paperStyle}>
                   <span style={textZone}>Info Code QR</span>
-                  <Button variant="contained" color="primary" style={buttonStyle} onClick={this.startSignal}>
-                      Start
-                  </Button>
-                  <span style={textZone}>Chronographe</span>
+              </Paper>
+              <Paper elevation={4} style={paperStyle}>
+                  <Timer startSignal={this.startSignal} resetSignal={this.resetSignal}/>
               </Paper>
           </div>
           <div style={container}>
-              <Paper elevation={4} style={imageStyle}>
+              <Paper elevation={4} style={paperStyle}>
                   <span style={textZone}>Courant et</span>
                   <span style={textZone}>tension condensateur</span>
               </Paper>
-              <Paper elevation={4} style={imageStyle}>
+              <Paper elevation={4} style={paperStyle}>
                   <span style={textZone}>États présent du robot</span>
               </Paper>
           </div>
           <div style={container}>
-              <Paper elevation={4} style={imageStyle}>
+              <Paper elevation={4} style={paperStyle}>
                   <img src={imgR} width="200" alt="logo"/>
               </Paper>
-              <Paper elevation={4} style={imageStyle}>
+              <Paper elevation={4} style={paperStyle}>
                   <img src={imgR} width="200" alt="logo"/>
               </Paper>
           </div>
@@ -77,7 +82,7 @@ class App extends Component {
   }
 }
 
-const imageStyle = {
+const paperStyle = {
   display: 'flex',
   flexDirection: 'column',
   margin: '10px',
@@ -96,14 +101,8 @@ const mainPaper = {
   marginTop: '10px',
 };
 
-const mainDock = {
-  display: 'flex',
-  justifyContent: 'center',
+const morePadding = {
   padding: '10px'
-};
-
-const buttonStyle = {
-  margin: '10px'
 };
 
 const textZone = {
