@@ -13,16 +13,14 @@ def color_detector(frame):
     shapeDetector.set_peri_limiter(150, 700)
     shapeDetector.set_rect_limiter(10, 10)
     shapeDetector.set_radius_limiter(90, True)
-    shape = shapeDetector.detect(edges, False)
+    shape = shapeDetector.detect(edges)
+    shape = shapeDetector.detect(shape.frameCnts)
+
+    mask = cv2.bitwise_and(frame, frame, mask=shape.frameWithText)
 
     kernel = np.ones((9, 9), np.uint8)
     kernelerode = np.ones((9,9),np.uint8)
-
-    shape = shapeDetector.detect(edges, True)
-
-    output = cv2.bitwise_and(frame, frame, mask=edges)
-
-    mask = output
+    
     mask = cv2.morphologyEx(mask, cv2.MORPH_OPEN, cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (10,10)))
     mask = cv2.morphologyEx(mask, cv2.MORPH_CLOSE, cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (10,10)))
     mask = cv2.erode(mask,kernelerode,iterations = 1)
