@@ -44,7 +44,7 @@ class Timer extends Component {
     const { status, time } = this.state;
     return (
       <div>
-        <h2>{ timeFormat(time) }</h2>
+        <h2 style={timerStyle}>{ timeFormat(time) }</h2>
         <Button variant="contained" color="primary" style={buttonStyle} 
           onClick={this.startSignalHandler}>
           { status ? 'Stop' : 'Start'}
@@ -60,6 +60,12 @@ class Timer extends Component {
 
 const buttonStyle = {
   margin: '10px'
+};
+
+const timerStyle = {
+  border: '2px rgb(63, 81, 181) solid',
+  borderRadius: '2px',
+  backgroundColor: 'rgb(240, 240, 240)'
 };
 
 export default Timer;
