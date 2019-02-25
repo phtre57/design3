@@ -33,6 +33,7 @@ def main_sequence():
     frame = cv2.imread(path)
     obj = decode(frame)
 
+    SendImage(frame, "actualimg")
     SendText(obj.data, "qrcode")
 
     pathfinding("./image_samples/real_image/globalmonde1QR.jpg", 235, 60)
@@ -40,6 +41,9 @@ def main_sequence():
     path = "./image_samples/real_image/pieces.jpg"
     frame = cv2.imread(path)
     shape = detect_contour_pieces(frame)
+
+    SendImage(frame, "actualimg")
+
     cv2.imshow('EDGES', shape.frame)
     cv2.waitKey()
 
@@ -48,6 +52,9 @@ def main_sequence():
     path = "./image_samples/real_image/zonedep.jpg"
     frame = cv2.imread(path)
     shape = detect_zone_dep(frame)
+
+    SendImage(frame, "actualimg")
+
     cv2.imshow('EDGES', shape.frame)
     cv2.waitKey()
 
