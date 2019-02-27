@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import logo from './logo.svg';
+import logo from './logo.png';
 import './App.css';
 
 import AppBar from "@material-ui/core/AppBar";
@@ -33,12 +33,16 @@ class App extends Component {
     console.log("reset signal sent");
   }
 
-  render() {
-    let imgR = "data:image/png;base64, " + this.state.img;
-    if (this.state.img === "") {
-      imgR = logo;
+  renderImage = (image) => {
+    let imgR = "data:image/png;base64, " + image;
+    if (image === undefined) {
+      return <img src={logo} width={30} alt="logo"/>;
     }
 
+    return <img src={imgR} style={imageStyle} alt="logo"/>;
+  }
+
+  render() {
     return (
       <div className="App">
           <AppBar position="static" color="primary">
@@ -52,7 +56,9 @@ class App extends Component {
           <Paper elevation={15}>
           <div style={{...container, ...morePadding}}>
               <Paper elevation={4} style={paperStyle}>
-                  <span style={textZone}>Info Code QR</span>
+                  <h4 style={textZone}>Informations QR</h4>
+                  <p>{this.state.qrcode}</p>
+                  <div> {this.renderImage(this.state.actualimg)} </div>
               </Paper>
               <Paper elevation={4} style={paperStyle}>
                   <Timer startSignal={this.startSignal} resetSignal={this.resetSignal}/>
@@ -69,10 +75,12 @@ class App extends Component {
           </div>
           <div style={container}>
               <Paper elevation={4} style={paperStyle}>
-                  <img src={imgR} width="200" alt="logo"/>
+                  <h4>Trajectoire planifiée</h4>
+                  <div> {this.renderImage(this.state.optpath)} </div>
               </Paper>
               <Paper elevation={4} style={paperStyle}>
-                  <img src={imgR} width="200" alt="logo"/>
+                  <h4>Trajectoire réelle</h4>
+                  <div> {this.renderImage(this.state.actualpath)} </div>
               </Paper>
           </div>
           </Paper>
@@ -107,6 +115,11 @@ const morePadding = {
 
 const textZone = {
   margin: '10px 50px 10px 50px'
+};
+
+const imageStyle = {
+  maxWidth: '300px',
+  maxHeight: '300px'
 };
 
 export default App;
