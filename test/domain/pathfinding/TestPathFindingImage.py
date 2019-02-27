@@ -20,6 +20,20 @@ def test_astar_on_image(image_path, blur=False):
     return test_image.image
 
 
+def test_astar_inject_end_point(image_path, x, y):
+    img = cv2.imread(image_path)
+
+    test_image = ImageToGridConverter(img, x, y)
+
+    astar = Astar(test_image.grid, HEIGHT, LENGTH)
+    astar.find_path()
+
+    for point in astar.path:
+        cv2.circle(test_image.image, (point.j, point.i), 1, [0, 0, 255])
+
+    return test_image.image
+
+
 def test_on_robot_discovery_and_path_finding_with_blur():
     start = time.time()
 
@@ -93,16 +107,35 @@ def test_on_real_image():
     cv2.imshow("path10", path10)
     cv2.waitKey(0)
 
+
+def test_inject_ending_point():
+    start = time.time()
+
+    # test 1
+    path1 = test_astar_inject_end_point("../../image_samples/real_image/globalmonde5.jpg", 100, 100)
+
+    end = time.time()
+    print("Total time: ", end - start)
+    print("Average time: ", (end - start) / 1)
+
+    cv2.imshow("path1", path1)
+    while(True):
+        if cv2.waitKey(0) & 0xFF == ord('q'):
+            break
+
 if __name__ == "__main__":
     # test_switch: 0 = created with no blur two circles starting point
     # test_switch: 1 = on real image
+    # test_switch: 2 = inject end point
 
-    test_switch = 1
+    test_switch = 2
 
     if test_switch == 0:
         test_on_robot_discovery_and_path_finding_with_blur()
     elif test_switch == 1:
         test_on_real_image()
+    elif test_switch == 2:
+        test_inject_ending_point()
 
 
 
