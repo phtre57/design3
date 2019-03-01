@@ -1,6 +1,6 @@
 import cv2
 import time
-from domain.image_path_analysis.ImageToGridConverter import *
+from domain.image_analysis.ImageToGridConverter import *
 from domain.pathfinding.Astar import Astar
 
 

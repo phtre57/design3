@@ -9,7 +9,7 @@ from domain.image_analysis.opencv_callable.DetectQR import decode
 from domain.image_analysis.opencv_callable.DetectContourPieces import *
 from domain.image_analysis.opencv_callable.DetectZoneDep import *
 from infrastructure.communication_pi.comm_pi import *
-from infrastructure.communication_ui.comm_ui import SendImage, SendText
+from infrastructure.communication_ui.comm_ui import *
 
 parser = argparse.ArgumentParser(description='Process some integers.')
 parser.add_argument('--d', dest='debug', type=bool, default=False, help='debug mode')
@@ -90,6 +90,7 @@ def init_conn():
 
 def main():
     if (args.debug):
+        print("debug")
         # connectToPi()
         # sendCoordinates('200 0\n')
     else:
