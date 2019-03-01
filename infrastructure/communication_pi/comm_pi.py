@@ -16,8 +16,6 @@ s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 def main():
 	connectToPi()
 	time.sleep(2)
-	# readySignal()
-	time.sleep(2)
 	getImage()
 	time.sleep(2)
 	sendCoordinates("2")
@@ -54,9 +52,8 @@ def getImage():
 	data = data[msg_size:]
 
 	frame=pickle.loads(frame_data, fix_imports=True, encoding="bytes")
-	frame = cv2.imdecode(frame, cv2.IMREAD_COLOR)
-
-	cv2.imwrite('messigray.png',frame)
+	# cv2.imwrite('messigray.png',frame)
+	return cv2.imdecode(frame, cv2.IMREAD_COLOR)
 
 def sendCoordinates(str):
 	signal = 'sendPosition'
