@@ -2,13 +2,7 @@ import cv2
 import numpy as np
 
 from domain.image_analysis.ShapeDetector import ShapeDetector
-from domain.image_analysis.Canny import canny, erode_mask
-
-"""
-from ShapeValidator import ShapeValidator
-from ShapeDetector import ShapeDetector
-from Canny import canny, dilate_mask, erode_mask
-"""
+from domain.image_analysis.opencv_callable.Canny import canny, erode_mask
 
 def detect_table(frame):
     frame = frame.copy()

@@ -1,4 +1,4 @@
-from domain.image_analysis.DetectTable import *
+from domain.image_analysis.opencv_callable.DetectZoneDep import *
 from image_samples.real_image import *
 import unittest
 import numpy as np
@@ -6,7 +6,7 @@ import cv2
 import os
 import inspect
 
-class DetectTableTest(unittest.TestCase):
+class DetectZoneDepTest(unittest.TestCase):
 
     def setUp(self):
         self.dumb = 0
@@ -15,11 +15,12 @@ class DetectTableTest(unittest.TestCase):
         path = os.path.normpath(os.path.join(os.path.dirname(__file__), os.pardir))
         path = os.path.normpath(os.path.join(path, os.pardir))
         path = os.path.normpath(os.path.join(path, os.pardir))
-        path = os.path.join(path, "./image_samples/real_image/globalmonde.jpg")
+        path = os.path.normpath(os.path.join(path, os.pardir))
+        path = os.path.join(path, "./image_samples/real_image/zonedep.jpg")
 
         frame = cv2.imread(path)
 
-        shape = detect_table(frame)
+        shape = detect_zone_dep(frame)
         cv2.imshow('EDGES', shape.frame)
         cv2.waitKey()
 

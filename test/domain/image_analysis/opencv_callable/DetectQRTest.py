@@ -1,4 +1,4 @@
-from domain.image_analysis.DetectContourPieces import *
+from domain.image_analysis.opencv_callable.DetectQR import *
 from image_samples.real_image import *
 import unittest
 import numpy as np
@@ -6,7 +6,7 @@ import cv2
 import os
 import inspect
 
-class DetectContourPiecesTest(unittest.TestCase):
+class QRTest(unittest.TestCase):
 
     def setUp(self):
         self.dumb = 0
@@ -15,15 +15,14 @@ class DetectContourPiecesTest(unittest.TestCase):
         path = os.path.normpath(os.path.join(os.path.dirname(__file__), os.pardir))
         path = os.path.normpath(os.path.join(path, os.pardir))
         path = os.path.normpath(os.path.join(path, os.pardir))
-        path = os.path.join(path, "./image_samples/real_image/pieces.jpg")
+        path = os.path.normpath(os.path.join(path, os.pardir))
+        path = os.path.join(path, "./image_samples/real_image/qr.png")
 
         frame = cv2.imread(path)
 
-        shape = detect_contour_pieces(frame)
-        cv2.imshow('EDGES', shape.frame)
-        cv2.waitKey()
+        obj = decode(frame)
 
-        self.assertEqual(shape.shapes, ['circle', 'rectangle', 'circle', 'pentagon'])
+        self.assertEqual(str(obj.data), "b'0-rouge-Zone0'")
 
 if __name__ == '__main__':
     unittest.main()
