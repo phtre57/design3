@@ -10,16 +10,16 @@ switch = True
 
 while switch:
 
-    comm_pi.sendCoordinates("660,0\n")
+    comm_pi.sendCoordinates("390,0\n")
     time.sleep(5)
 
-    comm_pi.sendCoordinates("0,660\n")
+    comm_pi.sendCoordinates("0,381\n")
     time.sleep(5)
 
-    comm_pi.sendCoordinates("-660,0\n")
+    comm_pi.sendCoordinates("-390,0\n")
     time.sleep(5)
 
-    comm_pi.sendCoordinates("0,-660\n")
+    comm_pi.sendCoordinates("0,-381\n")
     time.sleep(5)
 
     end = time.time()
