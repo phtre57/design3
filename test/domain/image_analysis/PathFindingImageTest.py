@@ -1,3 +1,4 @@
+import os
 import time
 import unittest
 from domain.image_analysis.ImageToGridConverter import *
@@ -57,25 +58,30 @@ def test_on_real_image(show_images):
     start = time.time()
 
     # test 1
-    path1 = test_astar_on_image("../../../image_samples/real_image/globalmonde.jpg", False)
+    path = os.path.normpath(os.path.join(os.path.dirname(__file__), os.pardir))
+    path = os.path.normpath(os.path.join(path, os.pardir))
+    path = os.path.normpath(os.path.join(path, os.pardir))
+    path = os.path.join(path, "./image_samples/real_image/")
 
-    path2 = test_astar_on_image("../../../image_samples/real_image/globalmonde1.jpg", False)
+    path1 = test_astar_on_image(path+"globalmonde.jpg", False)
 
-    path3 = test_astar_on_image("../../../image_samples/real_image/globalmonde2.jpg", False)
+    path2 = test_astar_on_image(path+"globalmonde1.jpg", False)
 
-    path4 = test_astar_on_image("../../../image_samples/real_image/globalmonde3.jpg", False)
+    path3 = test_astar_on_image(path+"globalmonde2.jpg", False)
 
-    path5 = test_astar_on_image("../../../image_samples/real_image/globalmonde4.jpg", False)
+    path4 = test_astar_on_image(path+"globalmonde3.jpg", False)
 
-    path6 = test_astar_on_image("../../../image_samples/real_image/globalmonde5.jpg", False)
+    path5 = test_astar_on_image(path+"globalmonde4.jpg", False)
 
-    path7 = test_astar_on_image("../../../image_samples/real_image/globalmonde6.jpg", False)
+    path6 = test_astar_on_image(path+"globalmonde5.jpg", False)
 
-    path8 = test_astar_on_image("../../../image_samples/real_image/globalmonde7.jpg", False)
+    path7 = test_astar_on_image(path+"globalmonde6.jpg", False)
 
-    path9 = test_astar_on_image("../../../image_samples/real_image/globalmonde8.jpg", False)
+    path8 = test_astar_on_image(path+"globalmonde7.jpg", False)
 
-    path10 = test_astar_on_image("../../../image_samples/real_image/globalmonde9.jpg", False)
+    path9 = test_astar_on_image(path+"globalmonde8.jpg", False)
+
+    path10 = test_astar_on_image(path+"globalmonde9.jpg", False)
 
     end = time.time()
     print("Total time: ", end - start)
