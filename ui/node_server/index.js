@@ -19,9 +19,6 @@ io.on("connection", client => {
   })
 
   client.on("eventFromRobot", data => {
-    console.log("Info from robot");
-    console.log(data);
-    
     if (data.type === "img") {
       console.log(">> Img");
       data.data = String.fromCharCode.apply(null, new Uint16Array(data.data));
