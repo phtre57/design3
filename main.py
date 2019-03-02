@@ -30,6 +30,8 @@ def pathfinding(path, x, y):
 
     comm_ui = Communication_ui()
     comm_ui.SendImage(frame, "optpath")
+
+    comm_ui = Communication_ui()
     comm_ui.SendImage(frame, "actualpath")
 
     cv2.imshow("main", frame)
@@ -44,6 +46,8 @@ def main_sequence():
 
     comm_ui = Communication_ui()
     comm_ui.SendImage(frame, "actualimg")
+
+    comm_ui = Communication_ui()
     comm_ui.SendText(obj.data, "qrcode")
 
     pathfinding("./image_samples/real_image/globalmonde1QR.jpg", 235, 60)
@@ -52,6 +56,7 @@ def main_sequence():
     frame = cv2.imread(path)
     shape = detect_contour_pieces(frame)
 
+    comm_ui = Communication_ui()
     comm_ui.SendImage(shape.frame, "actualimg")
 
     cv2.imshow('EDGES', shape.frame)
@@ -63,6 +68,7 @@ def main_sequence():
     frame = cv2.imread(path)
     shape = detect_zone_dep(frame)
 
+    comm_ui = Communication_ui()
     comm_ui.SendImage(shape.frame, "actualimg")
 
     cv2.imshow('EDGES', shape.frame)
@@ -81,6 +87,7 @@ def init_conn():
 
     @sio.on('validation')
     def on_validation(v):
+        print('disconnect MainRobot')
         sio.disconnect()
 
     @sio.on('start')

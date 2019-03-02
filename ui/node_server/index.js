@@ -19,14 +19,15 @@ io.on("connection", client => {
   })
 
   client.on("eventFromRobot", data => {
+    console.log("eventFromRobot");
+    
     if (data.type === "img") {
-      console.log(">> Img");
       data.data = String.fromCharCode.apply(null, new Uint16Array(data.data));
     }
     
     UIClient.emit("event", data)
     client.emit("validation", "v")
-    // client.disconnect()
+    client.disconnect()
   })
 
   client.on("disconnect", () => { 

@@ -17,7 +17,9 @@ def main():
         subprocess.call('pip install --upgrade pyzbar', shell=True)
         subprocess.call('pip install --upgrade opencv-python', shell=True)
         subprocess.call('pip install --upgrade coverage', shell=True)
-        subprocess.call('pip install --upgrade python-socketio', shell=True)
+        subprocess.call('pip install --upgrade python-socketio[client]', shell=True)
+        subprocess.call('pip install --upgrade imutils', shell=True)
+        subprocess.call('pip install --upgrade requests', shell=True)
     elif (args.cov):
         subprocess.call('coverage run -m unittest discover . "*Test.py"', shell=True)
         subprocess.call('coverage report -m', shell=True)
