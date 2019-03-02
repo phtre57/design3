@@ -11,7 +11,7 @@ class ColorDetectorTest(unittest.TestCase):
     def setUp(self):
         self.dumb = 0
 
-    def test_given_when_then(self):
+    def test_givenCnts_thenDetectTheShapeAssociated(self):
         shapeValidator = ShapeValidator()
         
         self.assertEqual(shapeValidator.validate([[1], [2], [3]]), 'triangle')

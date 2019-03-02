@@ -19,6 +19,9 @@ io.on("connection", client => {
   })
 
   client.on("eventFromRobot", data => {
+    console.log("Info from robot");
+    console.log(data);
+    
     if (data.type === "img") {
       console.log(">> Img");
       data.data = String.fromCharCode.apply(null, new Uint16Array(data.data));
@@ -26,7 +29,7 @@ io.on("connection", client => {
     
     UIClient.emit("event", data)
     client.emit("validation", "v")
-    client.disconnect()
+    // client.disconnect()
   })
 
   client.on("disconnect", () => { 
@@ -40,10 +43,11 @@ console.log("Started")
 function onConnect(client) {
   if (client.handshake.query.token === "UI") {
     UIClient = client
-    UIClient.emit("event", { data: "Bienvenue toé" })
     console.log("Hi UI");
   } else if(client.handshake.query.token === "MainRobot") {
     robotMainClient = client
     console.log("Hi Main Robot");
+  } else {
+    // console.log("Hi Robot");
   }
 }

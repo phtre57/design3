@@ -1,10 +1,11 @@
 import socketio
 import argparse
+import cv2
 
 from domain.image_analysis.opencv_callable.DetectTable import *
-from domain.image_path_analysis.ImageToGridConverter import *
+from domain.image_analysis.ImageToGridConverter import *
 from domain.pathfinding.Astar import Astar
-from test.domain.pathfinding.TestPathFindingImage import test_astar_on_image
+from test.domain.image_analysis.PathFindingImageTest import test_astar_on_image
 from domain.image_analysis.opencv_callable.DetectQR import decode
 from domain.image_analysis.opencv_callable.DetectContourPieces import *
 from domain.image_analysis.opencv_callable.DetectZoneDep import *
@@ -26,9 +27,10 @@ def pathfinding(path, x, y):
         cv2.circle(test_image.image, (point.j, point.i), 1, [0, 0, 0])
 
     frame = test_image.image
-    comm_ui = Communication_ui()
-    comm_ui.SendImage(frame, "optpath")
-    comm_ui.SendImage(frame, "actualpath")
+
+    SendImage(frame, "optpath")
+    SendImage(frame, "actualpath")
+
     cv2.imshow("main", frame)
     cv2.waitKey()
 
@@ -39,9 +41,8 @@ def main_sequence():
     frame = cv2.imread(path)
     obj = decode(frame)
 
-    comm_ui = Communication_ui()
-    comm_ui.SendImage(frame, "actualimg")
-    comm_ui.SendText(obj.data, "qrcode")
+    SendImage(frame, "actualimg")
+    SendText(obj.data, "qrcode")
 
     pathfinding("./image_samples/real_image/globalmonde1QR.jpg", 235, 60)
 
@@ -49,8 +50,7 @@ def main_sequence():
     frame = cv2.imread(path)
     shape = detect_contour_pieces(frame)
 
-    comm_ui = Communication_ui()
-    comm_ui.SendImage(shape.frame, "actualimg")
+    SendImage(shape.frame, "actualimg")
 
     cv2.imshow('EDGES', shape.frame)
     cv2.waitKey()
@@ -61,8 +61,7 @@ def main_sequence():
     frame = cv2.imread(path)
     shape = detect_zone_dep(frame)
 
-    comm_ui = Communication_ui()
-    comm_ui.SendImage(shape.frame, "actualimg")
+    SendImage(shape.frame, "actualimg")
 
     cv2.imshow('EDGES', shape.frame)
     cv2.waitKey()
@@ -95,7 +94,5 @@ def main():
         # sendCoordinates('200 0\n')
     else:
         init_conn()
-
-
 
 main()

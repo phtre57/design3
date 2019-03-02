@@ -20,6 +20,7 @@ class App extends Component {
 
   componentDidMount() {
     this.state.socket.on('event', resp => {
+      console.log(resp);
       this.setState({ [resp.dest]: resp.data });
     });
   }
@@ -71,6 +72,7 @@ class App extends Component {
               </Paper>
               <Paper elevation={4} style={paperStyle}>
                   <span style={textZone}>États présent du robot</span>
+                  <span style={textZone}>{this.state.phase}</span>
               </Paper>
           </div>
           <div style={container}>

@@ -12,7 +12,7 @@ class DetectContourPiecesTest(unittest.TestCase):
     def setUp(self):
         self.dumb = 0
 
-    def test_given_when_then(self):
+    def test_givenPiecesPicture_thenDetectTheShapeOfEveryPieces(self):
         path = os.path.normpath(os.path.join(os.path.dirname(__file__), os.pardir))
         path = os.path.normpath(os.path.join(path, os.pardir))
         path = os.path.normpath(os.path.join(path, os.pardir))
