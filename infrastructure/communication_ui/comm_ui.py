@@ -17,7 +17,6 @@ class Communication_ui():
 
         return sio
 
-
     def SendImage(self, frame, dest):
         _, buffer = cv2.imencode('.jpg', frame)
         encoded = base64.b64encode(buffer)
