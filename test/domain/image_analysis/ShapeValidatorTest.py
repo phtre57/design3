@@ -9,7 +9,7 @@ import inspect
 class ColorDetectorTest(unittest.TestCase):
 
     def setUp(self):
-        self.dumb = 0
+        print ("In method ", self._testMethodName)
 
     def test_givenCnts_thenDetectTheShapeAssociated(self):
         shapeValidator = ShapeValidator()

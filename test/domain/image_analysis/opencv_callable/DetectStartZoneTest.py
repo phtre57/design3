@@ -9,7 +9,7 @@ import inspect
 class DetectStartZoneTest(unittest.TestCase):
 
     def setUp(self):
-        self.dumb = 0
+        print ("In method ", self._testMethodName)
 
     def test_givenFrameOfTable_thenTheStartZoneIsDetected(self):
         path = os.path.normpath(os.path.join(os.path.dirname(__file__), os.pardir))
@@ -21,8 +21,8 @@ class DetectStartZoneTest(unittest.TestCase):
         frame = cv2.imread(path)
 
         shape = detect_start_zone(frame)
-        cv2.imshow('EDGES', shape.frame)
-        cv2.waitKey()
+        # cv2.imshow('EDGES', shape.frame)
+        # cv2.waitKey()
 
         self.assertEqual(shape.shapes, ['square'])
 

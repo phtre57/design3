@@ -10,7 +10,7 @@ import inspect
 class DetectContourPiecesTest(unittest.TestCase):
 
     def setUp(self):
-        self.dumb = 0
+        print ("In method ", self._testMethodName)
 
     def test_givenPiecesPicture_thenDetectTheShapeOfEveryPieces(self):
         path = os.path.normpath(os.path.join(os.path.dirname(__file__), os.pardir))
@@ -28,8 +28,8 @@ class DetectContourPiecesTest(unittest.TestCase):
         shape = shapeDetector.detect(frame)
         shape = shapeDetector.detect(shape.frameCnts)
 
-        cv2.imshow('EDGES', shape.frameWithText)
-        cv2.waitKey()
+        # cv2.imshow('EDGES', shape.frameWithText)
+        # cv2.waitKey()
 
         self.assertEqual(shape.shapes, ['circle', 'rectangle', 'circle', 'pentagon'])
 

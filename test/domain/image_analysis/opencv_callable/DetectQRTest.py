@@ -9,7 +9,7 @@ import inspect
 class QRTest(unittest.TestCase):
 
     def setUp(self):
-        self.dumb = 0
+        print ("In method ", self._testMethodName)
 
     def test_givenQRCode_thenItIsCorrectlyDecoded(self):
         path = os.path.normpath(os.path.join(os.path.dirname(__file__), os.pardir))

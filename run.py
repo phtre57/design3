@@ -8,6 +8,8 @@ optional.add_argument('--test')
 optional.add_argument('--install')
 args = parser.parse_args()
 
+# Emergency pip uninstall -y (pip freeze)
+
 def main():
     if (args.install):
         print("Press any key to continue, pip install functions will be executed.")
