@@ -25,13 +25,13 @@ class PixelToXYCoordinatesConverterTest(unittest.TestCase):
         self.assertEqual(round(self.converter.x_pixel_to_mm_factor), 2)
 
     def test_givenArrayContainingCell_whenConvertingToXYCoord_thenIsMultipliedByAFactorOf2(self):
-        path = [Cell(1, 2, True), Cell(3, 4, True)]
+        path = [(1, 2), (3, 4)]
         xy_path = self.converter.convert_to_xy(path)
         xy_path_temp = []
         for tuple in xy_path:
             xy_path_temp.append((round(tuple[0]), round(tuple[1])))
 
-        expected_xy_path = [(4, 2), (8, 6)]
+        expected_xy_path = [(2, 4), (6, 8)]
 
         self.assertEqual(expected_xy_path, xy_path_temp)
 

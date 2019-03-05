@@ -7,7 +7,8 @@ NUMBER_OF_COLUMNS = 7
 NUMBER_OF_LINES = 7
 CHESS_SQUARE_WIDTH = 30
 
-class PixelToXYCoordinatesConverter():
+
+class PixelToXYCoordinatesConverter:
 
     def __init__(self, image):
         self.image = image
@@ -61,8 +62,8 @@ class PixelToXYCoordinatesConverter():
     # arg: array of pixels (i, j)
     def convert_to_xy(self, array_of_points_in_pixel):
         path = []
-        for cell in array_of_points_in_pixel:
-            path.append((cell.j * self.x_pixel_to_mm_factor, cell.i * self.y_pixel_to_mm_factor))
+        for point in array_of_points_in_pixel:
+            path.append((point[0] * self.x_pixel_to_mm_factor, point[1] * self.y_pixel_to_mm_factor))
 
         return path
 

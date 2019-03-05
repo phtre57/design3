@@ -1,7 +1,7 @@
-import cv2
 import time
 from domain.image_path_analysis.ImageToGridConverter import *
 from domain.pathfinding.Astar import Astar
+from domain.pathfinding.PathSmoother import PathSmoother
 
 
 def test_astar_on_image(image_path, blur=False):
@@ -12,10 +12,17 @@ def test_astar_on_image(image_path, blur=False):
     test_image = ImageToGridConverter(img, LENGTH - 1, HEIGHT - 1)
 
     astar = Astar(test_image.grid, HEIGHT, LENGTH)
-    astar.find_path()
+
+    path = astar.find_path()
+
+    path_smoother = PathSmoother(path)
+    smooth_path = path_smoother.smooth_path()
 
     for point in astar.path:
         cv2.circle(test_image.image, (point.j, point.i), 1, [0, 0, 0])
+
+    for point in smooth_path:
+        cv2.circle(test_image.image, (point[0], point[1]), 1, [0, 0, 255])
 
     return test_image.image
 
