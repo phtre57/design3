@@ -5,13 +5,14 @@ import numpy as np
 CRITERIA = (cv2.TERM_CRITERIA_EPS + cv2.TERM_CRITERIA_MAX_ITER, 30, 0.001)
 NUMBER_OF_COLUMNS = 7
 NUMBER_OF_LINES = 7
-CHESS_SQUARE_WIDTH = 30
+CHESS_SQUARE_WIDTH = 43 #real constant used with chessboard
 
 
 class PixelToXYCoordinatesConverter:
 
-    def __init__(self, image):
+    def __init__(self, image, square_width):
         self.image = image
+        self.square_width = square_width
         self.object_points = np.zeros((NUMBER_OF_COLUMNS * NUMBER_OF_LINES, 3), np.int32)
         self.real_object_points = []
         self.image_points = []
@@ -54,10 +55,10 @@ class PixelToXYCoordinatesConverter:
             y_temp = y_temp + points[i + NUMBER_OF_COLUMNS][0][1] - points[i][0][1]
 
         self.x_pixel_square_width = x_temp / (NUMBER_OF_COLUMNS * (NUMBER_OF_LINES - 1))
-        self.x_pixel_to_mm_factor = CHESS_SQUARE_WIDTH / self.x_pixel_square_width
+        self.x_pixel_to_mm_factor = self.square_width / self.x_pixel_square_width
 
         self.y_pixel_square_width = y_temp / ((NUMBER_OF_COLUMNS - 1) * NUMBER_OF_LINES)
-        self.y_pixel_to_mm_factor = CHESS_SQUARE_WIDTH / self.y_pixel_square_width
+        self.y_pixel_to_mm_factor = self.square_width / self.y_pixel_square_width
 
     # arg: array of pixels (i, j)
     def convert_to_xy(self, array_of_points_in_pixel):
