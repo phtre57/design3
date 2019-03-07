@@ -19,7 +19,6 @@ def test_main_loop_move_robot():
 
     pixel_to_xy_converter = PixelToXYCoordinatesConverter(img, CHESS_SQUARE_WIDTH)
 
-
     #moving robot phase
     print("Starting path finding")
     img = take_image()
@@ -55,6 +54,8 @@ def test_main_loop_move_robot():
 
         comm_pi.sendCoordinates(str(x_coord) + "," + str(y_coord) + "\n")
         time.sleep(5)
+
+        starting_point = point
 
 
 def take_image():
