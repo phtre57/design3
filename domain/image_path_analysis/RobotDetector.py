@@ -1,5 +1,7 @@
 import cv2
-from domain.image_path_analysis.ImageToGridConverter import *
+import math
+import numpy as np
+from domain.image_path_analysis.ImageToGridConverter import LENGTH, HEIGHT
 from domain.image_path_analysis.Exceptions.CouldNotFindRobotMarker import *
 
 YELLOW_HSV_LOW = np.array([20, 100, 160])
@@ -17,7 +19,6 @@ class RobotDetector:
 
     def find_center_of_robot(self):
         yellow_x_center_of_contour, yellow_y_center_of_contour = self.__find_yellow_marker_center()
-
         red_x_center_of_contour, red_y_center_of_contour = self.__find_red_marker_center()
 
         half_distance_between_x = round(abs(yellow_x_center_of_contour - red_x_center_of_contour) / 2)
@@ -37,11 +38,18 @@ class RobotDetector:
 
     def find_angle_of_robot(self):
         yellow_x_center_of_contour, yellow_y_center_of_contour = self.__find_yellow_marker_center()
-
         red_x_center_of_contour, red_y_center_of_contour = self.__find_red_marker_center()
 
+        vector = (yellow_x_center_of_contour - red_x_center_of_contour,
+                  yellow_y_center_of_contour - red_y_center_of_contour)
 
+        print(vector)
 
+        angle = math.atan2(vector[1], vector[0])
+
+        print(math.degrees(angle) * -1)
+
+        return angle * -1 #we change sign here to fit with robot referential
 
     def __find_center_of_contour(self, mask):
         ret, thresh = cv2.threshold(mask, 60, 255, cv2.THRESH_BINARY)
