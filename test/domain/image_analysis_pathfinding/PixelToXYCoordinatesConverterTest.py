@@ -31,7 +31,7 @@ class PixelToXYCoordinatesConverterTest(unittest.TestCase):
         for tuple in xy_path:
             xy_path_temp.append((round(tuple[0]), round(tuple[1])))
 
-        expected_xy_path = [(2, 4), (6, 8)]
+        expected_xy_path = [(2, -4), (6, -8)]
 
         self.assertEqual(expected_xy_path, xy_path_temp)
 

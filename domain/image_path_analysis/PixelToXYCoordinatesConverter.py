@@ -63,8 +63,10 @@ class PixelToXYCoordinatesConverter:
     # arg: array of pixels (i, j)
     def convert_to_xy(self, array_of_points_in_pixel):
         path = []
+
+        #inversing y coord to be in robot referential
         for point in array_of_points_in_pixel:
-            path.append((point[0] * self.x_pixel_to_mm_factor, point[1] * self.y_pixel_to_mm_factor))
+            path.append((point[0] * self.x_pixel_to_mm_factor, point[1] * self.y_pixel_to_mm_factor * -1))
 
         return path
 
