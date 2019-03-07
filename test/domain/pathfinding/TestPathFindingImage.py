@@ -2,6 +2,7 @@ import time
 from domain.image_path_analysis.ImageToGridConverter import *
 from domain.pathfinding.Astar import Astar
 from domain.pathfinding.PathSmoother import PathSmoother
+from domain.image_path_analysis.RobotDetector import RobotDetector
 
 
 def test_astar_on_image(image_path, blur=False):
@@ -9,7 +10,10 @@ def test_astar_on_image(image_path, blur=False):
     if blur:
         img = cv2.GaussianBlur(img, (9, 9), 0)
 
-    test_image = ImageToGridConverter(img, LENGTH - 1, HEIGHT - 1)
+    robot_detector = RobotDetector(img)
+    x_start, y_start = robot_detector.find_center_of_robot()
+
+    test_image = ImageToGridConverter(img, x_start, y_start, LENGTH - 1, HEIGHT - 1)
 
     astar = Astar(test_image.grid, HEIGHT, LENGTH)
 
