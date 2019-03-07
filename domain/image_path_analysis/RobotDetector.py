@@ -43,11 +43,7 @@ class RobotDetector:
         vector = (yellow_x_center_of_contour - red_x_center_of_contour,
                   yellow_y_center_of_contour - red_y_center_of_contour)
 
-        print(vector)
-
         angle = math.atan2(vector[1], vector[0])
-
-        print(math.degrees(angle) * -1)
 
         return angle * -1 #we change sign here to fit with robot referential
 

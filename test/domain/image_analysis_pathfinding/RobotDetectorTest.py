@@ -32,3 +32,6 @@ class RobotDetectorTest(unittest.TestCase):
         self.robot_detector = RobotDetector(img)
         angle = self.robot_detector.find_angle_of_robot()
 
+        self.assertGreaterEqual(angle, 0.7)
+        self.assertLessEqual(angle, 0.75)
+
