@@ -19,6 +19,15 @@ def test_main_loop_move_robot():
 
     pixel_to_xy_converter = PixelToXYCoordinatesConverter(img, CHESS_SQUARE_WIDTH)
 
+    #Rotating robot to 0 degree
+    print("Rotating robot phase: ")
+    img = take_image()
+
+    robot_detector = RobotDetector(img)
+    robot_angle = robot_detector.find_angle_of_robot()
+
+    #here send negative the angle found to robot...
+
     #moving robot phase
     print("Starting path finding")
     img = take_image()
