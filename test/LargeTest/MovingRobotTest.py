@@ -55,7 +55,10 @@ def test_main_loop_move_robot():
         comm_pi.sendCoordinates(str(x_coord) + "," + str(y_coord) + "\n")
         time.sleep(5)
 
-        starting_point = point
+        x_new, y_new = robot_detector.find_center_of_robot()
+        temp = [(x_new, y_new)]
+        xy_temp = pixel_to_xy_converter.convert_to_xy(temp)
+        starting_point = xy_temp[0]
 
 
 def take_image():

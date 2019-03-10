@@ -45,7 +45,7 @@ class RobotDetector:
 
         angle = math.atan2(vector[1], vector[0])
 
-        return angle * -1 #we change sign here to fit with robot referential
+        return math.degrees(angle) * -1 #we change sign here to fit with robot referential
 
     def __find_center_of_contour(self, mask):
         ret, thresh = cv2.threshold(mask, 60, 255, cv2.THRESH_BINARY)
