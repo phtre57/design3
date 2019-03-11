@@ -1,7 +1,8 @@
 import os
 import unittest
-from domain.image_path_analysis.PixelToXYCoordinatesConverter import PixelToXYCoordinatesConverter
+from domain.image_path_analysis.PixelToXYCoordinatesConverter import *
 from domain.pathfinding.Cell import Cell
+
 
 class PixelToXYCoordinatesConverterTest(unittest.TestCase):
 
@@ -10,7 +11,7 @@ class PixelToXYCoordinatesConverterTest(unittest.TestCase):
         self.path = os.path.normpath(os.path.join(self.path, os.pardir))
         self.path = os.path.normpath(os.path.join(self.path, os.pardir))
         self.path = os.path.join(self.path, "./image_samples/calibration/")
-        self.converter = PixelToXYCoordinatesConverter(self.path + "calibration.png", 30)
+        self.converter = PixelToXYCoordinatesConverter(self.path + "calibration.png", 30, 7, 7)
 
     def test_givenChessBoardWith16PixelBetweenSquareInX_thenWidthCalculatedIs16(self):
         self.assertEqual(round(self.converter.x_pixel_square_width), 16)
@@ -34,6 +35,9 @@ class PixelToXYCoordinatesConverterTest(unittest.TestCase):
         expected_xy_path = [(2, -4), (6, -8)]
 
         self.assertEqual(expected_xy_path, xy_path_temp)
+
+    def test_(self):
+        converter = PixelToXYCoordinatesConverter(self.path + "calib2.jpg", CHESS_SQUARE_WIDTH, NUMBER_OF_LINES, NUMBER_OF_COLUMNS)
 
 
 
