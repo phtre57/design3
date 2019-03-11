@@ -6,7 +6,7 @@ from domain.image_path_analysis.ImageToGridConverter import *
 from infrastructure.communication_pi import comm_pi
 from domain.image_path_analysis.RobotDetector import RobotDetector
 
-#this test do not reassess position of robot
+
 def test_main_loop_move_robot():
     #connect to pi
     print("Now connecting...")
@@ -15,36 +15,57 @@ def test_main_loop_move_robot():
 
     #calibration phase
     print("Calibration phase: ")
-    img = take_image()
+    ok = True
 
-    pixel_to_xy_converter = PixelToXYCoordinatesConverter(img, CHESS_SQUARE_WIDTH)
+    while ok:
+        try:
+            img = take_image()
+
+            pixel_to_xy_converter = PixelToXYCoordinatesConverter(img, CHESS_SQUARE_WIDTH)
+
+            ok = False
+        except Exception as ex:
+            print(ex)
 
     #Rotating robot to 0 degree
     print("Rotating robot phase: ")
-    img = take_image()
+    ok = True
 
-    robot_detector = RobotDetector(img)
-    robot_angle = robot_detector.find_angle_of_robot()
+    while ok:
+        try:
+            img = take_image()
 
-    #here send negative the angle found to robot...
+            robot_detector = RobotDetector(img)
+            robot_angle = robot_detector.find_angle_of_robot()
+
+            #here send negative the angle found to robot...
+            ok = False
+        except Exception as ex:
+            print(ex)
 
     #moving robot phase
     print("Starting path finding")
-    img = take_image()
-
     start = time.time()
 
-    robot_detector = RobotDetector(img)
-    x_start, y_start = robot_detector.find_center_of_robot()
+    ok = True
 
-    grid_converter = ImageToGridConverter(img, x_start, y_start, 50, 50)
+    while ok:
+        try:
+            img = take_image()
 
-    astar = Astar(grid_converter.grid, HEIGHT, LENGTH)
+            robot_detector = RobotDetector(img)
+            x_start, y_start = robot_detector.find_center_of_robot()
 
-    path = astar.find_path()
+            grid_converter = ImageToGridConverter(img, x_start, y_start, 50, 50)
 
-    path_smoother = PathSmoother(path)
-    smooth_path = path_smoother.smooth_path()
+            astar = Astar(grid_converter.grid, HEIGHT, LENGTH)
+
+            path = astar.find_path()
+
+            path_smoother = PathSmoother(path)
+            smooth_path = path_smoother.smooth_path()
+        except Exception as ex:
+            print(ex)
 
     end = time.time()
 
@@ -64,10 +85,18 @@ def test_main_loop_move_robot():
         comm_pi.sendCoordinates(str(x_coord) + "," + str(y_coord) + "\n")
         time.sleep(5)
 
-        x_new, y_new = robot_detector.find_center_of_robot()
-        temp = [(x_new, y_new)]
-        xy_temp = pixel_to_xy_converter.convert_to_xy(temp)
-        starting_point = xy_temp[0]
+        ok = True
+
+        while ok:
+            try:
+                img = take_image()
+                robot_detector = RobotDetector(img)
+                x_new, y_new = robot_detector.find_center_of_robot()
+                temp = [(x_new, y_new)]
+                xy_temp = pixel_to_xy_converter.convert_to_xy(temp)
+                starting_point = xy_temp[0]
+            except Exception as ex:
+                print(ex)
 
 
 def take_image():
