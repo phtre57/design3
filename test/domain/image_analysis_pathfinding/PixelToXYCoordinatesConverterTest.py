@@ -36,8 +36,8 @@ class PixelToXYCoordinatesConverterTest(unittest.TestCase):
 
         self.assertEqual(expected_xy_path, xy_path_temp)
 
-    def test_(self):
-        converter = PixelToXYCoordinatesConverter(self.path + "calib2.jpg", CHESS_SQUARE_WIDTH, NUMBER_OF_LINES, NUMBER_OF_COLUMNS)
+    def test_realImageChessBoard(self):
+        converter = PixelToXYCoordinatesConverter(self.path + "testBigChessBoard.jpg", CHESS_SQUARE_WIDTH, NUMBER_OF_LINES, NUMBER_OF_COLUMNS)
 
 
 

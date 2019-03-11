@@ -4,7 +4,7 @@ import numpy as np
 
 CRITERIA = (cv2.TERM_CRITERIA_EPS + cv2.TERM_CRITERIA_MAX_ITER, 30, 0.001)
 NUMBER_OF_COLUMNS = 7
-NUMBER_OF_LINES = 9
+NUMBER_OF_LINES = 7
 CHESS_SQUARE_WIDTH = 43 #real constant used with chessboard
 
 
@@ -15,7 +15,7 @@ class PixelToXYCoordinatesConverter:
         self.nb_columns = number_of_columns
         self.image = image
         self.square_width = square_width
-        self.object_points = np.zeros((NUMBER_OF_COLUMNS * NUMBER_OF_LINES, 3), np.int32)
+        self.object_points = np.zeros((self.nb_columns * self.nb_lines, 3), np.int32)
         self.real_object_points = []
         self.image_points = []
         self.__create_real_object_points_and_image_points()
