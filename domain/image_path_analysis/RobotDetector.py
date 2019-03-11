@@ -8,7 +8,7 @@ YELLOW_HSV_LOW = np.array([20, 100, 160])
 YELLOW_HSV_HIGH = np.array([30, 255, 255])
 RED_HSV_LOW = np.array([150, 100, 100])
 RED_HSV_HIGH = hsv_high = np.array([180, 255, 255])
-RADIUS_OF_MARKER = 5
+RADIUS_OF_MARKER = 3
 
 
 class RobotDetector:
@@ -70,10 +70,12 @@ class RobotDetector:
         hsv = cv2.cvtColor(self.image, cv2.COLOR_BGR2HSV)
 
         mask = cv2.inRange(hsv, YELLOW_HSV_LOW, YELLOW_HSV_HIGH)
+        #cv2.imshow("yellow_mask", mask)
         return self.__find_center_of_contour(mask)
 
     def __find_red_marker_center(self):
         hsv = cv2.cvtColor(self.image, cv2.COLOR_BGR2HSV)
 
         mask = cv2.inRange(hsv, RED_HSV_LOW, RED_HSV_HIGH)
+        #cv2.imshow("red_mask", mask)
         return self.__find_center_of_contour(mask)
