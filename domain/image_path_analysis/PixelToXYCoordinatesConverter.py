@@ -47,7 +47,6 @@ class PixelToXYCoordinatesConverter:
             cv2.imshow('img', img)
             cv2.waitKey(0)
 
-
     def __init_xy_factors(self):
         x_temp = 0
         y_temp = 0
