@@ -49,15 +49,19 @@ class Calibrator:
         newcameramtx, roi = cv2.getOptimalNewCameraMatrix(mtx, dist, (w, h), 1, (w, h))
 
         # undistort
-        dst = cv2.undistort(self.image, mtx, dist, None, newcameramtx)
+        dst = cv2.undistort(self.image.copy(), mtx, dist, None, newcameramtx)
 
         # crop the image
         x, y, w, h = roi
         dst = dst[y:y + h, x:x + w]
 
         cv2.imshow("undistorted", dst)
+        cv2.waitKey(0)
 
 
+img = cv2.imread("")
+
+calibrator = Calibrator(img, NUMBER_OF_LINES,  NUMBER_OF_COLUMNS)
 
 
 
