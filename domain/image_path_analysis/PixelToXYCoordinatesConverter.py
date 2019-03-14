@@ -11,10 +11,10 @@ IMAGE_SCALE_FACTOR = 0.5
 
 class PixelToXYCoordinatesConverter:
 
-    def __init__(self, image_path, square_width, number_of_lines, number_of_columns):
+    def __init__(self, image, square_width, number_of_lines, number_of_columns):
         self.nb_lines = number_of_lines
         self.nb_columns = number_of_columns
-        self.image_path = image_path
+        self.image = image
         self.square_width = square_width
         self.object_points = np.zeros((self.nb_columns * self.nb_lines, 3), np.int32)
         self.real_object_points = []
@@ -32,8 +32,7 @@ class PixelToXYCoordinatesConverter:
         self.object_points[:, :2] = np.mgrid[0:self.nb_lines, 0:self.nb_columns].T.reshape(-1, 2)
 
     def __create_real_object_points_and_image_points(self):
-        img = cv2.imread(self.image_path)
-        gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+        gray = cv2.cvtColor(self.image, cv2.COLOR_BGR2GRAY)
 
         ret, corners = cv2.findChessboardCorners(gray, (self.nb_lines, self.nb_columns), None)
 

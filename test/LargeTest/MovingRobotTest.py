@@ -20,10 +20,11 @@ def test_main_loop_move_robot():
     while ok:
         try:
             img = take_image()
-
-            pixel_to_xy_converter = PixelToXYCoordinatesConverter(img, CHESS_SQUARE_WIDTH)
+            print("before pixel to shit")
+            pixel_to_xy_converter = PixelToXYCoordinatesConverter(img, CHESS_SQUARE_WIDTH, NUMBER_OF_LINES, NUMBER_OF_COLUMNS)
 
             ok = False
+            break
         except Exception as ex:
             print(ex)
 
@@ -110,12 +111,19 @@ def test_main_loop_move_robot():
 
 
 def take_image():
-    cap = cv2.VideoCapture(0)
-    ret, img = cap.read()
-    cap.release()
+    print("patate0")
 
-    cv2.imshow(img, "imageCourante")
-    cv2.waitKey(0)
+    cap = cv2.VideoCapture(0)
+    print("patate1")
+    ret, img = cap.read()
+    print("patate2")
+
+    cap.release()
+    print("patate3")
+
+
+    cv2.imshow("imageCourante", img)
+    cv2.waitKey()
 
     return img
 
