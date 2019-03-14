@@ -88,9 +88,9 @@ def test_main_loop_move_robot():
         x_coord = round(point[0] - starting_point[0])
         y_coord = round(point[1] - starting_point[1])
 
-        print("Sending coordinates: (" + str(x_coord) + ", " + str(y_coord) + ")")
+        print("Sending coordinates: " + str(x_coord) + "," + str(y_coord) + ",0")
 
-        comm_pi.sendCoordinates(str(x_coord) + "," + str(y_coord) + "\n")
+        comm_pi.sendCoordinates(str(x_coord) + "," + str(y_coord) + ",0" + "\n")
         time.sleep(10)
 
         ok = True
