@@ -10,8 +10,8 @@ from domain.image_path_analysis.RobotDetector import RobotDetector
 def test_main_loop_move_robot():
     #connect to pi
     print("Now connecting...")
-    comm_pi.connectToPi()
-    time.sleep(5)
+    #comm_pi.connectToPi()
+    #time.sleep(5)
 
     #calibration phase
     print("Calibration phase: ")
@@ -90,8 +90,8 @@ def test_main_loop_move_robot():
 
         print("Sending coordinates: (" + x_coord + ", " + y_coord + ")")
 
-        comm_pi.sendCoordinates(str(x_coord) + "," + str(y_coord) + "\n")
-        time.sleep(5)
+        #comm_pi.sendCoordinates(str(x_coord) + "," + str(y_coord) + "\n")
+        #time.sleep(5)
 
         ok = True
 
