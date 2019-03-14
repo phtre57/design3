@@ -13,7 +13,7 @@ STARTING_MARKER = 2
 ENDING_MARKER = 3
 HSV_IN_RANGE_MARKER = 255
 
-OBSTACLE_BORDER = 40
+OBSTACLE_BORDER = 35
 
 X_WALL_LEFT_CORNER = 20
 X_WALL_RIGHT_CORNER = 300
@@ -34,11 +34,11 @@ class ImageToGridConverter(object):
         self.grid = np.zeros((HEIGHT, LENGTH))
         self.mark_starting_point(x_start, y_start)
         self.mark_ending_point(x_end, y_end)
+        self.__mark_obstacle_border()
         self.__mark_table_wall()
         self.mark_obstacle_in_grid_from_image()
 
     def mark_obstacle_in_grid_from_image(self):
-        self.__mark_obstacle_border()
 
         hsv = cv2.cvtColor(self.image, cv2.COLOR_BGR2HSV)
 

@@ -4,23 +4,23 @@ import cv2
 
 CONST_TRESHOLD = 30
 
-def detect_blurriness():
-    image = cv2.imread("blurry.jpg")
+def detect_blurriness(imagePath):
+    image = cv2.imread(imagePath)
     gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
     fm = laplacian(gray)
-    text = "Not Blurry en criss"
 
     if fm < CONST_TRESHOLD:
-        text = "Blurry en criss"
+        print("Freakin' blurry")
+        return False
 
-    cv2.putText(image, "{}: {:.2f}".format(text, fm), (10, 30),
-    cv2.FONT_HERSHEY_SIMPLEX, 0.8, (0, 0, 255), 3)
     cv2.imshow("Image", image)
     key = cv2.waitKey(0)
+    print("Pas blurry")
+    return True
 
 def laplacian(image):
     return cv2.Laplacian(image, cv2.CV_64F).var()
 
 
 if __name__ == "__main__":
-    detect_blurriness()
+    detect_blurriness("blurry.jpg")

@@ -7,7 +7,7 @@ from infrastructure.communication_pi import comm_pi
 from domain.image_path_analysis.RobotDetector import RobotDetector
 
 X_END = 75
-Y_END = 75
+Y_END = 118
 cap = cv2.VideoCapture(0)
 
 def test_main_loop_move_robot():
@@ -92,7 +92,24 @@ def test_main_loop_move_robot():
 
     #send coords here
     for point in real_path:
-        
+        ok = True
+
+        while ok:
+            try:
+                img = take_image()
+
+                robot_detector = RobotDetector(img)
+                robot_angle = robot_detector.find_angle_of_robot()
+                turning_angle = int(round(robot_angle))
+
+                print("Sending angle: " + "0,0," + str(turning_angle) + "\n")
+                
+                comm_pi.sendCoordinates("0,0," + str(turning_angle) + "\n")
+                time.sleep(2)
+
+                ok = False
+            except Exception as ex:
+                print(ex)
 
         x_coord = int(round(point[0] - starting_point[0], 0))
         y_coord = int(round(point[1] - starting_point[1], 0))
@@ -123,8 +140,8 @@ def take_image():
     ret, img = cap.read()
     #cap.release()
 
-    cv2.imshow("imageCourante", img)
-    cv2.waitKey()
+    # cv2.imshow("imageCourante", img)
+    #cv2.waitKey()
 
     cv2.destroyAllWindows()
 
