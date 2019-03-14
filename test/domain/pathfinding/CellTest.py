@@ -5,6 +5,7 @@ from domain.pathfinding.Cell import Cell
 class CellTest(unittest.TestCase):
 
     def setUp(self):
+        print ("In method ", self._testMethodName)
         self.cell = Cell(1, 5, True)
         self.cell.net_cost = 50
 

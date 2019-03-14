@@ -1,6 +1,6 @@
 class Shape:
     def __init__(self, shapes, cnts, approx, frameWithText, frameCnts):
-        self.shapes =  shapes
+        self.shapes = shapes
         self.cnts = cnts
         self.approx = approx
         self.frameWithText = frameWithText

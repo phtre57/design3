@@ -1,6 +1,7 @@
-import cv2
+import os
 import time
-from domain.image_path_analysis.ImageToGridConverter import *
+import unittest
+from domain.image_analysis.ImageToGridConverter import *
 from domain.pathfinding.Astar import Astar
 
 
@@ -53,29 +54,34 @@ def test_on_robot_discovery_and_path_finding_with_blur():
     cv2.imshow("path6", path6)
     cv2.waitKey(0)
 
-def test_on_real_image():
+def test_on_real_image(show_images):
     start = time.time()
 
     # test 1
-    path1 = test_astar_on_image("../../image_samples/real_image/globalmonde.jpg", False)
+    path = os.path.normpath(os.path.join(os.path.dirname(__file__), os.pardir))
+    path = os.path.normpath(os.path.join(path, os.pardir))
+    path = os.path.normpath(os.path.join(path, os.pardir))
+    path = os.path.join(path, "./image_samples/real_image/")
 
-    path2 = test_astar_on_image("../../image_samples/real_image/globalmonde1.jpg", False)
+    path1 = test_astar_on_image(path+"globalmonde.jpg", False)
 
-    path3 = test_astar_on_image("../../image_samples/real_image/globalmonde2.jpg", False)
+    path2 = test_astar_on_image(path+"globalmonde1.jpg", False)
 
-    path4 = test_astar_on_image("../../image_samples/real_image/globalmonde3.jpg", False)
+    path3 = test_astar_on_image(path+"globalmonde2.jpg", False)
 
-    path5 = test_astar_on_image("../../image_samples/real_image/globalmonde4.jpg", False)
+    path4 = test_astar_on_image(path+"globalmonde3.jpg", False)
 
-    path6 = test_astar_on_image("../../image_samples/real_image/globalmonde5.jpg", False)
+    path5 = test_astar_on_image(path+"globalmonde4.jpg", False)
 
-    path7 = test_astar_on_image("../../image_samples/real_image/globalmonde6.jpg", False)
+    path6 = test_astar_on_image(path+"globalmonde5.jpg", False)
 
-    path8 = test_astar_on_image("../../image_samples/real_image/globalmonde7.jpg", False)
+    path7 = test_astar_on_image(path+"globalmonde6.jpg", False)
 
-    path9 = test_astar_on_image("../../image_samples/real_image/globalmonde8.jpg", False)
+    path8 = test_astar_on_image(path+"globalmonde7.jpg", False)
 
-    path10 = test_astar_on_image("../../image_samples/real_image/globalmonde9.jpg", False)
+    path9 = test_astar_on_image(path+"globalmonde8.jpg", False)
+
+    path10 = test_astar_on_image(path+"globalmonde9.jpg", False)
 
     end = time.time()
     print("Total time: ", end - start)
@@ -91,19 +97,14 @@ def test_on_real_image():
     cv2.imshow("path8", path8)
     cv2.imshow("path9", path9)
     cv2.imshow("path10", path10)
-    cv2.waitKey(0)
 
-if __name__ == "__main__":
-    # test_switch: 0 = created with no blur two circles starting point
-    # test_switch: 1 = on real image
-
-    test_switch = 1
-
-    if test_switch == 0:
-        test_on_robot_discovery_and_path_finding_with_blur()
-    elif test_switch == 1:
-        test_on_real_image()
+    if show_images:
+        cv2.waitKey(0)
 
 
+class PathFindingImageTest(unittest.TestCase):
+
+    def test_pathfinding_on_real_image(self):
+        test_on_real_image(False)
 
 

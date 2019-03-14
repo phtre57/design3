@@ -1,4 +1,4 @@
-from domain.image_analysis.QR import *
+from domain.image_analysis.opencv_callable.DetectQR import *
 from image_samples.real_image import *
 import unittest
 import numpy as np
@@ -9,10 +9,11 @@ import inspect
 class QRTest(unittest.TestCase):
 
     def setUp(self):
-        self.dumb = 0
+        print ("In method ", self._testMethodName)
 
-    def test_given_when_then(self):
+    def test_givenQRCode_thenItIsCorrectlyDecoded(self):
         path = os.path.normpath(os.path.join(os.path.dirname(__file__), os.pardir))
+        path = os.path.normpath(os.path.join(path, os.pardir))
         path = os.path.normpath(os.path.join(path, os.pardir))
         path = os.path.normpath(os.path.join(path, os.pardir))
         path = os.path.join(path, "./image_samples/real_image/qr.png")

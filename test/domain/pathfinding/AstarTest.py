@@ -6,6 +6,7 @@ import numpy as np
 class AstarTest(unittest.TestCase):
 
     def setUp(self):
+        print ("In method ", self._testMethodName)
         self.test2_grid = np.zeros((10, 10))
         self.test2_grid[9][9] = 3
         self.test2_grid[0][0] = 2
