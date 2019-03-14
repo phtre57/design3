@@ -8,6 +8,7 @@ from domain.image_path_analysis.RobotDetector import RobotDetector
 
 X_END = 75
 Y_END = 75
+cap = cv2.VideoCapture(0)
 
 def test_main_loop_move_robot():
     #connect to pi
@@ -85,13 +86,13 @@ def test_main_loop_move_robot():
 
     #send coords here
     for point in real_path:
-        x_coord = round(point[0] - starting_point[0])
-        y_coord = round(point[1] - starting_point[1])
+        x_coord = int(round(point[0] - starting_point[0], 0))
+        y_coord = int(round(point[1] - starting_point[1], 0))
 
         print("Sending coordinates: " + str(x_coord) + "," + str(y_coord) + ",0")
 
         comm_pi.sendCoordinates(str(x_coord) + "," + str(y_coord) + ",0" + "\n")
-        time.sleep(10)
+        time.sleep(2)
 
         ok = True
 
@@ -111,9 +112,8 @@ def test_main_loop_move_robot():
 
 def take_image():
     print("Capture d'image en cours...")
-    cap = cv2.VideoCapture(0)
     ret, img = cap.read()
-    cap.release()
+    #cap.release()
 
     cv2.imshow("imageCourante", img)
     cv2.waitKey()
