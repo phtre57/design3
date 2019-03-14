@@ -27,21 +27,6 @@ def test_main_loop_move_robot():
         ok = False
         break
 
-    #Rotating robot to 0 degree
-    print("Rotating robot phase: ")
-    ok = True
-
-    while ok:
-        try:
-            img = take_image()
-
-            robot_detector = RobotDetector(img)
-            robot_angle = robot_detector.find_angle_of_robot()
-
-            #here send negative the angle found to robot...
-            ok = False
-        except Exception as ex:
-            print(ex)
 
     #moving robot phase
     print("Starting path finding")
@@ -85,6 +70,26 @@ def test_main_loop_move_robot():
 
     #send coords here
     for point in real_path:
+
+        # Rotating robot to 0 degree
+        print("Rotating robot phase: ")
+        ok = True
+
+        while ok:
+            try:
+                img = take_image()
+
+                robot_detector = RobotDetector(img)
+                robot_angle = robot_detector.find_angle_of_robot()
+                turning_angle = int(round(robot_angle)) * -1
+
+                print("Sending angle: " + "0,0," + str(turning_angle) + "\n")
+
+                comm_pi.sendCoordinates("0,0," + str(turning_angle) + "\n")
+                ok = False
+            except Exception as ex:
+                print(ex)
+
         x_coord = round(point[0] - starting_point[0])
         y_coord = round(point[1] - starting_point[1])
 
