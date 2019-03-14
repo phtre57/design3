@@ -8,6 +8,7 @@ from domain.image_path_analysis.RobotDetector import RobotDetector
 
 X_END = 75
 Y_END = 75
+cap = cv2.VideoCapture(0)
 
 def test_main_loop_move_robot():
     #connect to pi
@@ -64,39 +65,42 @@ def test_main_loop_move_robot():
         except Exception as ex:
             print(ex)
 
+    # Rotating robot to 0 degree
+    print("Rotating robot phase: ")
+    ok = True
+
+    while ok:
+        try:
+            img = take_image()
+
+            robot_detector = RobotDetector(img)
+            robot_angle = robot_detector.find_angle_of_robot()
+            turning_angle = int(round(robot_angle))
+
+            print("Sending angle: " + "0,0," + str(turning_angle) + "\n")
+
+            comm_pi.sendCoordinates("0,0," + str(turning_angle) + "\n")
+            time.sleep(10)
+
+            ok = False
+        except Exception as ex:
+            print(ex)
+
     real_path = pixel_to_xy_converter.convert_to_xy(smooth_path)
     starting_point = real_path[0]
     real_path = real_path[1:]
 
     #send coords here
     for point in real_path:
+        
 
-        # Rotating robot to 0 degree
-        print("Rotating robot phase: ")
-        ok = True
-
-        while ok:
-            try:
-                img = take_image()
-
-                robot_detector = RobotDetector(img)
-                robot_angle = robot_detector.find_angle_of_robot()
-                turning_angle = int(round(robot_angle)) * -1
-
-                print("Sending angle: " + "0,0," + str(turning_angle) + "\n")
-
-                comm_pi.sendCoordinates("0,0," + str(turning_angle) + "\n")
-                ok = False
-            except Exception as ex:
-                print(ex)
-
-        x_coord = round(point[0] - starting_point[0])
-        y_coord = round(point[1] - starting_point[1])
+        x_coord = int(round(point[0] - starting_point[0], 0))
+        y_coord = int(round(point[1] - starting_point[1], 0))
 
         print("Sending coordinates: " + str(x_coord) + "," + str(y_coord) + ",0")
 
         comm_pi.sendCoordinates(str(x_coord) + "," + str(y_coord) + ",0" + "\n")
-        time.sleep(10)
+        time.sleep(2)
 
         ok = True
 
@@ -116,9 +120,8 @@ def test_main_loop_move_robot():
 
 def take_image():
     print("Capture d'image en cours...")
-    cap = cv2.VideoCapture(0)
     ret, img = cap.read()
-    cap.release()
+    #cap.release()
 
     cv2.imshow("imageCourante", img)
     cv2.waitKey()
