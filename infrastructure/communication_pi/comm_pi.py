@@ -55,6 +55,14 @@ class Communication_pi():
 		self.socket.sendall(str.encode('utf-8'))
 		print("Coordonnees envoyees")
 
+		# while True:
+		# 	recv = self.socket.recv(255)
+		# 	print("Waiting")
+		# 	time.sleep(0.5)
+		# 	if ('validationSendPosition' == recv):
+		# 		print("Response recv")
+		# 		break
+
 	def disconnectFromPi(self):
 		self.socket.close()
 
