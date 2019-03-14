@@ -35,6 +35,7 @@ class PixelToXYCoordinatesConverter:
         gray = cv2.cvtColor(self.image, cv2.COLOR_BGR2GRAY)
 
         ret, corners = cv2.findChessboardCorners(gray, (self.nb_lines, self.nb_columns), None)
+        print("Ret value: " + str(ret))
 
         if ret:
             self.__create_real_world_object_points()
@@ -46,6 +47,8 @@ class PixelToXYCoordinatesConverter:
             img = cv2.drawChessboardCorners(self.image, (self.nb_lines, self.nb_columns), corners2, ret)
             cv2.imshow('img', img)
             cv2.waitKey(0)
+        else:
+            print("Could not find chessboard")
 
     def __init_xy_factors(self):
         x_temp = 0
