@@ -14,7 +14,7 @@ class PixelToXYCoordinatesConverter:
     def __init__(self, image, square_width, number_of_lines, number_of_columns):
         self.nb_lines = number_of_lines
         self.nb_columns = number_of_columns
-        self.image = image
+        self.image = image.copy()
         self.square_width = square_width
         self.object_points = np.zeros((self.nb_columns * self.nb_lines, 3), np.int32)
         self.real_object_points = []
@@ -43,7 +43,7 @@ class PixelToXYCoordinatesConverter:
             corners2 = cv2.cornerSubPix(gray, corners, (11, 11), (-1, -1), CRITERIA)
             self.image_points.append(corners2)
 
-            img = cv2.drawChessboardCorners(img, (self.nb_lines, self.nb_columns), corners2, ret)
+            img = cv2.drawChessboardCorners(self.image, (self.nb_lines, self.nb_columns), corners2, ret)
             cv2.imshow('img', img)
             cv2.waitKey(0)
 
