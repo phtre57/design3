@@ -6,7 +6,7 @@ CRITERIA = (cv2.TERM_CRITERIA_EPS + cv2.TERM_CRITERIA_MAX_ITER, 30, 0.001)
 NUMBER_OF_COLUMNS = 7
 NUMBER_OF_LINES = 7
 CHESS_SQUARE_WIDTH = 64 #real constant used with chessboard
-IMAGE_SCALE_FACTOR = 0.5
+IMAGE_SCALE_FACTOR = 2
 
 
 class PixelToXYCoordinatesConverter:

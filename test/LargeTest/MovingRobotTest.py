@@ -6,27 +6,26 @@ from domain.image_path_analysis.ImageToGridConverter import *
 from infrastructure.communication_pi import comm_pi
 from domain.image_path_analysis.RobotDetector import RobotDetector
 
+X_END = 75
+Y_END = 75
 
 def test_main_loop_move_robot():
     #connect to pi
     print("Now connecting...")
-    #comm_pi.connectToPi()
-    #time.sleep(5)
+    comm_pi.connectToPi()
+    time.sleep(5)
 
     #calibration phase
     print("Calibration phase: ")
     ok = True
 
     while ok:
-        try:
-            img = take_image()
-            print("before pixel to shit")
-            pixel_to_xy_converter = PixelToXYCoordinatesConverter(img, CHESS_SQUARE_WIDTH, NUMBER_OF_LINES, NUMBER_OF_COLUMNS)
+        img = take_image()
+        print("before pixel to shit")
+        pixel_to_xy_converter = PixelToXYCoordinatesConverter(img, CHESS_SQUARE_WIDTH, NUMBER_OF_LINES, NUMBER_OF_COLUMNS)
 
-            ok = False
-            break
-        except Exception as ex:
-            print(ex)
+        ok = False
+        break
 
     #Rotating robot to 0 degree
     print("Rotating robot phase: ")
@@ -57,7 +56,7 @@ def test_main_loop_move_robot():
             robot_detector = RobotDetector(img)
             x_start, y_start = robot_detector.find_center_of_robot()
 
-            grid_converter = ImageToGridConverter(img, x_start, y_start, 50, 50)
+            grid_converter = ImageToGridConverter(img, x_start, y_start, X_END, Y_END)
 
             astar = Astar(grid_converter.grid, HEIGHT, LENGTH)
 
@@ -89,10 +88,10 @@ def test_main_loop_move_robot():
         x_coord = round(point[0] - starting_point[0])
         y_coord = round(point[1] - starting_point[1])
 
-        print("Sending coordinates: (" + x_coord + ", " + y_coord + ")")
+        print("Sending coordinates: (" + str(x_coord) + ", " + str(y_coord) + ")")
 
-        #comm_pi.sendCoordinates(str(x_coord) + "," + str(y_coord) + "\n")
-        #time.sleep(5)
+        comm_pi.sendCoordinates(str(x_coord) + "," + str(y_coord) + "\n")
+        time.sleep(10)
 
         ok = True
 
@@ -111,19 +110,15 @@ def test_main_loop_move_robot():
 
 
 def take_image():
-    print("patate0")
-
+    print("Capture d'image en cours...")
     cap = cv2.VideoCapture(0)
-    print("patate1")
     ret, img = cap.read()
-    print("patate2")
-
     cap.release()
-    print("patate3")
-
 
     cv2.imshow("imageCourante", img)
     cv2.waitKey()
+
+    cv2.destroyAllWindows()
 
     return img
 
