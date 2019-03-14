@@ -1,19 +1,20 @@
 import cv2 as cv2
 import numpy as np
-
+from domain.image_path_analysis.ImageToGridConverter import *
 
 CRITERIA = (cv2.TERM_CRITERIA_EPS + cv2.TERM_CRITERIA_MAX_ITER, 30, 0.001)
 NUMBER_OF_COLUMNS = 7
 NUMBER_OF_LINES = 7
-CHESS_SQUARE_WIDTH = 43 #real constant used with chessboard
+CHESS_SQUARE_WIDTH = 64 #real constant used with chessboard
+IMAGE_SCALE_FACTOR = 0.5
 
 
 class PixelToXYCoordinatesConverter:
 
-    def __init__(self, image, square_width, number_of_lines, number_of_columns):
+    def __init__(self, image_path, square_width, number_of_lines, number_of_columns):
         self.nb_lines = number_of_lines
         self.nb_columns = number_of_columns
-        self.image = image
+        self.image_path = image_path
         self.square_width = square_width
         self.object_points = np.zeros((self.nb_columns * self.nb_lines, 3), np.int32)
         self.real_object_points = []
@@ -31,7 +32,7 @@ class PixelToXYCoordinatesConverter:
         self.object_points[:, :2] = np.mgrid[0:self.nb_lines, 0:self.nb_columns].T.reshape(-1, 2)
 
     def __create_real_object_points_and_image_points(self):
-        img = cv2.imread(self.image)
+        img = cv2.imread(self.image_path)
         gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
 
         ret, corners = cv2.findChessboardCorners(gray, (self.nb_lines, self.nb_columns), None)
@@ -71,7 +72,8 @@ class PixelToXYCoordinatesConverter:
 
         #inversing y coord to be in robot referential
         for point in array_of_points_in_pixel:
-            path.append((point[0] * self.x_pixel_to_mm_factor, point[1] * self.y_pixel_to_mm_factor * -1))
+            path.append((point[0] * self.x_pixel_to_mm_factor * IMAGE_SCALE_FACTOR,
+                         point[1] * self.y_pixel_to_mm_factor * IMAGE_SCALE_FACTOR * -1))
 
         return path
 

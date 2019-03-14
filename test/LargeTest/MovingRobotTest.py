@@ -64,12 +64,20 @@ def test_main_loop_move_robot():
 
             path_smoother = PathSmoother(path)
             smooth_path = path_smoother.smooth_path()
+
+            for point in smooth_path:
+                cv2.circle(grid_converter.image, (point[0], point[1]), 1, [0, 0, 255])
+
+            end = time.time()
+
+            print("Found path in: " + str(end - start))
+
+            cv2.imshow("path", grid_converter.image)
+            cv2.waitKey(0)
+
+            ok = False
         except Exception as ex:
             print(ex)
-
-    end = time.time()
-
-    print("Found path in: " + str(end - start))
 
     real_path = pixel_to_xy_converter.convert_to_xy(smooth_path)
     starting_point = real_path[0]
@@ -95,6 +103,8 @@ def test_main_loop_move_robot():
                 temp = [(x_new, y_new)]
                 xy_temp = pixel_to_xy_converter.convert_to_xy(temp)
                 starting_point = xy_temp[0]
+
+                ok = False
             except Exception as ex:
                 print(ex)
 

@@ -47,6 +47,8 @@ class Calibrator:
         h, w = self.image.shape[:2]
         newcameramtx, roi = cv2.getOptimalNewCameraMatrix(mtx, dist, (w, h), 1, (w, h))
 
+        print(newcameramtx)
+
         # undistort
         dst = cv2.undistort(self.image, mtx, dist, None, newcameramtx)
 
