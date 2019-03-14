@@ -6,6 +6,7 @@ class Shape:
         self.frameWithText = frameWithText
         self.frameCnts = frameCnts
         self.frame = 0
+        self.result = ""
 
     def set_frame(self, frame):
         self.frame = frame
