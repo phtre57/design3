@@ -15,6 +15,12 @@ HSV_IN_RANGE_MARKER = 255
 
 OBSTACLE_BORDER = 35
 
+X_WALL_LEFT_CORNER = 20
+X_WALL_RIGHT_CORNER = 300
+Y_WALL_UP_CORNER = 60
+Y_WALL_DOWN_CORNER = 180
+
+
 BLUE_HSV_LOW = np.array([100, 100, 120])
 BLUE_HSV_HIGH = hsv_high = np.array([140, 255, 255])
 BLUR_TUPLE = (3, 3)
@@ -28,6 +34,7 @@ class ImageToGridConverter(object):
         self.grid = np.zeros((HEIGHT, LENGTH))
         self.mark_starting_point(x_start, y_start)
         self.mark_ending_point(x_end, y_end)
+        self.__mark_table_wall()
         self.mark_obstacle_in_grid_from_image()
 
     def mark_obstacle_in_grid_from_image(self):
@@ -93,4 +100,21 @@ class ImageToGridConverter(object):
                 start_x = x + OBSTACLE_BORDER
 
                 cv2.circle(self.image, (start_x, start_y + i), 1, [255, 51, 51])
+
+    def __mark_table_wall(self):
+        for i in range(X_WALL_RIGHT_CORNER - X_WALL_LEFT_CORNER):
+            start_x = X_WALL_LEFT_CORNER + i
+
+            cv2.circle(self.image, (start_x, Y_WALL_UP_CORNER), 1, [255, 51, 51])
+
+        for i in range(X_WALL_RIGHT_CORNER - X_WALL_LEFT_CORNER):
+            start_x = X_WALL_LEFT_CORNER + i
+
+            cv2.circle(self.image, (start_x, Y_WALL_DOWN_CORNER), 1, [255, 51, 51])
+
+        for i in range(Y_WALL_DOWN_CORNER - Y_WALL_UP_CORNER):
+            cv2.circle(self.image, (X_WALL_LEFT_CORNER, Y_WALL_UP_CORNER + i), 1, [255, 51, 51])
+
+        for i in range(Y_WALL_DOWN_CORNER - Y_WALL_UP_CORNER):
+            cv2.circle(self.image, (X_WALL_RIGHT_CORNER, Y_WALL_UP_CORNER + i), 1, [255, 51, 51])
 

@@ -70,14 +70,14 @@ class RobotDetector:
         hsv = cv2.cvtColor(self.image, cv2.COLOR_BGR2HSV)
 
         mask = cv2.inRange(hsv, YELLOW_HSV_LOW, YELLOW_HSV_HIGH)
-        cv2.imshow("yellow_mask", mask)
-        cv2.waitKey(0)
+        #cv2.imshow("yellow_mask", mask)
+        #cv2.waitKey(0)
         return self.__find_center_of_contour(mask)
 
     def __find_red_marker_center(self):
         hsv = cv2.cvtColor(self.image, cv2.COLOR_BGR2HSV)
 
         mask = cv2.inRange(hsv, RED_HSV_LOW, RED_HSV_HIGH)
-        cv2.imshow("red_mask", mask)
-        cv2.waitKey(0)
+        #cv2.imshow("red_mask", mask)
+        #cv2.waitKey(0)
         return self.__find_center_of_contour(mask)
