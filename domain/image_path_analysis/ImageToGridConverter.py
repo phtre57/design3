@@ -34,12 +34,11 @@ class ImageToGridConverter(object):
         self.grid = np.zeros((HEIGHT, LENGTH))
         self.mark_starting_point(x_start, y_start)
         self.mark_ending_point(x_end, y_end)
+        self.__mark_obstacle_border()
         self.__mark_table_wall()
         self.mark_obstacle_in_grid_from_image()
 
     def mark_obstacle_in_grid_from_image(self):
-        self.__mark_obstacle_border()
-
         hsv = cv2.cvtColor(self.image, cv2.COLOR_BGR2HSV)
 
         mask = cv2.inRange(hsv, BLUE_HSV_LOW, BLUE_HSV_HIGH)
