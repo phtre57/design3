@@ -54,13 +54,13 @@ class Communication_pi():
 		self.socket.sendall(signal.encode('utf-8'))
 		self.socket.sendall(str.encode('utf-8'))
 		print("Coordonnees envoyees")
+		self.robotReady()
 
 	def disconnectFromPi(self):
 		self.socket.close()
 
 	def robotReady(self):
 		okSignal = self.socket.recv(255)
-		print(okSignal)
 
 	def changeCondensateur(self):
 		signal = 'condensateurChange'
