@@ -58,6 +58,15 @@ class Communication_pi():
 	def disconnectFromPi(self):
 		self.socket.close()
 
+	def robotReady(self):
+		okSignal = self.socket.recv(255)
+		print(okSignal)
+
+	def changeCondensateur(self):
+		signal = 'condensateurChange'
+		self.socket.sendall(signal.encode('utf-8'))
+		print("Signal envoye!")
+
 def main():
 	communication_pi = Communication_pi()
 	communication_pi.connectToPi()
