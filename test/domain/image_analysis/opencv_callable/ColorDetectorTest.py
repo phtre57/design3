@@ -26,8 +26,8 @@ class ColorDetectorTest(unittest.TestCase):
         color.YELLOW()
         shape = color_detector(frame, color)
 
-        cv2.imshow('EDGES', shape.res_contour[3])
-        cv2.waitKey()
+        # cv2.imshow('EDGES', shape.res_contour[3])
+        # cv2.waitKey()
 
         self.assertEqual(shape.shapes, ['circle', 'rectangle', 'circle', 'pentagon'])
 
@@ -44,9 +44,9 @@ class ColorDetectorTest(unittest.TestCase):
         color.RED()
         shape = color_detector(frame, color)
 
-        cv2.imshow('EDGES', shape.frame)
-        cv2.imshow('EDGES', shape.res_contour[3])
-        cv2.waitKey()
+        # cv2.imshow('EDGES', shape.frame)
+        # cv2.imshow('EDGES', shape.res_contour[3])
+        # cv2.waitKey()
 
         self.assertEqual(shape.shapes, ['circle', 'rectangle', 'circle', 'pentagon'])
 
@@ -64,8 +64,8 @@ class ColorDetectorTest(unittest.TestCase):
         shape = color_detector(frame, color)
 
         # cv2.imshow('EDGES', shape.frame)
-        cv2.imshow('EDGES', shape.res_contour[3])
-        cv2.waitKey()
+        # cv2.imshow('EDGES', shape.res_contour[3])
+        # cv2.waitKey()
 
         self.assertEqual(shape.shapes, ['circle', 'rectangle', 'circle', 'pentagon'])
 
@@ -83,8 +83,8 @@ class ColorDetectorTest(unittest.TestCase):
         shape = color_detector(frame, color)
 
         # cv2.imshow('EDGES', shape.frame)
-        cv2.imshow('EDGES', shape.res_contour[3])
-        cv2.waitKey()
+        # cv2.imshow('EDGES', shape.res_contour[3])
+        # cv2.waitKey()
 
         self.assertEqual(shape.shapes, ['circle', 'rectangle', 'circle', 'pentagon'])
 
@@ -101,15 +101,15 @@ class ColorDetectorTest(unittest.TestCase):
         color.GREEN()
         shape = color_detector(frame, color)
 
-        print(shape.res_contour[0])
+        # print(shape.res_contour[0])
 
-        cv2.circle(shape.res_contour[3], shape.res_contour[2], int(3), [0,0,255], 2)
+        # cv2.circle(shape.res_contour[3], shape.res_contour[2], int(3), [0,0,255], 2)
 
-        print(shape.res_contour[1])
+        # print(shape.res_contour[1])
 
-        # cv2.imshow('EDGES', shape.frame)
-        cv2.imshow('EDGES', shape.res_contour[3])
-        cv2.waitKey()
+        # # cv2.imshow('EDGES', shape.frame)
+        # cv2.imshow('EDGES', shape.res_contour[3])
+        # cv2.waitKey()
 
         # self.assertEqual(shape.shapes, ['circle', 'rectangle', 'circle', 'pentagon'])
 

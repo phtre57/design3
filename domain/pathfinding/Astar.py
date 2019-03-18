@@ -9,6 +9,7 @@ class Astar(object):
     def __init__(self, grid, number_of_rows, nb_of_columns):
         self.cells = []
         self.path = []
+        self.path_in_pixel_coordinates = []
         self.open = []
         self.visited_cells = set()
         self.starting_cell = Cell(0, 0, False)
@@ -61,6 +62,11 @@ class Astar(object):
             self.path.append(cell)
             cell = cell.parent
         self.path.reverse()
+        self.__init_path_in_pixel_coordinates()
+
+    def __init_path_in_pixel_coordinates(self):
+        for cell in self.path:
+            self.path_in_pixel_coordinates.append((cell.j, cell.i))
 
     def __find_neighbour_cell(self):
         neighbour_cells = []
@@ -105,4 +111,6 @@ class Astar(object):
                     else:
                         self.__update_cell(neighbour, cell)
                         heapq.heappush(self.open, (neighbour.net_cost, neighbour))
+
+        return self.path_in_pixel_coordinates
 
