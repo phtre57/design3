@@ -1,6 +1,6 @@
 import heapq
 from .Cell import Cell
-from domain.image_path_analysis.ImageToGridConverter import *
+from domain.image_analysis.ImageToGridConverter import *
 
 INFINITE_WEIGHT = 9999999
 

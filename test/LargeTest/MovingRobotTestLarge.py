@@ -1,10 +1,10 @@
 import time
 from domain.pathfinding.Astar import Astar
 from domain.pathfinding.PathSmoother import PathSmoother
-from domain.image_path_analysis.PixelToXYCoordinatesConverter import *
-from domain.image_path_analysis.ImageToGridConverter import *
+from domain.image_analysis_pathfinding.PixelToXYCoordinatesConverter import *
+from domain.image_analysis.ImageToGridConverter import *
 from infrastructure.communication_pi import comm_pi
-from domain.image_path_analysis.RobotDetector import RobotDetector
+from domain.image_analysis_pathfinding.RobotDetector import RobotDetector
 
 X_END = 75
 Y_END = 118

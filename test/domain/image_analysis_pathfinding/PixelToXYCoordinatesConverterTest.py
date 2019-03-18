@@ -1,6 +1,6 @@
 import os
 import unittest
-from domain.image_path_analysis.PixelToXYCoordinatesConverter import *
+from domain.image_analysis_pathfinding.PixelToXYCoordinatesConverter import *
 from domain.pathfinding.Cell import Cell
 
 

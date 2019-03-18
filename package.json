@@ -1,0 +1,27 @@
+{
+  "name": "design3",
+  "version": "1.0.0",
+  "description": "Projet de design 3/projet multidisplinaire",
+  "main": "index.js",
+  "directories": {
+    "test": "test"
+  },
+  "scripts": {
+    "test": "python -m unittest discover . \"*Test.py\"",
+    "cov": "coverage run -m unittest discover . \"*Test.py\"",
+    "report": "coverage report -m",
+    "main": "python -m main",
+    "start": "node ui/node_server/index.js",
+    "client": "cd ./ui/web_client && yarn start"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/phtre57/design3.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/phtre57/design3/issues"
+  },
+  "homepage": "https://github.com/phtre57/design3#readme"
+}

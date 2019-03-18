@@ -1,8 +1,8 @@
 import unittest
 import os
 import cv2
-from domain.image_path_analysis.RobotDetector import *
-from domain.image_path_analysis.Exceptions.CouldNotFindRobotMarker import *
+from domain.image_analysis_pathfinding.RobotDetector import *
+from domain.image_analysis.Exceptions.CouldNotFindRobotMarker import *
 
 
 class RobotDetectorTest(unittest.TestCase):

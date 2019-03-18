@@ -1,6 +1,6 @@
 import cv2 as cv2
 import numpy as np
-from domain.image_path_analysis.ImageToGridConverter import *
+from domain.image_analysis.ImageToGridConverter import *
 
 CRITERIA = (cv2.TERM_CRITERIA_EPS + cv2.TERM_CRITERIA_MAX_ITER, 30, 0.001)
 NUMBER_OF_COLUMNS = 7

@@ -1,7 +1,7 @@
 import cv2
 
 from domain.image_analysis.ShapeDetector import ShapeDetector
-from domain.image_analysis.Canny import canny, dilate_mask_zone_dep
+from domain.image_analysis.opencv_callable.Canny import canny, dilate_mask_zone_dep
 
 # WIP
 

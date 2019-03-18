@@ -1,7 +1,7 @@
 import time
 import cv2
 import traceback
-from domain.image_path_analysis.RobotDetector import RobotDetector
+from domain.image_analysis_pathfinding.RobotDetector import RobotDetector
 from infrastructure.communication_pi import comm_pi
 
 

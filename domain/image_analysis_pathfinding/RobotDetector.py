@@ -1,8 +1,8 @@
 import cv2
 import math
 import numpy as np
-from domain.image_path_analysis.ImageToGridConverter import LENGTH, HEIGHT
-from domain.image_path_analysis.Exceptions.CouldNotFindRobotMarker import *
+from domain.image_analysis.ImageToGridConverter import LENGTH, HEIGHT
+from domain.image_analysis.Exceptions.CouldNotFindRobotMarker import *
 
 YELLOW_HSV_LOW = np.array([20, 100, 160])
 YELLOW_HSV_HIGH = np.array([30, 255, 255])

@@ -1,14 +1,7 @@
 import cv2
 
 from domain.image_analysis.ShapeDetector import ShapeDetector
-from domain.image_analysis.Canny import canny, dilate_mask
-
-"""
-from ShapeValidator import ShapeValidator
-from ShapeDetector import ShapeDetector
-from Canny import canny, dilate_mask, erode_mask
-"""
-
+from domain.image_analysis.opencv_callable.Canny import canny, dilate_mask
 
 def detect_contour_pieces(frame):
     frame = frame.copy()
@@ -24,11 +17,3 @@ def detect_contour_pieces(frame):
     shape.set_frame(shape.frameWithText)
 
     return shape
-
-
-
-# frame = cv2.imread("../../image_samples/real_image/pieces.jpg")
-# detect_contour_pieces(frame)
-
-# cv2.imshow('EDGES', frame)
-# cv2.waitKey()
