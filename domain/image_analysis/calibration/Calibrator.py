@@ -60,11 +60,6 @@ class Calibrator:
         cv2.waitKey(0)
 
 
-img = cv2.imread("calib.jpg")
-
-calibrator = Calibrator(img, NUMBER_OF_LINES,  NUMBER_OF_COLUMNS)
-calibrator.calibrate_camera()
-
 
 
 
