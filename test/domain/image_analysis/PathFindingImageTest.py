@@ -16,7 +16,7 @@ def test_astar_on_image(image_path, blur=False):
     robot_detector = RobotDetector(img)
     x_start, y_start = robot_detector.find_center_of_robot()
 
-    test_image = ImageToGridConverter(img, x_start, y_start, LENGTH - 1, HEIGHT - 1)
+    test_image = ImageToGridConverter(img, x_start, y_start, 50, 100)
 
     astar = Astar(test_image.grid, HEIGHT, LENGTH)
 
@@ -86,9 +86,9 @@ def test_on_real_image(show_images):
 
     path5 = test_astar_on_image(path+"globalmonde4.jpg", False)
 
-    # path6 = test_astar_on_image(path+"globalmonde5.jpg", False)
+    #path6 = test_astar_on_image(path+"globalmonde5.jpg", False)
 
-    path7 = test_astar_on_image(path+"globalmonde6.jpg", False)
+    #path7 = test_astar_on_image(path+"globalmonde6.jpg", False)
 
     path8 = test_astar_on_image(path+"globalmonde7.jpg", False)
 
@@ -106,7 +106,7 @@ def test_on_real_image(show_images):
     cv2.imshow("path4", path4)
     cv2.imshow("path5", path5)
     #cv2.imshow("path6", path6)
-    cv2.imshow("path7", path7)
+    #cv2.imshow("path7", path7)
     cv2.imshow("path8", path8)
     cv2.imshow("path9", path9)
     cv2.imshow("path10", path10)
