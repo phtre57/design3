@@ -2,20 +2,16 @@ from imutils import paths
 import argparse
 import cv2
 
-CONST_TRESHOLD = 30
+BLUR_TRESHOLD = 30
 
 def detect_blurriness(imagePath):
     image = cv2.imread(imagePath)
     gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
-    fm = laplacian(gray)
+    actualBlur = laplacian(gray)
 
-    if fm < CONST_TRESHOLD:
-        print("Freakin' blurry")
+    if actualBlur < BLUR_TRESHOLD:
         return False
 
-    cv2.imshow("Image", image)
-    key = cv2.waitKey(0)
-    print("Pas blurry")
     return True
 
 def laplacian(image):
@@ -23,4 +19,9 @@ def laplacian(image):
 
 
 if __name__ == "__main__":
-    detect_blurriness("blurry.jpg")
+    isBlurry = detect_blurriness("non_blurry.jpg")
+
+    if isBlurry:
+        print("Pas blurry")
+    else:
+        print("Freakin' blurry")
