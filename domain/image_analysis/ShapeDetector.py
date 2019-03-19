@@ -75,7 +75,7 @@ class ShapeDetector:
             if (self.shape_only != None):
                 if (shape != self.shape_only):
                     continue
-                    
+
             self.shapes.append(shape)
             shapes_with_approx.append([shape, approx])
 

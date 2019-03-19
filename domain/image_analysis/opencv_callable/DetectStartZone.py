@@ -4,14 +4,23 @@ import numpy as np
 from domain.image_analysis.ShapeDetector import ShapeDetector
 from domain.image_analysis.opencv_callable.Canny import canny, erode_mask
 
+PERI_LIMITER_CHECK = True
+PERI_LIMITER_UPPER = 100000
+PERI_LIMITER_LOWER = 1000
+RECT_LIMITER_CHECK = True
+RECT_W_LIMITER = 90
+RECT_H_LIMITER = 90
+RADIUS_LIMITER_CHECK = False
+RADIUS_LIMITER = 250
+RAIDUS_POSITIVE = True
+
 def detect_start_zone(frame):
     frame.copy()
 
     edges = canny(frame, erode_mask)
-    shapeDetector = ShapeDetector(True, True, False)
-    shapeDetector.set_peri_limiter(1000, 100000)
-    shapeDetector.set_rect_limiter(90, 90)
-    shapeDetector.set_radius_limiter(250, True)
+    shapeDetector = ShapeDetector(PERI_LIMITER_CHECK, RECT_LIMITER_CHECK, RADIUS_LIMITER_CHECK)
+    shapeDetector.set_peri_limiter(PERI_LIMITER_LOWER, PERI_LIMITER_UPPER)
+    shapeDetector.set_rect_limiter(RECT_W_LIMITER, RECT_H_LIMITER)
 
     shape = shapeDetector.detect(edges)
     shape = shapeDetector.detect(shape.frameCnts)
