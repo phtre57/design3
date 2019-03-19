@@ -28,7 +28,7 @@ def test_main_loop_move_robot(X_END, Y_END, sequence):
     sequence.create_smooth_path()
 
     print("## Rotating robot")
-    sequence.get_rotation_angle()
+    sequence.send_rotation_angle()
 
     print("## Convert to X Y")
     sequence.convert_to_xy()

@@ -28,8 +28,8 @@ class Sequence:
                 traceback.print_exc(file=sys.stdout)
 
     def __get_smooth_path(self):
-        resp = self.__find_current_center_robot()
-        grid_converter = ImageToGridConverter(resp['image'], resp['center'][0], resp['center'][1], self.X_END, self.Y_END)
+        center_and_image = self.__find_current_center_robot()
+        grid_converter = ImageToGridConverter(center_and_image['image'], center_and_image['center'][0], center_and_image['center'][1], self.X_END, self.Y_END)
 
         astar = Astar(grid_converter.grid, HEIGHT, LENGTH)
         path = astar.find_path()
@@ -49,7 +49,7 @@ class Sequence:
 
     def send_coordinates(self):
         for point in self.real_path:
-            self.get_rotation_angle(self.smooth_path)
+            self.send_rotation_angle(self.smooth_path)
             x_coord = int(round(point[0] - self.starting_point[0], 0))
             y_coord = int(round(point[1] - self.starting_point[1], 0))
             print("Sending coordinates: " + str(x_coord) + "," + str(y_coord) + ",0")
@@ -57,8 +57,8 @@ class Sequence:
 
             while True:
                 try:
-                    resp = self.__find_current_center_robot()
-                    self.starting_point = self.pixel_to_xy_converter.convert_to_xy_point((resp['center'][0], resp['center'][1]))
+                    center_and_image = self.__find_current_center_robot()
+                    self.starting_point = self.pixel_to_xy_converter.convert_to_xy_point((center_and_image['center'][0], center_and_image['center'][1]))
                     break
                 except Exception as ex:
                     print(ex)
@@ -69,10 +69,10 @@ class Sequence:
         robot_detector = RobotDetector(img)
         return { 'center': robot_detector.find_center_of_robot(), 'image': img }
     
-    def get_rotation_angle(self, smooth_path = None):
+    def send_rotation_angle(self, path = None):
         while True:
             try:
-                img = self.take_image(smooth_path)
+                img = self.take_image(path)
                 robot_detector = RobotDetector(img)
                 robot_angle = robot_detector.find_angle_of_robot()
                 turning_angle = int(round(robot_angle))
