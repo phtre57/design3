@@ -21,8 +21,8 @@ class DetectStartZoneTest(unittest.TestCase):
         frame = cv2.imread(path)
 
         shape = detect_start_zone(frame)
-        # cv2.imshow('EDGES', shape.frame)
-        # cv2.waitKey()
+        cv2.imshow('EDGES', shape.frame)
+        cv2.waitKey()
 
         self.assertEqual(shape.shapes, ['square'])
 

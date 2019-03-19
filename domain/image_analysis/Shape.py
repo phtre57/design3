@@ -7,6 +7,7 @@ class Shape:
         self.frameCnts = frameCnts
         self.frame = 0
         self.result = ""
+        self.center = (0, 0)
 
     def set_frame(self, frame):
         self.frame = frame

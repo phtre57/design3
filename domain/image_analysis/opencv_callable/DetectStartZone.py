@@ -3,9 +3,10 @@ import numpy as np
 
 from domain.image_analysis.ShapeDetector import ShapeDetector
 from domain.image_analysis.opencv_callable.Canny import canny, erode_mask
+from domain.image_analysis.ShapeUtils import *
 
 def detect_start_zone(frame):
-    frame.copy()
+    frame = frame.copy()
 
     edges = canny(frame, erode_mask)
     shapeDetector = ShapeDetector(True, True, False)
@@ -34,8 +35,18 @@ def detect_start_zone(frame):
     shapeDetector.set_radius_limiter(250, True)
     shape = shapeDetector.detect(output)
 
+    # cv2.imshow("ok", output)
+    # cv2.waitKey()
+
     output = cv2.bitwise_and(frame, frame, mask=shape.frameWithText)
 
     shape.set_frame(output)
+
+    if (len(shape.approx) > 1):
+        print("Ça pas marché")
+        shape.center = (0,0)
+        return shape
+
+    shape.center = find_center(shape.approx[0][2], 100)
 
     return shape

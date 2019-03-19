@@ -1,5 +1,7 @@
 import pickle
 import time
+import cv2
+import traceback
 
 from infrastructure.communication_pi.comm_pi import Communication_pi
 from test.LargeTest.mock.comm_pi import Communication_pi_mock
@@ -17,13 +19,16 @@ def connect(comm_pi):
 def calibrate():
     print("Calibration phase: ")
     pixel_to_xy_converter = None
+    try:
+        with open('calibration_data.pkl', 'rb') as input:
+            pixel_to_xy_converter = pickle.load(input)
+        
+        return pixel_to_xy_converter
+    except Exception as ex:
+        print(ex)
+        traceback.print_exc(file=sys.stdout)
 
-    with open('calibration_data.pkl', 'rb') as input:
-        pixel_to_xy_converter = pickle.load(input)
-    
-    return pixel_to_xy_converter
-
-def test_main_loop_move_robot(X_END, Y_END, sequence):
+def test_main_loop_move_robot(sequence):
     print("## Starting path finding")
     sequence.create_smooth_path()
 
@@ -41,9 +46,19 @@ def main():
     comm_pi = Communication_pi()
     connect(comm_pi)
     pixel_to_xy_converter = calibrate()
-    sequence = Sequence(cap, X_END, Y_END, comm_pi)
-    test_main_loop_move_robot(X_END_CHARGE, Y_END_CHARGE, sequence)
-    test_main_loop_move_robot(X_END_CHARGE, Y_END_CHARGE, sequence)
+    
+    X_END = X_END_CHARGE
+    Y_END = Y_END_CHARGE 
+
+    sequence = Sequence(cap, comm_pi, pixel_to_xy_converter)
+    # sequence.set_end_point(X_END, Y_END)
+    # sequence.detect_start_zone()
+    sequence.detect_zone_dep()
+    test_main_loop_move_robot(sequence)
+    # test_main_loop_move_robot(sequence)
+
+    # test_main_loop_move_robot(X_END_CHARGE, Y_END_CHARGE, sequence)
+    # test_main_loop_move_robot(X_END_CHARGE, Y_END_CHARGE, sequence)
 
     # test_main_loop_move_robot(X_END_QR, Y_END_QR)
     # test_main_loop_move_robot(X_END_PICKUP, Y_END_PICKUP)
@@ -72,9 +87,11 @@ def main_test():
     X_END = X_END_CHARGE
     Y_END = Y_END_CHARGE
 
-    sequence = Sequence(cap, X_END, Y_END, comm_pi, pixel_to_xy_converter)
-    test_main_loop_move_robot(X_END, Y_END, sequence)
-    test_main_loop_move_robot(X_END, Y_END, sequence)
+    sequence = Sequence(cap, comm_pi, pixel_to_xy_converter)
+    sequence.detect_start_zone()
+    # sequence.set_end_point(X_END, Y_END)
+    # test_main_loop_move_robot(sequence)
+    # test_main_loop_move_robot(sequence)
 
-# main()
-main_test()
+main()
+# main_test()

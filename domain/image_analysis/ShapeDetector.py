@@ -4,6 +4,8 @@ import imutils
 from domain.image_analysis.ShapeValidator import ShapeValidator
 from domain.image_analysis.Shape import Shape
 
+debug = True
+
 class ShapeDetector:
 
     def __init__(self, peri_limiter, rect_limiter, radius_limiter):
@@ -41,12 +43,15 @@ class ShapeDetector:
         for c in cnts:
             shape = "unidentified"
             peri = cv2.arcLength(c, True)
-
             if (self.peri_limiter):
                 if (peri > self.peri_upper):
                     continue
                 elif (peri < self.peri_lower):
                     continue
+
+            if debug:
+                print("Wave")
+                print(peri)
 
             approx = cv2.approxPolyDP(c, 0.02 * peri, True)
 
@@ -56,9 +61,19 @@ class ShapeDetector:
                 if (abs(wRect) < self.w_rect_limit or abs(hRect) < self.h_rect_limit):
                     continue
 
+            if debug:
+                print(wRect, hRect)
 
             ((x, y), radius) = cv2.minEnclosingCircle(c)
             center = (round(int(x)),round(int(y)))
+
+            if debug:
+                print(radius)
+
+                img = frameWithText.copy()
+                cv2.circle(img, (round(x), round(y)), 3, [0, 0, 255])
+                cv2.imshow("SHOW", img)
+                cv2.waitKey()
 
             if (self.radius_limiter):
                 if (self.radius_positive):
@@ -68,7 +83,6 @@ class ShapeDetector:
                     if (radius < self.radius_limit):
                         continue
 
-
             shapeValidator = ShapeValidator()
             shape = shapeValidator.validate(approx)
 
@@ -77,7 +91,7 @@ class ShapeDetector:
                     continue
                     
             self.shapes.append(shape)
-            shapes_with_approx.append([shape, approx])
+            shapes_with_approx.append([shape, approx, c])
 
             cv2.drawContours(frameWithText, [c], -1, (70,0,255), 10)
             cv2.putText(frameWithText, shape, (int(x-radius),int(y-radius)), cv2.FONT_HERSHEY_SIMPLEX,

@@ -16,13 +16,17 @@ class DetectZoneDepWorldTest(unittest.TestCase):
         path = os.path.normpath(os.path.join(path, os.pardir))
         path = os.path.normpath(os.path.join(path, os.pardir))
         path = os.path.normpath(os.path.join(path, os.pardir))
-        path = os.path.join(path, "./image_samples/real_image/globalmonde.jpg")
+        path = os.path.join(path, "./image_samples/real_image/globalmonde10.jpg")
 
         frame = cv2.imread(path)
 
+        cap = cv2.VideoCapture(1)
+        ret, frame = cap.read()
+
         shape = detect_zone_dep_world(frame)
-        # cv2.imshow('EDGES', shape.frame)
-        # cv2.waitKey()
+
+        cv2.imshow('EDGES', shape.frame)
+        cv2.waitKey()
 
         self.assertEqual(shape.shapes, ['rectangle'])
 

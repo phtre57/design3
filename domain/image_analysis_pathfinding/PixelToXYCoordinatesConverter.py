@@ -102,48 +102,41 @@ class PixelToXYCoordinatesConverter:
         return (point[0] * self.x_pixel_to_mm_factor * IMAGE_SCALE_FACTOR,
                 point[1] * self.y_pixel_to_mm_factor * IMAGE_SCALE_FACTOR * -1)
 
-    def correction_pauvre2(self, pixel_point):
-        if (pixel_point[0] < X_7):
-            print("8")
-            return 1.5
-        elif(pixel_point[0] < X_5):
-            print("6")
-            return 1.4
-        elif(pixel_point[0] < X_3):
-            print("4")
-            return 1.3
-        elif(pixel_point[0] < X_1):
-            print("2")
-            return 1.2
-        else:
-            print("No correction...")
-            return 1
-
     def correction_pauvre(self, final_pixel_point, final_point):
+        debug = False
         if (final_pixel_point[0] < X_7):
-            print("8")
+            if debug:
+                print("8")
             return (final_point[0]-100, final_point[1])
         elif(final_pixel_point[0] < X_5):
-            print("6")
+            if debug:
+                print("6")
             return (final_point[0]-80, final_point[1])
         elif(final_pixel_point[0] < X_3):
-            print("4")
+            if debug:
+                print("4")
             return (final_point[0]-35, final_point[1])
         elif(final_pixel_point[0] < X_1):
-            print("2")
+            if debug:
+                print("2")
             return (final_point[0]-15, final_point[1])
         elif(final_pixel_point[0] > X_9):
-            print("9")
+            if debug:
+                print("9")
             return (final_point[0]+100, final_point[1])
         elif(final_pixel_point[0] > X_11):
-            print("11")
+            if debug:
+                print("11")
             return (final_point[0]+80, final_point[1])
         elif(final_pixel_point[0] > X_13):
-            print("13")
+            if debug:
+                print("13")
             return (final_point[0]+35, final_point[1])
         elif(final_pixel_point[0] > X_15):
-            print("15")
+            if debug:
+                print("15")
             return (final_point[0]+15, final_point[1])
         else:
-            print("No correction...")
+            if debug:
+                print("No correction...")
             return final_point

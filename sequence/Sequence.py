@@ -6,12 +6,14 @@ from domain.pathfinding.PathSmoother import PathSmoother
 from domain.image_analysis_pathfinding.PixelToXYCoordinatesConverter import *
 from domain.image_analysis.ImageToGridConverter import *
 from domain.image_analysis_pathfinding.RobotDetector import RobotDetector
+from domain.image_analysis.opencv_callable.DetectStartZone import detect_start_zone
+from domain.image_analysis.opencv_callable.DetectZoneDepWorld import detect_zone_dep_world
 
 class Sequence:
-    def __init__(self, cap, X_END, Y_END, comm_pi, pixel_to_xy_converter):
+    def __init__(self, cap, comm_pi, pixel_to_xy_converter):
         self.cap = cap
-        self.X_END = X_END
-        self.Y_END = Y_END
+        self.X_END = None
+        self.Y_END = None
         self.comm_pi = comm_pi
         self.pixel_to_xy_converter = pixel_to_xy_converter
         self.real_path = None
@@ -43,7 +45,6 @@ class Sequence:
 
     def convert_to_xy(self):
         self.real_path = self.pixel_to_xy_converter.convert_to_xy(self.smooth_path)
-        print(self.real_path)
         self.starting_point = self.real_path[0]
         self.real_path = self.real_path[1:]
 
@@ -65,14 +66,14 @@ class Sequence:
                     traceback.print_exc(file=sys.stdout)
 
     def __find_current_center_robot(self):
-        img = self.take_image(self.smooth_path)
+        img = self.take_image_and_draw(self.smooth_path)
         robot_detector = RobotDetector(img)
         return { 'center': robot_detector.find_center_of_robot(), 'image': img }
     
     def send_rotation_angle(self, path = None):
         while True:
             try:
-                img = self.take_image(path)
+                img = self.take_image_and_draw(path)
                 robot_detector = RobotDetector(img)
                 robot_angle = robot_detector.find_angle_of_robot()
                 turning_angle = int(round(robot_angle))
@@ -92,7 +93,7 @@ class Sequence:
         cv2.imshow("path", grid_converter.image)
         cv2.waitKey(0)
 
-    def take_image(self, smooth_path = None):
+    def take_image_and_draw(self, smooth_path = None):
         print("Capture d'image en cours...")
         ret, img = self.cap.read()
 
@@ -108,3 +109,36 @@ class Sequence:
         cv2.destroyAllWindows()
 
         return img
+
+    def take_image(self):
+        print("Capture d'image en cours...")
+        ret, img = self.cap.read()
+
+        cv2.destroyAllWindows()
+
+        return img
+
+    def set_end_point(x, y):
+        self.X_END = x
+        self.Y_END = y
+
+    def detect_start_zone(self):
+        img = self.take_image()
+        shape = detect_start_zone(img)
+        x, y = shape.center
+        self.X_END = round(x / 2)
+        self.Y_END = round(y / 2)
+
+    def detect_zone_dep(self):
+        img = self.take_image()
+        shape = detect_zone_dep_world(img)
+        print(shape)
+        x, y = shape.center
+
+        cv2.circle(img, (x, y), 1, [0, 0, 255])
+
+        cv2.imshow("imageCourante", img)
+        cv2.waitKey()
+
+        self.X_END = round(x / 2)
+        self.Y_END = round(y / 2)
