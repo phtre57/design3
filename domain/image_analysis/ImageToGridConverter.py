@@ -13,7 +13,7 @@ STARTING_MARKER = 2
 ENDING_MARKER = 3
 HSV_IN_RANGE_MARKER = 255
 
-OBSTACLE_BORDER = 35
+OBSTACLE_BORDER = 38
 
 X_WALL_LEFT_CORNER = 20
 X_WALL_RIGHT_CORNER = 300
@@ -116,4 +116,3 @@ class ImageToGridConverter(object):
 
         for i in range(Y_WALL_DOWN_CORNER - Y_WALL_UP_CORNER):
             cv2.circle(self.image, (X_WALL_RIGHT_CORNER, Y_WALL_UP_CORNER + i), 1, [255, 51, 51])
-

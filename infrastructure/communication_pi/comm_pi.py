@@ -54,6 +54,7 @@ class Communication_pi():
 		self.socket.sendall(signal.encode('utf-8'))
 		self.socket.sendall(str.encode('utf-8'))
 		print("Coordonnees envoyees")
+		self.robotReady()
 
 		# while True:
 		# 	recv = self.socket.recv(255)
@@ -65,6 +66,14 @@ class Communication_pi():
 
 	def disconnectFromPi(self):
 		self.socket.close()
+
+	def robotReady(self):
+		okSignal = self.socket.recv(255)
+
+	def changeCondensateur(self):
+		signal = 'condensateurChange'
+		self.socket.sendall(signal.encode('utf-8'))
+		print("Signal envoye!")
 
 def main():
 	communication_pi = Communication_pi()
