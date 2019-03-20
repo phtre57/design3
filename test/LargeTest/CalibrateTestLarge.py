@@ -17,7 +17,8 @@ def take_image():
 with open('calibration_data.pkl', 'wb') as output:
     img = take_image()
     c = PixelToXYCoordinatesConverter(img, CHESS_SQUARE_WIDTH, NUMBER_OF_LINES,
-                                      NUMBER_OF_COLUMNS, SHOW_IMAGE_CALIBRATION)
+                                      NUMBER_OF_COLUMNS,
+                                      SHOW_IMAGE_CALIBRATION)
     pickle.dump(c, output, pickle.HIGHEST_PROTOCOL)
 
 # del company1
