@@ -5,14 +5,23 @@ from domain.image_analysis.ShapeDetector import ShapeDetector
 from domain.image_analysis.opencv_callable.Canny import *
 from domain.image_analysis.ShapeUtils import *
 
+PERI_LIMITER_CHECK = True
+PERI_LIMITER_UPPER = 100000
+PERI_LIMITER_LOWER = 1000
+RECT_LIMITER_CHECK = True
+RECT_W_LIMITER = 90
+RECT_H_LIMITER = 90
+RADIUS_LIMITER_CHECK = False
+
 
 def detect_zone_dep_world(frame):
     frame = frame.copy()
 
     edges = canny(frame, erode_mask)
-    shapeDetector = ShapeDetector(True, True, False)
-    shapeDetector.set_peri_limiter(1000, 100000)
-    shapeDetector.set_rect_limiter(90, 90)
+    shapeDetector = ShapeDetector(PERI_LIMITER_CHECK, RECT_LIMITER_CHECK,
+                                  RADIUS_LIMITER_CHECK)
+    shapeDetector.set_peri_limiter(PERI_LIMITER_LOWER, PERI_LIMITER_UPPER)
+    shapeDetector.set_rect_limiter(RECT_W_LIMITER, RECT_H_LIMITER)
     shapeDetector.set_shape_only("rectangle")
 
     shape = shapeDetector.detect(edges)

@@ -8,6 +8,16 @@ from domain.image_analysis.ShapeUtils import *
 RADIUS_LIMIT = 15
 
 
+PERI_LIMITER_CHECK = True
+PERI_LIMITER_UPPER = 700
+PERI_LIMITER_LOWER = 150
+RECT_LIMITER_CHECK = True
+RECT_W_LIMITER = 10
+RECT_H_LIMITER = 10
+RADIUS_LIMITER_CHECK = True
+RADIUS_LIMITER = 90
+RAIDUS_POSITIVE = True
+
 def color_detector(frame, color):
     frame = frame.copy()
 
@@ -20,10 +30,11 @@ def color_detector(frame, color):
 
 def create_mask_for_color_detector(frame):
     edges = canny(frame, dilate_mask)
-    shapeDetector = ShapeDetector(True, True, True)
-    shapeDetector.set_peri_limiter(150, 700)
-    shapeDetector.set_rect_limiter(10, 10)
-    shapeDetector.set_radius_limiter(90, True)
+    shapeDetector = ShapeDetector(PERI_LIMITER_CHECK, RECT_LIMITER_CHECK, RADIUS_LIMITER_CHECK)
+    shapeDetector.set_peri_limiter(PERI_LIMITER_LOWER, PERI_LIMITER_UPPER)
+    shapeDetector.set_rect_limiter(RECT_W_LIMITER, RECT_H_LIMITER)
+    shapeDetector.set_radius_limiter(RADIUS_LIMITER, RAIDUS_POSITIVE)
+    
     shape = shapeDetector.detect(edges)
     shape = shapeDetector.detect(shape.frameCnts)
 
