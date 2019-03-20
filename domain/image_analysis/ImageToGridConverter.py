@@ -13,7 +13,9 @@ STARTING_MARKER = 2
 ENDING_MARKER = 3
 HSV_IN_RANGE_MARKER = 255
 
-OBSTACLE_BORDER = 38
+OBSTACLE_BORDER = 37
+
+LEFT_OBSTACLE_BORDER = 45
 
 X_WALL_LEFT_CORNER = 20
 X_WALL_RIGHT_CORNER = 300
@@ -78,18 +80,24 @@ class ImageToGridConverter(object):
         for point in obstacles_center_array:
             x, y = point
 
-            # loop for upper border and left border
-            for i in range(OBSTACLE_BORDER * 2):
+            # loop for upper border
+            for i in range(LEFT_OBSTACLE_BORDER * 2 - (LEFT_OBSTACLE_BORDER - OBSTACLE_BORDER)):
                 start_y = y - OBSTACLE_BORDER
-                start_x = x - OBSTACLE_BORDER
+                start_x = x - LEFT_OBSTACLE_BORDER
 
                 cv2.circle(self.image, (start_x + i, start_y), 1, [255, 51, 51])
+
+            #loop for left border
+            for i in range(OBSTACLE_BORDER * 2):
+                start_y = y - OBSTACLE_BORDER
+                start_x = x - LEFT_OBSTACLE_BORDER
+
                 cv2.circle(self.image, (start_x, start_y + i), 1, [255, 51, 51])
 
             # loop for bottom border
-            for i in range(OBSTACLE_BORDER * 2):
+            for i in range(LEFT_OBSTACLE_BORDER * 2 - (LEFT_OBSTACLE_BORDER - OBSTACLE_BORDER)):
                 start_y = y + OBSTACLE_BORDER
-                start_x = x - OBSTACLE_BORDER
+                start_x = x - LEFT_OBSTACLE_BORDER
 
                 cv2.circle(self.image, (start_x + i, start_y), 1, [255, 51, 51])
 

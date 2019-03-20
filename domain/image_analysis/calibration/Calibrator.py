@@ -4,7 +4,7 @@ import numpy as np
 CRITERIA = (cv2.TERM_CRITERIA_EPS + cv2.TERM_CRITERIA_MAX_ITER, 30, 0.001)
 NUMBER_OF_COLUMNS = 7
 NUMBER_OF_LINES = 7
-CHESS_SQUARE_WIDTH = 43  # real constant used with chessboard
+CHESS_SQUARE_WIDTH = 64  # real constant used with chessboard
 
 
 class Calibrator:
