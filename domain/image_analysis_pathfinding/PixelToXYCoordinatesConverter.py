@@ -118,7 +118,7 @@ class PixelToXYCoordinatesConverter:
 
     def convert_to_xy_point(self, point):
         return (point[0] * self.x_pixel_to_mm_factor * IMAGE_SCALE_FACTOR,
-                point[1] * self.y_pixel_to_mm_factor * IMAGE_SCALE_FACTOR * -1)
+                point[1] * self.y_pixel_to_mm_factor * IMAGE_SCALE_FACTOR)
 
     def correction_pauvre(self, final_pixel_point, final_point):
         debug = False
