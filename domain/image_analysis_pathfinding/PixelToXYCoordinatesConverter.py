@@ -24,9 +24,13 @@ X_13 = 320 - X_3
 X_15 = 320 - X_1
 
 
+<<<<<<< HEAD
 class PixelToXYCoordinatesConverter:
     def __init__(self, image, square_width, number_of_lines,
                  number_of_columns):
+=======
+    def __init__(self, image, square_width, number_of_lines, number_of_columns, show_image=False):
+>>>>>>> ba7bcd06dff89e9dd1bf7c0ac11fcb394ca18ceb
         self.nb_lines = number_of_lines
         self.nb_columns = number_of_columns
         self.image = image.copy()
@@ -35,7 +39,7 @@ class PixelToXYCoordinatesConverter:
                                       np.int32)
         self.real_object_points = []
         self.image_points = []
-        self.__create_real_object_points_and_image_points()
+        self.__create_real_object_points_and_image_points(show_image)
 
         self.x_pixel_square_width = None
         self.y_pixel_square_width = None
@@ -48,7 +52,7 @@ class PixelToXYCoordinatesConverter:
         self.object_points[:, :2] = np.mgrid[0:self.nb_lines, 0:self.
                                              nb_columns].T.reshape(-1, 2)
 
-    def __create_real_object_points_and_image_points(self):
+    def __create_real_object_points_and_image_points(self, show_image):
         gray = cv2.cvtColor(self.image, cv2.COLOR_BGR2GRAY)
 
         ret, corners = cv2.findChessboardCorners(
@@ -63,11 +67,10 @@ class PixelToXYCoordinatesConverter:
                                         CRITERIA)
             self.image_points.append(corners2)
 
-            img = cv2.drawChessboardCorners(
-                self.image, (self.nb_lines, self.nb_columns), corners2, ret)
-            # mettre un if WIP
-            # cv2.imshow('img', img)
-            # cv2.waitKey(0)
+            if show_image:
+                img = cv2.drawChessboardCorners(self.image, (self.nb_lines, self.nb_columns), corners2, ret)
+                cv2.imshow('img', img)
+                cv2.waitKey(0)
         else:
             print("Could not find chessboard")
 
