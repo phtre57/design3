@@ -35,7 +35,7 @@ class PixelToXYCoordinatesConverterTest(unittest.TestCase):
 
         expected_xy_path = [(4, -8), (11, -16)]
 
-        self.assertEqual(expected_xy_path, xy_path_temp)
+        self.assertEqual(expected_xy_path, xy_path_temp[0:2])
 
     def test_realImageChessBoard(self):
         img = cv2.imread(self.path + "calib.jpg")

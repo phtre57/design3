@@ -68,6 +68,18 @@ class Communication_pi():
         self.socket.sendall(signal.encode('utf-8'))
         print("Signal envoye!")
 
+    def changeServoHori(self, str):
+        signal = 'servoHori'
+        self.socket.sendall(signal.encode('utf-8'))
+        self.socket.sendall(str.encode('utf-8'))
+        print("Servo Horizontal envoyees")
+
+    def changeServoVert(self, str):
+        signal = 'servoVert'
+        self.socket.sendall(signal.encode('utf-8'))
+        self.socket.sendall(str.encode('utf-8'))
+        print("Servo Vertical envoyees")
+
 
 def main():
     communication_pi = Communication_pi()
