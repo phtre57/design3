@@ -5,7 +5,7 @@ from domain.image_analysis.ImageToGridConverter import *
 CRITERIA = (cv2.TERM_CRITERIA_EPS + cv2.TERM_CRITERIA_MAX_ITER, 30, 0.001)
 NUMBER_OF_COLUMNS = 7
 NUMBER_OF_LINES = 7
-CHESS_SQUARE_WIDTH = 64  # real constant used with chessboard
+CHESS_SQUARE_WIDTH = 64  #real constant used with chessboard
 IMAGE_SCALE_FACTOR = 2
 
 Y_POINT = 116
@@ -23,7 +23,14 @@ X_11 = 320 - X_5
 X_13 = 320 - X_3
 X_15 = 320 - X_1
 
-    def __init__(self, image, square_width, number_of_lines, number_of_columns, show_image=False):
+
+class PixelToXYCoordinatesConverter:
+    def __init__(self,
+                 image,
+                 square_width,
+                 number_of_lines,
+                 number_of_columns,
+                 show_image=False):
         self.nb_lines = number_of_lines
         self.nb_columns = number_of_columns
         self.image = image.copy()
@@ -61,7 +68,9 @@ X_15 = 320 - X_1
             self.image_points.append(corners2)
 
             if show_image:
-                img = cv2.drawChessboardCorners(self.image, (self.nb_lines, self.nb_columns), corners2, ret)
+                img = cv2.drawChessboardCorners(
+                    self.image, (self.nb_lines, self.nb_columns), corners2,
+                    ret)
                 cv2.imshow('img', img)
                 cv2.waitKey(0)
         else:
