@@ -4,7 +4,7 @@ import imutils
 from domain.image_analysis.ShapeValidator import ShapeValidator
 from domain.image_analysis.Shape import Shape
 
-debug = True
+debug = False
 
 
 class ShapeDetector:

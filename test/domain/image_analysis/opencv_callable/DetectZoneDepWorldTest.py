@@ -6,17 +6,19 @@ import cv2
 import os
 import inspect
 
-class DetectZoneDepWorldTest(unittest.TestCase):
 
+class DetectZoneDepWorldTest(unittest.TestCase):
     def setUp(self):
-        print ("In method ", self._testMethodName)
+        print("In method ", self._testMethodName)
 
     def test_givenFrameOfZoneDepWorld_thenZoneDepIsDetected(self):
-        path = os.path.normpath(os.path.join(os.path.dirname(__file__), os.pardir))
+        path = os.path.normpath(
+            os.path.join(os.path.dirname(__file__), os.pardir))
         path = os.path.normpath(os.path.join(path, os.pardir))
         path = os.path.normpath(os.path.join(path, os.pardir))
         path = os.path.normpath(os.path.join(path, os.pardir))
-        path = os.path.join(path, "./image_samples/real_image/globalmonde10.jpg")
+        path = os.path.join(path,
+                            "./image_samples/real_image/globalmonde10.jpg")
 
         frame = cv2.imread(path)
 
@@ -25,10 +27,11 @@ class DetectZoneDepWorldTest(unittest.TestCase):
 
         shape = detect_zone_dep_world(frame)
 
-        cv2.imshow('EDGES', shape.frame)
-        cv2.waitKey()
+        # cv2.imshow('EDGES', shape.frame)
+        # cv2.waitKey()
 
-        self.assertEqual(shape.shapes, ['rectangle'])
+        self.assertEqual(len(shape.shapes), 1)
+
 
 if __name__ == '__main__':
     unittest.main()

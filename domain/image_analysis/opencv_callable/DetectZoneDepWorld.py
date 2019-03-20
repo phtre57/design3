@@ -39,9 +39,6 @@ def detect_zone_dep_world(frame):
     output = cv2.bitwise_and(frame, frame, mask=mask)
     output = canny(output, erode_mask_zone_dep)
 
-    cv2.imshow("ok", output)
-    cv2.waitKey()
-
     output = cv2.morphologyEx(
         output, cv2.MORPH_CLOSE,
         cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (20, 20)))
@@ -53,15 +50,9 @@ def detect_zone_dep_world(frame):
     shapeDetector.set_radius_limiter(50, True)
     shape = shapeDetector.detect(output)
 
-    cv2.imshow("ok", output)
-    cv2.waitKey()
-
     output = cv2.bitwise_and(frame, frame, mask=shape.frameCnts)
 
     shape.set_frame(output)
-
-    cv2.imshow("ok", output)
-    cv2.waitKey()
 
     if (len(shape.approx) > 1):
         print("Ça pas marché")

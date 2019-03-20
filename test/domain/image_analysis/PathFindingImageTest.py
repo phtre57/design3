@@ -38,22 +38,28 @@ def test_on_robot_discovery_and_path_finding_with_blur():
     start = time.time()
 
     # test 1
-    path1 = test_astar_on_image("../../image_samples/path_finding/test_image_0.png", True)
+    path1 = test_astar_on_image(
+        "../../image_samples/path_finding/test_image_0.png", True)
 
-    #test 2
-    path2 = test_astar_on_image("../../image_samples/path_finding/test_image_1.png", True)
+    # test 2
+    path2 = test_astar_on_image(
+        "../../image_samples/path_finding/test_image_1.png", True)
 
-    #test 3
-    path3 = test_astar_on_image("../../image_samples/path_finding/test_image_2.png", True)
+    # test 3
+    path3 = test_astar_on_image(
+        "../../image_samples/path_finding/test_image_2.png", True)
 
     # test 4
-    path4 = test_astar_on_image("../../image_samples/path_finding/test_image_3.png", True)
+    path4 = test_astar_on_image(
+        "../../image_samples/path_finding/test_image_3.png", True)
 
     # test 5
-    path5 = test_astar_on_image("../../image_samples/path_finding/test_image_4.png", True)
+    path5 = test_astar_on_image(
+        "../../image_samples/path_finding/test_image_4.png", True)
 
     # test 6
-    path6 = test_astar_on_image("../../image_samples/path_finding/test_image_5.png", True)
+    path6 = test_astar_on_image(
+        "../../image_samples/path_finding/test_image_5.png", True)
 
     end = time.time()
     print("Total time: ", end - start)
@@ -67,6 +73,7 @@ def test_on_robot_discovery_and_path_finding_with_blur():
     cv2.imshow("path6", path6)
     cv2.waitKey(0)
 
+
 def test_on_real_image(show_images):
     start = time.time()
 
@@ -76,48 +83,45 @@ def test_on_real_image(show_images):
     path = os.path.join(path, "./image_samples/real_image/")
 
     # test 1
-    path1 = test_astar_on_image(path+"globalmonde.jpg", False)
+    path1 = test_astar_on_image(path + "globalmonde.jpg", False)
 
-    path2 = test_astar_on_image(path+"globalmonde1.jpg", False)
+    path2 = test_astar_on_image(path + "globalmonde1.jpg", False)
 
-    path3 = test_astar_on_image(path+"globalmonde2.jpg", False)
+    path3 = test_astar_on_image(path + "globalmonde2.jpg", False)
 
-    path4 = test_astar_on_image(path+"globalmonde3.jpg", False)
+    path4 = test_astar_on_image(path + "globalmonde3.jpg", False)
 
-    path5 = test_astar_on_image(path+"globalmonde4.jpg", False)
+    path5 = test_astar_on_image(path + "globalmonde4.jpg", False)
 
     # path6 = test_astar_on_image(path+"globalmonde5.jpg", False)
 
-    #path7 = test_astar_on_image(path+"globalmonde6.jpg", False)
+    # path7 = test_astar_on_image(path+"globalmonde6.jpg", False)
 
-    path8 = test_astar_on_image(path+"globalmonde7.jpg", False)
+    path8 = test_astar_on_image(path + "globalmonde7.jpg", False)
 
-    path9 = test_astar_on_image(path+"globalmonde8.jpg", False)
+    path9 = test_astar_on_image(path + "globalmonde8.jpg", False)
 
-    path10 = test_astar_on_image(path+"globalmonde9.jpg", False)
+    path10 = test_astar_on_image(path + "globalmonde9.jpg", False)
 
     end = time.time()
     print("Total time: ", end - start)
     print("Average time: ", (end - start) / 8)
 
-    cv2.imshow("path1", path1)
-    cv2.imshow("path2", path2)
-    cv2.imshow("path3", path3)
-    cv2.imshow("path4", path4)
-    cv2.imshow("path5", path5)
-    #cv2.imshow("path6", path6)
-    #cv2.imshow("path7", path7)
-    cv2.imshow("path8", path8)
-    cv2.imshow("path9", path9)
-    cv2.imshow("path10", path10)
-
     if show_images:
+        cv2.imshow("path1", path1)
+        cv2.imshow("path2", path2)
+        cv2.imshow("path3", path3)
+        cv2.imshow("path4", path4)
+        cv2.imshow("path5", path5)
+        # cv2.imshow("path6", path6)
+        # cv2.imshow("path7", path7)
+        cv2.imshow("path8", path8)
+        cv2.imshow("path9", path9)
+        cv2.imshow("path10", path10)
+
         cv2.waitKey(0)
 
 
 class PathFindingImageTest(unittest.TestCase):
-
     def test_pathfinding_on_real_image(self):
-        test_on_real_image(True)
-
-
+        test_on_real_image(False)
