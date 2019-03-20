@@ -5,6 +5,7 @@ from domain.image_analysis.opencv_callable.Canny import canny, dilate_mask_zone_
 
 # WIP
 
+
 def detect_zone_dep(frame):
     frame.copy()
 
@@ -12,7 +13,7 @@ def detect_zone_dep(frame):
     shapeDetector = ShapeDetector(True, False, True)
     shapeDetector.set_peri_limiter(700, 7000)
     shapeDetector.set_radius_limiter(230, True)
-    
+
     shape = shapeDetector.detect(edges)
     shape = shapeDetector.detect(shape.frameCnts)
     shape.set_frame(shape.frameWithText)

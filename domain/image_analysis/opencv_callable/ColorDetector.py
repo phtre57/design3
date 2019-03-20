@@ -7,14 +7,16 @@ from domain.image_analysis.ShapeUtils import *
 
 RADIUS_LIMIT = 15
 
+
 def color_detector(frame, color):
     frame = frame.copy()
 
-    shape = create_mask_for_color_detector(frame)    
+    shape = create_mask_for_color_detector(frame)
 
     res_contour = find_where_the_shape_is(shape, color, RADIUS_LIMIT)
     shape.res_contour = res_contour
     return shape
+
 
 def create_mask_for_color_detector(frame):
     edges = canny(frame, dilate_mask)
@@ -27,12 +29,16 @@ def create_mask_for_color_detector(frame):
 
     mask = cv2.bitwise_and(frame, frame, mask=shape.frameWithText)
 
-    kernel = np.ones((9, 9), np.uint8)
-    kernelerode = np.ones((9,9),np.uint8)
-    
-    mask = cv2.morphologyEx(mask, cv2.MORPH_OPEN, cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (10,10)))
-    mask = cv2.morphologyEx(mask, cv2.MORPH_CLOSE, cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (10,10)))
-    mask = cv2.erode(mask,kernelerode,iterations = 1)
+    # kernel = np.ones((9, 9), np.uint8)
+    kernelerode = np.ones((9, 9), np.uint8)
+
+    mask = cv2.morphologyEx(
+        mask, cv2.MORPH_OPEN,
+        cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (10, 10)))
+    mask = cv2.morphologyEx(
+        mask, cv2.MORPH_CLOSE,
+        cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (10, 10)))
+    mask = cv2.erode(mask, kernelerode, iterations=1)
 
     shape.set_frame(mask)
 

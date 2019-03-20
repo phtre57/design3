@@ -5,6 +5,7 @@ from domain.image_analysis.ShapeDetector import ShapeDetector
 from domain.image_analysis.opencv_callable.Canny import canny, erode_mask
 from domain.image_analysis.ShapeUtils import *
 
+
 def detect_start_zone(frame):
     frame = frame.copy()
 
@@ -17,16 +18,18 @@ def detect_start_zone(frame):
     shape = shapeDetector.detect(edges)
     shape = shapeDetector.detect(shape.frameCnts)
 
-    kernelerode = np.ones((2,2),np.uint8)
+    kernelerode = np.ones((2, 2), np.uint8)
     kernel = np.ones((9, 9), np.uint8)
 
-    mask = cv2.erode(shape.frameWithText, kernelerode, iterations = 1)
+    mask = cv2.erode(shape.frameWithText, kernelerode, iterations=1)
 
     output = cv2.bitwise_and(frame, frame, mask=mask)
 
     output = canny(output, erode_mask)
 
-    output = cv2.morphologyEx(output, cv2.MORPH_CLOSE, cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (20,20)))
+    output = cv2.morphologyEx(
+        output, cv2.MORPH_CLOSE,
+        cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (20, 20)))
     output = cv2.morphologyEx(output, cv2.MORPH_OPEN, kernel)
 
     shapeDetector = ShapeDetector(True, True, True)
@@ -44,7 +47,7 @@ def detect_start_zone(frame):
 
     if (len(shape.approx) > 1):
         print("Ça pas marché")
-        shape.center = (0,0)
+        shape.center = (0, 0)
         return shape
 
     shape.center = find_center(shape.approx[0][2], 100)

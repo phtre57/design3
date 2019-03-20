@@ -20,8 +20,8 @@ class DetectZoneDepWorldTest(unittest.TestCase):
 
         frame = cv2.imread(path)
 
-        cap = cv2.VideoCapture(1)
-        ret, frame = cap.read()
+        # cap = cv2.VideoCapture(1)
+        # ret, frame = cap.read()
 
         shape = detect_zone_dep_world(frame)
 

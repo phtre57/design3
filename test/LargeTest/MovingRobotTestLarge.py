@@ -2,12 +2,14 @@ import pickle
 import time
 import cv2
 import traceback
+import sys
 
 from infrastructure.communication_pi.comm_pi import Communication_pi
 from test.LargeTest.mock.comm_pi import Communication_pi_mock
 from test.LargeTest.mock.cap import Cap_mock
 from sequence.Sequence import Sequence
 from test.LargeTest.TestConstants import *
+
 
 def connect(comm_pi):
     if comm_pi is None:
@@ -16,17 +18,19 @@ def connect(comm_pi):
     comm_pi.connectToPi()
     time.sleep(5)
 
+
 def calibrate():
     print("Calibration phase: ")
     pixel_to_xy_converter = None
     try:
         with open('calibration_data.pkl', 'rb') as input:
             pixel_to_xy_converter = pickle.load(input)
-        
+
         return pixel_to_xy_converter
     except Exception as ex:
         print(ex)
         traceback.print_exc(file=sys.stdout)
+
 
 def test_main_loop_move_robot(sequence):
     print("## Starting path finding")
@@ -41,14 +45,15 @@ def test_main_loop_move_robot(sequence):
     print("## Send coordinates")
     sequence.send_coordinates()
 
+
 def main():
     cap = cv2.VideoCapture(1)
     comm_pi = Communication_pi()
     connect(comm_pi)
     pixel_to_xy_converter = calibrate()
-    
-    X_END = X_END_CHARGE
-    Y_END = Y_END_CHARGE 
+
+    # X_END = X_END_CHARGE
+    # Y_END = Y_END_CHARGE
 
     sequence = Sequence(cap, comm_pi, pixel_to_xy_converter)
     # sequence.set_end_point(X_END, Y_END)
@@ -78,20 +83,22 @@ def main():
     # test_main_loop_move_robot(X_7, Y_POINT)
     # test_main_loop_move_robot(X_8, Y_POINT)
 
+
 def main_test():
     cap = Cap_mock()
     comm_pi = Communication_pi_mock()
     connect(comm_pi)
     pixel_to_xy_converter = calibrate()
 
-    X_END = X_END_CHARGE
-    Y_END = Y_END_CHARGE
+    # X_END = X_END_CHARGE
+    # Y_END = Y_END_CHARGE
 
     sequence = Sequence(cap, comm_pi, pixel_to_xy_converter)
     sequence.detect_start_zone()
     # sequence.set_end_point(X_END, Y_END)
     # test_main_loop_move_robot(sequence)
     # test_main_loop_move_robot(sequence)
+
 
 main()
 # main_test()

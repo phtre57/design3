@@ -5,6 +5,7 @@ from domain.image_analysis.ShapeDetector import ShapeDetector
 from domain.image_analysis.opencv_callable.Canny import *
 from domain.image_analysis.ShapeUtils import *
 
+
 def detect_zone_dep_world(frame):
     frame = frame.copy()
 
@@ -17,11 +18,13 @@ def detect_zone_dep_world(frame):
     shape = shapeDetector.detect(edges)
     shape = shapeDetector.detect(shape.frameCnts)
 
-    kernelerode = np.ones((2,2),np.uint8)
+    # kernelerode = np.ones((2, 2), np.uint8)
     kernel = np.ones((9, 9), np.uint8)
 
     mask = shape.frameWithText
-    mask = cv2.morphologyEx(mask, cv2.MORPH_CLOSE, cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (20,20)))
+    mask = cv2.morphologyEx(
+        mask, cv2.MORPH_CLOSE,
+        cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (20, 20)))
     # mask = cv2.erode(shape.frameWithText, kernelerode, iterations = 1)
 
     output = cv2.bitwise_and(frame, frame, mask=mask)
@@ -30,7 +33,9 @@ def detect_zone_dep_world(frame):
     cv2.imshow("ok", output)
     cv2.waitKey()
 
-    output = cv2.morphologyEx(output, cv2.MORPH_CLOSE, cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (20,20)))
+    output = cv2.morphologyEx(
+        output, cv2.MORPH_CLOSE,
+        cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (20, 20)))
     output = cv2.morphologyEx(output, cv2.MORPH_OPEN, kernel)
 
     shapeDetector = ShapeDetector(True, True, True)
@@ -51,13 +56,14 @@ def detect_zone_dep_world(frame):
 
     if (len(shape.approx) > 1):
         print("Ça pas marché")
-        shape.center = (0,0)
+        shape.center = (0, 0)
         return shape
 
     shape.center = find_center(shape.approx[0][2], 10)
     shape.center = adjust_start_zone_offset(shape.center)
 
     return shape
+
 
 def adjust_start_zone_offset(point):
     # Faire les deux bords de la table avec un beau if

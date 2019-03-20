@@ -6,8 +6,8 @@ from domain.image_analysis.Shape import Shape
 
 debug = True
 
-class ShapeDetector:
 
+class ShapeDetector:
     def __init__(self, peri_limiter, rect_limiter, radius_limiter):
         self.shapes = []
         self.peri_limiter = peri_limiter
@@ -27,7 +27,7 @@ class ShapeDetector:
         self.shapes = []
 
         cnts = cv2.findContours(frame.copy(), cv2.RETR_EXTERNAL,
-                                    cv2.CHAIN_APPROX_SIMPLE)
+                                cv2.CHAIN_APPROX_SIMPLE)
         cnts = imutils.grab_contours(cnts)
 
         if (len(cnts) <= 0):
@@ -58,14 +58,15 @@ class ShapeDetector:
             ((xRect, yRect), (wRect, hRect), angleRect) = cv2.minAreaRect(c)
 
             if (self.rect_limiter):
-                if (abs(wRect) < self.w_rect_limit or abs(hRect) < self.h_rect_limit):
+                if (abs(wRect) < self.w_rect_limit
+                        or abs(hRect) < self.h_rect_limit):
                     continue
 
             if debug:
                 print(wRect, hRect)
 
             ((x, y), radius) = cv2.minEnclosingCircle(c)
-            center = (round(int(x)),round(int(y)))
+            # center = (round(int(x)), round(int(y)))
 
             if debug:
                 print(radius)
@@ -86,24 +87,26 @@ class ShapeDetector:
             shapeValidator = ShapeValidator()
             shape = shapeValidator.validate(approx)
 
-            if (self.shape_only != None):
+            if (self.shape_only is not None):
                 if (shape != self.shape_only):
                     continue
-                    
+
             self.shapes.append(shape)
             shapes_with_approx.append([shape, approx, c])
 
-            cv2.drawContours(frameWithText, [c], -1, (70,0,255), 10)
-            cv2.putText(frameWithText, shape, (int(x-radius),int(y-radius)), cv2.FONT_HERSHEY_SIMPLEX,
-                0.5, (70, 0, 255), 2)
+            cv2.drawContours(frameWithText, [c], -1, (70, 0, 255), 10)
+            cv2.putText(frameWithText, shape,
+                        (int(x - radius), int(y - radius)),
+                        cv2.FONT_HERSHEY_SIMPLEX, 0.5, (70, 0, 255), 2)
 
-            cv2.drawContours(frameCnts, [c], -1, (100,0,255), 1)
+            cv2.drawContours(frameCnts, [c], -1, (100, 0, 255), 1)
 
             filler = cv2.convexHull(c)
             cv2.fillConvexPoly(frameWithText, filler, 255)
             cv2.fillConvexPoly(frameCnts, filler, 255)
-            
-        return Shape(self.shapes, cnts, shapes_with_approx, frameWithText, frameCnts)
+
+        return Shape(self.shapes, cnts, shapes_with_approx, frameWithText,
+                     frameCnts)
 
     def set_peri_limiter(self, peri_lower, peri_upper):
         self.peri_lower = peri_lower
