@@ -25,6 +25,8 @@ X_11 = 320 - X_5
 X_13 = 320 - X_3
 X_15 = 320 - X_1
 
+DEBUG = True
+
 
 class PixelToXYCoordinatesConverter:
     def __init__(self,
@@ -102,8 +104,9 @@ class PixelToXYCoordinatesConverter:
             (self.nb_columns - 1) * self.nb_lines)
         self.y_pixel_to_mm_factor = self.square_width / self.y_pixel_square_width
 
-        #print("x_factor: " + str(self.x_pixel_to_mm_factor))
-        #print("y_factor: " + str(self.y_pixel_to_mm_factor))
+        if DEBUG:
+            print("x_factor: " + str(self.x_pixel_to_mm_factor))
+            print("y_factor: " + str(self.y_pixel_to_mm_factor))
 
     # arg: array of pixels (i, j)
     def convert_to_xy(self, array_of_points_in_pixel):
