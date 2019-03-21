@@ -10,3 +10,5 @@ def decode(im) :
         # print('Type : ', obj.type)
         # print('Data : ', obj.data,'\n')
         return obj
+
+    raise Exception("Could not decode QR")

@@ -9,6 +9,11 @@ from domain.image_analysis.ImageToGridConverter import *
 from domain.image_analysis_pathfinding.RobotDetector import RobotDetector
 from domain.image_analysis.opencv_callable.DetectStartZone import detect_start_zone
 from domain.image_analysis.opencv_callable.DetectZoneDepWorld import detect_zone_dep_world
+from domain.image_analysis.opencv_callable.DetectQR import *
+from domain.image_analysis.DetectBlurriness import *
+from domain.image_analysis_pathfinding.RobotDetector import *
+
+DEBUG = True
 
 
 class Sequence:
@@ -170,3 +175,39 @@ class Sequence:
 
     def end(self):
         self.comm_pi.disconnectFromPi()
+
+    def sequenceQR(self):
+        x_sign = True
+        increment_x_sign = 0
+        while True:
+            self.send_rotation_angle() # adjust angle of robot
+
+            # move robot to detect qr
+            if x_sign:
+                self.comm_pi.sendCoordinates("50,0,0\n")
+                increment_x_sign += 1
+                if increment_x_sign == 6:
+                    x_sign = False
+            else:
+                self.comm_pi.sendCoordinates("-50,0,0\n")
+                increment_x_sign -= 1
+                if increment_x_sign == 0:
+                    x_sign = True
+
+            while True:
+                img = self.comm_pi.getImage()
+                if detect_blurriness(img) is False:
+                    break
+
+            if DEBUG:
+                cv2.imshow("qr", img)
+                cv2.waitKey(0)
+
+            #try to decode qr
+            try:
+                str = decode(img)
+                print(str)
+                if str is not None:
+                    break
+            except Exception as ex:
+                print(ex)
