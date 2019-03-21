@@ -10,7 +10,7 @@ RED_HSV_LOW = np.array([150, 100, 100])
 RED_HSV_HIGH = hsv_high = np.array([180, 255, 255])
 RADIUS_OF_MARKER = 5
 
-debug = False
+debug = True
 
 
 class RobotDetector:
@@ -38,6 +38,10 @@ class RobotDetector:
             y_starting_pt = red_y_center_of_contour + half_distance_between_y
         else:
             y_starting_pt = yellow_y_center_of_contour + half_distance_between_y
+
+        if debug:
+            print(x_starting_pt, y_starting_pt)
+            cv2.imshow("robot detector", self.image)
 
         return x_starting_pt, y_starting_pt
 
