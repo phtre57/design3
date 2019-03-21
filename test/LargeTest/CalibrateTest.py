@@ -5,7 +5,7 @@ from domain.image_analysis_pathfinding.PixelToXYCoordinatesConverter import *
 
 SHOW_IMAGE_CALIBRATION = True
 
-cap = cv2.VideoCapture(1)
+cap = cv2.VideoCapture(0)
 
 
 def take_image():
