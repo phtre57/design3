@@ -101,16 +101,15 @@ class PixelToXYCoordinatesConverter:
     def convert_to_xy(self, array_of_points_in_pixel):
         path = []
 
-        #inversing y coord to be in robot referential
+        # inversing y coord to be in robot referential
         for point in array_of_points_in_pixel:
             final_pixel_point = point
             final_point = (
                 point[0] * self.x_pixel_to_mm_factor * IMAGE_SCALE_FACTOR,
-                point[1] * self.y_pixel_to_mm_factor * IMAGE_SCALE_FACTOR * -1)
+                point[1] * self.y_pixel_to_mm_factor * IMAGE_SCALE_FACTOR)
             path.append(
                 (point[0] * self.x_pixel_to_mm_factor * IMAGE_SCALE_FACTOR,
-                 point[1] * self.y_pixel_to_mm_factor * IMAGE_SCALE_FACTOR *
-                 -1))
+                 point[1] * self.y_pixel_to_mm_factor * IMAGE_SCALE_FACTOR))
 
         path.append(self.correction_pauvre(final_pixel_point, final_point))
 
