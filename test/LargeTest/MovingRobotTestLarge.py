@@ -66,10 +66,10 @@ def main():
     Y_END = Y_END_CHARGE
 
     sequence = Sequence(cap, comm_pi, pixel_to_xy_converter)
-    # sequence.set_end_point(X_END, Y_END)
-    sequence.detect_start_zone()
+    sequence.set_end_point(X_END, Y_END)
+    # sequence.detect_start_zone()
     # sequence.detect_zone_dep()
-    # test_main_loop_move_robot(sequence)
+    test_main_loop_move_robot(sequence)
     # test_main_loop_move_robot(sequence)
 
     # test_main_loop_move_robot(X_END_CHARGE, Y_END_CHARGE, sequence)

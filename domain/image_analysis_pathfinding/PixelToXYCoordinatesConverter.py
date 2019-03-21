@@ -117,10 +117,12 @@ class PixelToXYCoordinatesConverter:
             final_pixel_point = point
             final_point = (
                 point[0] * self.x_pixel_to_mm_factor * IMAGE_SCALE_FACTOR,
-                point[1] * self.y_pixel_to_mm_factor * IMAGE_SCALE_FACTOR * INVERSE_SIGN)
+                point[1] * self.y_pixel_to_mm_factor * IMAGE_SCALE_FACTOR *
+                INVERSE_SIGN)
             path.append(
                 (point[0] * self.x_pixel_to_mm_factor * IMAGE_SCALE_FACTOR,
-                 point[1] * self.y_pixel_to_mm_factor * IMAGE_SCALE_FACTOR * INVERSE_SIGN))
+                 point[1] * self.y_pixel_to_mm_factor * IMAGE_SCALE_FACTOR *
+                 INVERSE_SIGN))
 
         path.append(self.correction_pauvre(final_pixel_point, final_point))
 
@@ -128,7 +130,8 @@ class PixelToXYCoordinatesConverter:
 
     def convert_to_xy_point(self, point):
         return (point[0] * self.x_pixel_to_mm_factor * IMAGE_SCALE_FACTOR,
-                point[1] * self.y_pixel_to_mm_factor * IMAGE_SCALE_FACTOR)
+                point[1] * self.y_pixel_to_mm_factor * IMAGE_SCALE_FACTOR *
+                INVERSE_SIGN)
 
     def convert_to_xy_point_without_scalling(self, point):
         return (point[0] * self.x_pixel_to_mm_factor,
