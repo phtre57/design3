@@ -19,7 +19,7 @@ class SequencePiece:
 
         frame = canny(img, dilate_mask)
         shapeDetector = ShapeDetector(True, False, False)
-        shapeDetector.set_peri_limiter(500, 1500)
+        shapeDetector.set_peri_limiter(400, 2000)
         shape = shapeDetector.detect(frame)
         shape = shapeDetector.detect(shape.frameCnts)
         x, y = shapeDetector.get_center_of_wanted_shape(shape.frameCnts, p_shape)
@@ -29,6 +29,6 @@ class SequencePiece:
         if DEBUG:
             print(x_from_center, y_from_center)
 
-            cv2.circle(shape.frameWithText, (x, y), 5, [0, 0, 0])
-            cv2.imshow(p_shape, shape.frameWithText)
+            cv2.circle(shape.frameCnts, (x, y), 5, [0, 0, 0])
+            cv2.imshow(p_shape, shape.frameCnts)
             cv2.waitKey()
