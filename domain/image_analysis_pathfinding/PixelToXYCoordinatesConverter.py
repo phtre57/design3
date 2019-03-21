@@ -85,11 +85,11 @@ class PixelToXYCoordinatesConverter:
 
         for i in range(1, self.nb_lines * self.nb_columns):
             if points[i][0][0] > points[i - 1][0][0]:
-                x_temp = x_temp + (points[i][0][0] - points[i - 1][0][0])
+                x_temp = x_temp + abs((points[i][0][0] - points[i - 1][0][0]))
 
         for i in range((self.nb_lines - 1) * self.nb_columns):
             y_temp = y_temp + (
-                points[i + self.nb_columns][0][1] - points[i][0][1])
+                abs(points[i + self.nb_columns][0][1] - points[i][0][1]))
 
         #print("x_temp: " + str(x_temp))
         #print("y_temp: " + str(y_temp))
