@@ -12,7 +12,7 @@ class PixelToXYCoordinatesConverterTest(unittest.TestCase):
         self.path = os.path.normpath(os.path.join(self.path, os.pardir))
         self.path = os.path.join(self.path, "./image_samples/calibration/")
         img = cv2.imread(self.path + "calibration.png")
-        self.converter = PixelToXYCoordinatesConverter(img, 30, 7, 7)
+        self.converter = PixelToXYCoordinatesConverter(img, 30, 7, 7, False)
 
     def test_givenChessBoardWith16PixelBetweenSquareInX_thenWidthCalculatedIs16(self):
         self.assertEqual(round(self.converter.x_pixel_square_width), 16)
@@ -33,7 +33,7 @@ class PixelToXYCoordinatesConverterTest(unittest.TestCase):
         for tuple in xy_path:
             xy_path_temp.append((round(tuple[0]), round(tuple[1])))
 
-        expected_xy_path = [(4, -8), (11, -16)]
+        expected_xy_path = [(4, 8), (11, 16)]
 
         self.assertEqual(expected_xy_path, xy_path_temp[0:2])
 
