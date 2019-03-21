@@ -55,21 +55,21 @@ def main():
     cap = cv2.VideoCapture(1)
     time.sleep(5)
     _, frame = cap.read()
-    # print(frame)
+
     cv2.imshow("TEST", frame)
     cv2.waitKey()
 
     connect(comm_pi)
     pixel_to_xy_converter = calibrate()
 
-    # X_END = X_END_QR
-    # Y_END = Y_END_QR
+    X_END = X_END_CHARGE
+    Y_END = Y_END_CHARGE
 
     sequence = Sequence(cap, comm_pi, pixel_to_xy_converter)
     # sequence.set_end_point(X_END, Y_END)
-    # sequence.detect_start_zone()
-    sequence.detect_zone_dep()
-    #test_main_loop_move_robot(sequence)
+    sequence.detect_start_zone()
+    # sequence.detect_zone_dep()
+    # test_main_loop_move_robot(sequence)
     # test_main_loop_move_robot(sequence)
 
     # test_main_loop_move_robot(X_END_CHARGE, Y_END_CHARGE, sequence)
