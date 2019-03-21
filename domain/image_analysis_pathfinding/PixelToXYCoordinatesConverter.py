@@ -5,7 +5,8 @@ from domain.image_analysis.ImageToGridConverter import *
 CRITERIA = (cv2.TERM_CRITERIA_EPS + cv2.TERM_CRITERIA_MAX_ITER, 30, 0.001)
 NUMBER_OF_COLUMNS = 7
 NUMBER_OF_LINES = 7
-CHESS_SQUARE_WIDTH = 64  #real constant used with chessboard
+CHESS_SQUARE_WIDTH = 64  # real constant used with chessboard
+EMBARKED_CHESS_SQUARE_WIDTH = 10  # real constant with small chessboard fo rembark camera
 IMAGE_SCALE_FACTOR = 2
 
 Y_POINT = 116
@@ -86,8 +87,11 @@ class PixelToXYCoordinatesConverter:
                 x_temp = x_temp + (points[i][0][0] - points[i - 1][0][0])
 
         for i in range((self.nb_lines - 1) * self.nb_columns):
-            y_temp = y_temp + points[i +
-                                     self.nb_columns][0][1] - points[i][0][1]
+            y_temp = y_temp + (
+                points[i + self.nb_columns][0][1] - points[i][0][1])
+
+        #print("x_temp: " + str(x_temp))
+        #print("y_temp: " + str(y_temp))
 
         self.x_pixel_square_width = x_temp / (self.nb_columns *
                                               (self.nb_lines - 1))
@@ -96,6 +100,9 @@ class PixelToXYCoordinatesConverter:
         self.y_pixel_square_width = y_temp / (
             (self.nb_columns - 1) * self.nb_lines)
         self.y_pixel_to_mm_factor = self.square_width / self.y_pixel_square_width
+
+        #print("x_factor: " + str(self.x_pixel_to_mm_factor))
+        #print("y_factor: " + str(self.y_pixel_to_mm_factor))
 
     # arg: array of pixels (i, j)
     def convert_to_xy(self, array_of_points_in_pixel):
@@ -118,6 +125,27 @@ class PixelToXYCoordinatesConverter:
     def convert_to_xy_point(self, point):
         return (point[0] * self.x_pixel_to_mm_factor * IMAGE_SCALE_FACTOR,
                 point[1] * self.y_pixel_to_mm_factor * IMAGE_SCALE_FACTOR)
+
+    def convert_to_xy_point_without_scalling(self, point):
+        return (point[0] * self.x_pixel_to_mm_factor,
+                point[1] * self.y_pixel_to_mm_factor)
+
+    def convert_to_xy_point_given_angle(self, point, angle):
+        if angle > -10 and angle < 10:
+            return (point[0] * self.x_pixel_to_mm_factor,
+                    point[1] * self.y_pixel_to_mm_factor * -1)
+
+        if angle > 80 and angle < 100:
+            return (point[1] * -1 * self.y_pixel_to_mm_factor,
+                    point[0] * -1 * self.x_pixel_to_mm_factor)
+
+        if (angle < -170 and angle > -190) or (angle < 190 and angle > 170):
+            return (point[0] * self.x_pixel_to_mm_factor * -1,
+                    point[1] * self.y_pixel_to_mm_factor)
+
+        if angle < -80 and angle > -100:
+            return (point[1] * self.y_pixel_to_mm_factor,
+                    point[0] * self.x_pixel_to_mm_factor)
 
     def correction_pauvre(self, final_pixel_point, final_point):
         debug = False

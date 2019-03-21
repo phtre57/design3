@@ -108,6 +108,49 @@ class ShapeDetector:
         return Shape(self.shapes, cnts, shapes_with_approx, frameWithText,
                      frameCnts)
 
+    def get_center_of_wanted_shape(self, frame, p_shape):
+        frame = frame.copy()
+
+        self.shapes = []
+
+        cnts = cv2.findContours(frame.copy(), cv2.RETR_EXTERNAL,
+                                cv2.CHAIN_APPROX_SIMPLE)
+        cnts = imutils.grab_contours(cnts)
+
+        if (len(cnts) <= 0):
+            return None
+
+        c = max(cnts, key=cv2.contourArea)
+
+        frameWithText = frame.copy()
+        frameCnts = frame.copy()
+
+        shapes_with_approx = []
+
+        for c in cnts:
+            shape = "unidentified"
+            peri = cv2.arcLength(c, True)
+            if (self.peri_limiter):
+                if (peri > self.peri_upper):
+                    continue
+                elif (peri < self.peri_lower):
+                    continue
+
+            approx = cv2.approxPolyDP(c, 0.02 * peri, True)
+
+            shapeValidator = ShapeValidator()
+            shape = shapeValidator.validate(approx)
+
+            print("shape: " + shape)
+            print("p_shape: " + p_shape)
+            if shape == p_shape:
+                M = cv2.moments(c)
+                x_center_of_contour = int(M["m10"] / M["m00"])
+                y_center_of_contour = int(M["m01"] / M["m00"])
+                return x_center_of_contour, y_center_of_contour
+
+        raise Exception("Could not find shape: " + p_shape)
+
     def set_peri_limiter(self, peri_lower, peri_upper):
         self.peri_lower = peri_lower
         self.peri_upper = peri_upper
