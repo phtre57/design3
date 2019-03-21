@@ -8,6 +8,7 @@ NUMBER_OF_LINES = 7
 CHESS_SQUARE_WIDTH = 64  # real constant used with chessboard
 EMBARKED_CHESS_SQUARE_WIDTH = 10  # real constant with small chessboard fo rembark camera
 IMAGE_SCALE_FACTOR = 2
+INVERSE_SIGN = -1
 
 Y_POINT = 116
 X_1 = 126
@@ -113,10 +114,10 @@ class PixelToXYCoordinatesConverter:
             final_pixel_point = point
             final_point = (
                 point[0] * self.x_pixel_to_mm_factor * IMAGE_SCALE_FACTOR,
-                point[1] * self.y_pixel_to_mm_factor * IMAGE_SCALE_FACTOR)
+                point[1] * self.y_pixel_to_mm_factor * IMAGE_SCALE_FACTOR * INVERSE_SIGN)
             path.append(
                 (point[0] * self.x_pixel_to_mm_factor * IMAGE_SCALE_FACTOR,
-                 point[1] * self.y_pixel_to_mm_factor * IMAGE_SCALE_FACTOR))
+                 point[1] * self.y_pixel_to_mm_factor * IMAGE_SCALE_FACTOR * INVERSE_SIGN))
 
         path.append(self.correction_pauvre(final_pixel_point, final_point))
 

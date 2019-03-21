@@ -7,8 +7,6 @@ cap = cv2.VideoCapture(0)
 ret, img = cap.read()
 cap.set(cv2.CAP_PROP_AUTOFOCUS, 0)  # turn the autofocus off
 
-cap.set(3, 640)  # set the Horizontal resolution
-cap.set(4, 480)
 cap.release()
 # img = cv2.resize(img, (LENGTH, HEIGHT))
 
