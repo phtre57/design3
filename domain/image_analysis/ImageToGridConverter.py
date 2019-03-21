@@ -13,15 +13,14 @@ STARTING_MARKER = 2
 ENDING_MARKER = 3
 HSV_IN_RANGE_MARKER = 255
 
-OBSTACLE_BORDER = 37
+OBSTACLE_BORDER = 35
 
-LEFT_OBSTACLE_BORDER = 45
+LEFT_OBSTACLE_BORDER = 51
 
 X_WALL_LEFT_CORNER = 20
 X_WALL_RIGHT_CORNER = 300
 Y_WALL_UP_CORNER = 60
 Y_WALL_DOWN_CORNER = 180
-
 
 BLUE_HSV_LOW = np.array([100, 100, 120])
 BLUE_HSV_HIGH = hsv_high = np.array([140, 255, 255])
@@ -57,7 +56,8 @@ class ImageToGridConverter(object):
 
     def __find_center_of_obstacle(self, mask):
         ret, thresh = cv2.threshold(mask, 60, 255, cv2.THRESH_BINARY)
-        contours, hierarchy = cv2.findContours(thresh, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+        contours, hierarchy = cv2.findContours(thresh, cv2.RETR_EXTERNAL,
+                                               cv2.CHAIN_APPROX_SIMPLE)
         coord_array = []
 
         for contour in contours:
@@ -81,46 +81,56 @@ class ImageToGridConverter(object):
             x, y = point
 
             # loop for upper border
-            for i in range(LEFT_OBSTACLE_BORDER * 2 - (LEFT_OBSTACLE_BORDER - OBSTACLE_BORDER)):
+            for i in range(LEFT_OBSTACLE_BORDER * 2 -
+                           (LEFT_OBSTACLE_BORDER - OBSTACLE_BORDER)):
                 start_y = y - OBSTACLE_BORDER
                 start_x = x - LEFT_OBSTACLE_BORDER
 
-                cv2.circle(self.image, (start_x + i, start_y), 1, [255, 51, 51])
+                cv2.circle(self.image, (start_x + i, start_y), 1,
+                           [255, 51, 51])
 
             #loop for left border
             for i in range(OBSTACLE_BORDER * 2):
                 start_y = y - OBSTACLE_BORDER
                 start_x = x - LEFT_OBSTACLE_BORDER
 
-                cv2.circle(self.image, (start_x, start_y + i), 1, [255, 51, 51])
+                cv2.circle(self.image, (start_x, start_y + i), 1,
+                           [255, 51, 51])
 
             # loop for bottom border
-            for i in range(LEFT_OBSTACLE_BORDER * 2 - (LEFT_OBSTACLE_BORDER - OBSTACLE_BORDER)):
+            for i in range(LEFT_OBSTACLE_BORDER * 2 -
+                           (LEFT_OBSTACLE_BORDER - OBSTACLE_BORDER)):
                 start_y = y + OBSTACLE_BORDER
                 start_x = x - LEFT_OBSTACLE_BORDER
 
-                cv2.circle(self.image, (start_x + i, start_y), 1, [255, 51, 51])
+                cv2.circle(self.image, (start_x + i, start_y), 1,
+                           [255, 51, 51])
 
             # loop for right border
             for i in range(OBSTACLE_BORDER * 2):
                 start_y = y - OBSTACLE_BORDER
                 start_x = x + OBSTACLE_BORDER
 
-                cv2.circle(self.image, (start_x, start_y + i), 1, [255, 51, 51])
+                cv2.circle(self.image, (start_x, start_y + i), 1,
+                           [255, 51, 51])
 
     def __mark_table_wall(self):
         for i in range(X_WALL_RIGHT_CORNER - X_WALL_LEFT_CORNER):
             start_x = X_WALL_LEFT_CORNER + i
 
-            cv2.circle(self.image, (start_x, Y_WALL_UP_CORNER), 1, [255, 51, 51])
+            cv2.circle(self.image, (start_x, Y_WALL_UP_CORNER), 1,
+                       [255, 51, 51])
 
         for i in range(X_WALL_RIGHT_CORNER - X_WALL_LEFT_CORNER):
             start_x = X_WALL_LEFT_CORNER + i
 
-            cv2.circle(self.image, (start_x, Y_WALL_DOWN_CORNER), 1, [255, 51, 51])
+            cv2.circle(self.image, (start_x, Y_WALL_DOWN_CORNER), 1,
+                       [255, 51, 51])
 
         for i in range(Y_WALL_DOWN_CORNER - Y_WALL_UP_CORNER):
-            cv2.circle(self.image, (X_WALL_LEFT_CORNER, Y_WALL_UP_CORNER + i), 1, [255, 51, 51])
+            cv2.circle(self.image, (X_WALL_LEFT_CORNER, Y_WALL_UP_CORNER + i),
+                       1, [255, 51, 51])
 
         for i in range(Y_WALL_DOWN_CORNER - Y_WALL_UP_CORNER):
-            cv2.circle(self.image, (X_WALL_RIGHT_CORNER, Y_WALL_UP_CORNER + i), 1, [255, 51, 51])
+            cv2.circle(self.image, (X_WALL_RIGHT_CORNER, Y_WALL_UP_CORNER + i),
+                       1, [255, 51, 51])

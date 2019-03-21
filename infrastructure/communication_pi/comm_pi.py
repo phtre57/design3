@@ -4,7 +4,7 @@ import cv2
 import pickle
 import time
 import numpy as np
-import struct  ## new
+import struct  # new
 
 # Host = Adresse ip du serveur (ici Raspberry pi)
 # Port = valeur predefinie (doit etre la meme pour le serveur)
@@ -58,10 +58,12 @@ class Communication_pi():
         self.robotReady()
 
     def disconnectFromPi(self):
+        signal = 'deconnect'
+        self.socket.sendall(signal.encode('utf-8'))
         self.socket.close()
 
     def robotReady(self):
-        okSignal = self.socket.recv(255)
+        self.socket.recv(255)
 
     def changeCondensateur(self):
         signal = 'condensateurChange'

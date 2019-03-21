@@ -21,6 +21,7 @@ class Sequence:
         self.real_path = None
         self.starting_point = None
         self.smooth_path = None
+        self.img = None
 
     def create_smooth_path(self):
         while True:
@@ -32,7 +33,15 @@ class Sequence:
                 traceback.print_exc(file=sys.stdout)
 
     def __get_smooth_path(self):
-        center_and_image = self.__find_current_center_robot()
+        center_and_image = None
+        while True:
+            try:
+                center_and_image = self.__find_current_center_robot()
+                break
+            except Exception as ex:
+                print(ex)
+                traceback.print_exc(file=sys.stdout)
+
         grid_converter = ImageToGridConverter(
             center_and_image['image'], center_and_image['center'][0],
             center_and_image['center'][1], self.X_END, self.Y_END)
@@ -123,11 +132,11 @@ class Sequence:
 
     def take_image(self):
         print("Capture d'image en cours...")
-        ret, img = self.cap.read()
+        ret, self.img = self.cap.read()
 
-        cv2.destroyAllWindows()
+        # cv2.destroyAllWindows()
 
-        return img
+        return self.img
 
     def set_end_point(self, x, y):
         self.X_END = x
@@ -135,7 +144,12 @@ class Sequence:
 
     def detect_start_zone(self):
         img = self.take_image()
+
         shape = detect_start_zone(img)
+
+        cv2.imshow('ZoneDep', shape.frame)
+        cv2.waitKey()
+
         x, y = shape.center
         self.X_END = round(x / 2)
         self.Y_END = round(y / 2)
@@ -153,3 +167,6 @@ class Sequence:
 
         self.X_END = round(x / 2)
         self.Y_END = round(y / 2)
+
+    def end(self):
+        self.comm_pi.disconnectFromPi()

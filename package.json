@@ -13,7 +13,8 @@
     "main": "python -m main",
     "start": "node ui/node_server/index.js",
     "client": "cd ./ui/web_client && yarn start",
-    "test-l": "python -m test.LargeTest.MovingRobotTestLarge"
+    "test-l": "python -m test.LargeTest.MovingRobotTestLarge",
+    "deco": "python -m test.LargeTest.DecoTestLarge"
   },
   "repository": {
     "type": "git",
