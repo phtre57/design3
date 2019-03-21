@@ -39,6 +39,10 @@ class RobotDetector:
         else:
             y_starting_pt = yellow_y_center_of_contour + half_distance_between_y
 
+        if debug:
+            print(x_starting_pt, y_starting_pt)
+            cv2.imshow("robot detector", self.image)
+
         return x_starting_pt, y_starting_pt
 
     def find_angle_of_robot(self):

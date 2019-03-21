@@ -18,7 +18,7 @@ class RobotDetectorTest(unittest.TestCase):
         self.robot_detector = RobotDetector(img)
         x, y = self.robot_detector.find_center_of_robot()
 
-        self.assertEqual(x, 83)
+        self.assertEqual(x, 84)
         self.assertEqual(y, 111)
 
     def test_given_robot_not_on_image_when_finding_center_then_ExceptionThrown(self):
@@ -41,7 +41,7 @@ class RobotDetectorTest(unittest.TestCase):
         angle = self.robot_detector.find_angle_of_robot()
 
         self.assertLessEqual(angle, -30)
-        self.assertGreaterEqual(angle, -35)
+        self.assertGreaterEqual(angle, -36)
 
     def test_given_robot_on_image_with_angle_minus140degrees_when_finding_angle_thenAngle_found_isminus_06radian(self):
         img = cv2.imread(self.path + "globalmonde6.jpg")
@@ -49,4 +49,4 @@ class RobotDetectorTest(unittest.TestCase):
         angle = self.robot_detector.find_angle_of_robot()
 
         self.assertGreaterEqual(angle, 130)
-        self.assertLessEqual(angle, 140)
+        self.assertLessEqual(angle, 145)
