@@ -1,6 +1,7 @@
 import time
-from infrastructure.communication_pi import comm_pi
+from infrastructure.communication_pi.comm_pi import *
 
+comm_pi = Communication_pi()
 comm_pi.connectToPi()
 time.sleep(5)
 
