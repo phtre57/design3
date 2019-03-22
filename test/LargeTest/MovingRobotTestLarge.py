@@ -38,12 +38,14 @@ def calibrate():
 
 def main():
     cap = cv2.VideoCapture(1)
-    time.sleep(5)
-    _, frame = cap.read()
-
     if CANCER_MAC_USER:
         cap.set(3, 1600)
         cap.set(4, 1200)
+        cap.set(3, 640)
+        cap.set(4, 480)
+
+    time.sleep(5)
+    _, frame = cap.read()
 
     # cv2.imshow("TEST", frame)
     # cv2.waitKey()
