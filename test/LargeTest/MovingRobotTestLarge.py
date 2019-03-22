@@ -10,6 +10,8 @@ from test.LargeTest.mock.cap import Cap_mock
 from sequence.Sequence import Sequence
 from test.LargeTest.TestConstants import *
 
+CANCER_MAC_USER = True
+
 comm_pi = Communication_pi()
 
 
@@ -38,6 +40,10 @@ def main():
     cap = cv2.VideoCapture(1)
     time.sleep(5)
     _, frame = cap.read()
+
+    if CANCER_MAC_USER:
+        cap.set(3, 1600)
+        cap.set(4, 1200)
 
     # cv2.imshow("TEST", frame)
     # cv2.waitKey()

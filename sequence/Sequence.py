@@ -15,6 +15,8 @@ from domain.image_analysis.DetectBlurriness import *
 from domain.image_analysis_pathfinding.RobotDetector import *
 
 DEBUG = True
+ROBOT_DANCE_X_POSITIVE = "200,0,0\n"
+ROBOT_DANCE_X_NEGATIVE = "-200,0,0\n"
 
 
 class Sequence:
@@ -201,12 +203,12 @@ class Sequence:
 
             # move robot to detect qr
             if x_sign:
-                self.comm_pi.sendCoordinates("200,0,0\n")
+                self.comm_pi.sendCoordinates(ROBOT_DANCE_X_POSITIVE)
                 increment_x_sign += 1
                 if increment_x_sign == 6:
                     x_sign = False
             else:
-                self.comm_pi.sendCoordinates("-200,0,0\n")
+                self.comm_pi.sendCoordinates(ROBOT_DANCE_X_NEGATIVE)
                 increment_x_sign -= 1
                 if increment_x_sign == 0:
                     x_sign = True
