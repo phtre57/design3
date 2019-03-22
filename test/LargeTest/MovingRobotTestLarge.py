@@ -61,14 +61,20 @@ def main():
 
     sequence = Sequence(cap, comm_pi, pixel_to_xy_converter)
     # sequence.set_end_point(X_END, Y_END)
+    print("Go to start zone...")
     sequence.go_to_start_zone()
     sequence.start()
+    print("Go to start charge station...")
     sequence.go_to_c_charge_station()
+    print("Go back from start charge station...")
     sequence.go_to_c_back_from_charge_station()
+    print("Go to qr...")
     sequence.set_end_point(X_END_QR, Y_END_QR)
     sequence.start()
-    sequence.dance_to_code_qr()
+    print("Dance around QR...")
+    sequence.strats_dance_code_qr(1) # 1 is number one strategy
     sequence.end()
+    print("Sad face we're done...")
 
     # sequence.go_to_zone_dep()
 

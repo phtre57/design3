@@ -195,9 +195,14 @@ class Sequence:
     def end(self):
         self.comm_pi.disconnectFromPi()
 
-    def dance_to_code_qr(self):
-        x_sign = True
-        increment_x_sign = 0
+    def __dance_to_code_qr(self, x_sign_movement, max_increment):
+        x_sign = x_sign_movement
+
+        if x_sign_movement:
+            increment_x_sign = 0
+        else:
+            increment_x_sign = max_increment
+
         while True:
             self.__send_rotation_angle()  # adjust angle of robot
 
@@ -205,7 +210,7 @@ class Sequence:
             if x_sign:
                 self.comm_pi.sendCoordinates(ROBOT_DANCE_X_POSITIVE)
                 increment_x_sign += 1
-                if increment_x_sign == 6:
+                if increment_x_sign == max_increment:
                     x_sign = False
             else:
                 self.comm_pi.sendCoordinates(ROBOT_DANCE_X_NEGATIVE)
@@ -235,14 +240,41 @@ class Sequence:
             except Exception as ex:
                 print(ex)
 
+    def strats_dance_code_qr(self, strat_number):
+        if strat_number == 1:
+            self.__dance_to_code_qr(True, 6)
+        elif strat_number == 2:
+            self.__dance_to_code_qr(True, 5)
+        elif strat_number == 3:
+            self.__dance_to_code_qr(False, 5)
+        elif strat_number == 4:
+            self.__dance_to_code_qr(True, 4)
+        elif strat_number == 5:
+            self.__dance_to_code_qr(False, 4)
+        else:
+            raise Exception("The number of the strategy for dancing around code qr does not exists")
+
+    def __get_image(self):
+        img = None
+        while True:
+            img = self.comm_pi.getImage()
+            if detect_blurriness(img) is False:
+                break
+
+        return img
+
     def go_to_c_charge_station(self):
         time.sleep(1)
         self.__send_rotation_angle()
+        print("Sending coordinates: -340,-381,0\n")
+
         self.comm_pi.sendCoordinates("-340,-381,0\n")
         # WAIT TO CHARGE
         time.sleep(1)
         # GET RESPONSE
 
     def go_to_c_back_from_charge_station(self):
+        print("Sending coordinates: 340,381,0\n")
+
         self.comm_pi.sendCoordinates("340,381,0\n")
         time.sleep(1)
