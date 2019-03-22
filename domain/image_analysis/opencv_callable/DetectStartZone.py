@@ -5,7 +5,6 @@ from domain.image_analysis.ShapeDetector import ShapeDetector
 from domain.image_analysis.opencv_callable.Canny import canny, erode_mask
 from domain.image_analysis.ShapeUtils import *
 
-
 PERI_LIMITER_CHECK = True
 PERI_LIMITER_UPPER = 100000
 PERI_LIMITER_LOWER = 1000
@@ -16,11 +15,13 @@ RADIUS_LIMITER_CHECK = False
 RADIUS_LIMITER = 250
 RAIDUS_POSITIVE = True
 
+
 def detect_start_zone(frame):
     frame = frame.copy()
 
     edges = canny(frame, erode_mask)
-    shapeDetector = ShapeDetector(PERI_LIMITER_CHECK, RECT_LIMITER_CHECK, RADIUS_LIMITER_CHECK)
+    shapeDetector = ShapeDetector(PERI_LIMITER_CHECK, RECT_LIMITER_CHECK,
+                                  RADIUS_LIMITER_CHECK)
     shapeDetector.set_peri_limiter(PERI_LIMITER_LOWER, PERI_LIMITER_UPPER)
     shapeDetector.set_rect_limiter(RECT_W_LIMITER, RECT_H_LIMITER)
 
@@ -59,6 +60,11 @@ def detect_start_zone(frame):
         shape.center = (0, 0)
         return shape
 
-    shape.center = find_center(shape.approx[0][2], 100)
+    shape.center = find_center_for_zone_dep(shape, 100)
+
+    cv2.circle(shape.frame, (shape.center[0], shape.center[1]), 1,
+               [255, 51, 51])
+
+    # shape.center = find_center(shape.approx[0][2], 100)
 
     return shape

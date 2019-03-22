@@ -9,6 +9,11 @@ CHESS_SQUARE_WIDTH = 64  # real constant used with chessboard
 EMBARKED_CHESS_SQUARE_WIDTH = 10  # real constant with small chessboard fo rembark camera
 IMAGE_SCALE_FACTOR = 2
 INVERSE_SIGN = -1
+CAMERA_HEIGHT = 2010
+# CAMERA_HEIGHT = 1900
+
+# ROBOT_HEIGHT = 260
+ROBOT_HEIGHT = 350
 
 Y_POINT = 116
 X_1 = 126
@@ -93,8 +98,8 @@ class PixelToXYCoordinatesConverter:
             y_temp = y_temp + (
                 abs(points[i + self.nb_columns][0][1] - points[i][0][1]))
 
-        #print("x_temp: " + str(x_temp))
-        #print("y_temp: " + str(y_temp))
+        # print("x_temp: " + str(x_temp))
+        # print("y_temp: " + str(y_temp))
 
         self.x_pixel_square_width = x_temp / (self.nb_columns *
                                               (self.nb_lines - 1))
@@ -124,7 +129,7 @@ class PixelToXYCoordinatesConverter:
                  point[1] * self.y_pixel_to_mm_factor * IMAGE_SCALE_FACTOR *
                  INVERSE_SIGN))
 
-        path.append(self.correction_pauvre(final_pixel_point, final_point))
+        path.append(self.correction_brillante(final_pixel_point, final_point))
 
         return path
 
@@ -154,41 +159,24 @@ class PixelToXYCoordinatesConverter:
             return (point[1] * self.y_pixel_to_mm_factor,
                     point[0] * self.x_pixel_to_mm_factor)
 
-    def correction_pauvre(self, final_pixel_point, final_point):
-        debug = False
-        if (final_pixel_point[0] < X_7):
-            if debug:
-                print("8")
-            return (final_point[0] - 100, final_point[1])
-        elif (final_pixel_point[0] < X_5):
-            if debug:
-                print("6")
-            return (final_point[0] - 80, final_point[1])
-        elif (final_pixel_point[0] < X_3):
-            if debug:
-                print("4")
-            return (final_point[0] - 35, final_point[1])
-        elif (final_pixel_point[0] < X_1):
-            if debug:
-                print("2")
-            return (final_point[0] - 15, final_point[1])
-        elif (final_pixel_point[0] > X_9):
-            if debug:
-                print("9")
-            return (final_point[0] + 100, final_point[1])
-        elif (final_pixel_point[0] > X_11):
-            if debug:
-                print("11")
-            return (final_point[0] + 80, final_point[1])
-        elif (final_pixel_point[0] > X_13):
-            if debug:
-                print("13")
-            return (final_point[0] + 35, final_point[1])
-        elif (final_pixel_point[0] > X_15):
-            if debug:
-                print("15")
-            return (final_point[0] + 15, final_point[1])
-        else:
-            if debug:
-                print("No correction...")
-            return final_point
+    def correction_brillante(self, final_pixel_point, final_point):
+        x = final_pixel_point[0] - (LENGTH / 2)
+
+        print(x)
+
+        correction_factor = 1
+        if (x < 0):
+            correction_factor = -1
+
+        x = abs(x * self.x_pixel_to_mm_factor)
+        top_angle = np.arctan(x / CAMERA_HEIGHT)
+        correction = np.tan(top_angle) * ROBOT_HEIGHT
+
+        print("##############################################")
+        print("##############################################")
+        print("##############################################")
+        print(correction * correction_factor)
+        return (final_point[0] + (correction * correction_factor),
+                final_point[1])
+
+        # return (final_point[0], final_point[1])

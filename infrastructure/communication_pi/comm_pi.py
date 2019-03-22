@@ -5,6 +5,9 @@ import pickle
 import time
 import numpy as np
 import struct  # new
+import base64
+from io import StringIO
+from PIL import Image
 
 # Host = Adresse ip du serveur (ici Raspberry pi)
 # Port = valeur predefinie (doit etre la meme pour le serveur)
@@ -22,33 +25,40 @@ class Communication_pi():
         print("Connecte au serveur")
         time.sleep(5)
 
-    def getImage(self):
-        data = b""
-        payload_size = struct.calcsize(">L")
-        print("payload_size: {}".format(payload_size))
+    def __recv_msg(self):
+        raw_msglen = self.__recvall(4)
+        if not raw_msglen:
+            return None
+        msglen = struct.unpack('>I', raw_msglen)[0]
+        return self.__recvall(msglen)
 
+    def __recvall(self, n):
+        data = b''
+        while len(data) < n:
+            packet = self.socket.recv(n - len(data))
+            if not packet:
+                return None
+            data += packet
+        return data
+
+    def send_msg(self, msg):
+        msg = struct.pack('>I', len(msg)) + msg
+        self.socket.sendall(msg)
+
+    def getImage(self):
         output = "getImage"
         self.socket.send(output.encode('utf-8'))
 
-        while len(data) < payload_size:
-            print("Recv: {}".format(len(data)))
-            data = self.socket.recv(4096)
+        data = self.__recv_msg()
+        data = str(data, 'utf-8')
+        frame_data = base64.b64decode(data)
 
-        print("Done Recv: {}".format(len(data)))
+        with open('test.jpg', 'wb') as f_output:
+            f_output.write(frame_data)
 
-        packed_msg_size = data[:payload_size]
-        data = data[payload_size:]
-        msg_size = struct.unpack(">L", packed_msg_size)[0]
-        print("msg_size: {}".format(msg_size))
+        time.sleep(1)
 
-        while len(data) < msg_size:
-            data += self.socket.recv(4096)
-        frame_data = data[:msg_size]
-        data = data[msg_size:]
-
-        #frame = pickle.loads(frame_data, fix_imports=True, encoding="bytes")
-        # cv2.imwrite('messigray.png',frame)
-        return cv2.imdecode(frame_data, cv2.IMREAD_COLOR)
+        return cv2.imread('./test.jpg')
 
     def sendCoordinates(self, str):
         signal = 'sendPosition'

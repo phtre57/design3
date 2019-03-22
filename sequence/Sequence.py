@@ -1,6 +1,7 @@
 import cv2
 import traceback
 import sys
+import time
 
 from domain.pathfinding.Astar import Astar
 from domain.pathfinding.PathSmoother import PathSmoother
@@ -27,8 +28,11 @@ class Sequence:
         self.starting_point = None
         self.smooth_path = None
         self.img = None
+        self.piece_color = None
+        self.depot_number = None
+        self.piece_shape = None
 
-    def create_smooth_path(self):
+    def __create_smooth_path(self):
         while True:
             try:
                 self.smooth_path = self.__get_smooth_path()
@@ -61,15 +65,15 @@ class Sequence:
 
         return smooth_path
 
-    def convert_to_xy(self):
+    def __convert_to_xy(self):
         self.real_path = self.pixel_to_xy_converter.convert_to_xy(
             self.smooth_path)
         self.starting_point = self.real_path[0]
         self.real_path = self.real_path[1:]
 
-    def send_coordinates(self):
+    def __send_coordinates(self):
         for point in self.real_path:
-            self.send_rotation_angle(self.smooth_path)
+            self.__send_rotation_angle(self.smooth_path)
             x_coord = int(round(point[0] - self.starting_point[0], 0))
             y_coord = int(round(point[1] - self.starting_point[1], 0))
             print("Sending coordinates: " + str(x_coord) + "," + str(y_coord) +
@@ -93,7 +97,7 @@ class Sequence:
         robot_detector = RobotDetector(img)
         return {'center': robot_detector.find_center_of_robot(), 'image': img}
 
-    def send_rotation_angle(self, path=None):
+    def __send_rotation_angle(self, path=None):
         while True:
             try:
                 img = self.take_image_and_draw(path)
@@ -147,7 +151,20 @@ class Sequence:
         self.X_END = x
         self.Y_END = y
 
-    def detect_start_zone(self):
+    def start(self):
+        print("## Starting path finding")
+        self.__create_smooth_path()
+
+        print("## Rotating robot")
+        self.__send_rotation_angle()
+
+        print("## Convert to X Y")
+        self.__convert_to_xy()
+
+        print("## Send coordinates")
+        self.__send_coordinates()
+
+    def go_to_start_zone(self):
         img = self.take_image()
 
         shape = detect_start_zone(img)
@@ -159,7 +176,7 @@ class Sequence:
         self.X_END = round(x / 2)
         self.Y_END = round(y / 2)
 
-    def detect_zone_dep(self):
+    def go_to_zone_dep(self):
         img = self.take_image()
         shape = detect_zone_dep_world(img)
         print(shape)
@@ -176,20 +193,20 @@ class Sequence:
     def end(self):
         self.comm_pi.disconnectFromPi()
 
-    def sequenceQR(self):
+    def dance_to_code_qr(self):
         x_sign = True
         increment_x_sign = 0
         while True:
-            self.send_rotation_angle() # adjust angle of robot
+            self.__send_rotation_angle()  # adjust angle of robot
 
             # move robot to detect qr
             if x_sign:
-                self.comm_pi.sendCoordinates("50,0,0\n")
+                self.comm_pi.sendCoordinates("200,0,0\n")
                 increment_x_sign += 1
                 if increment_x_sign == 6:
                     x_sign = False
             else:
-                self.comm_pi.sendCoordinates("-50,0,0\n")
+                self.comm_pi.sendCoordinates("-200,0,0\n")
                 increment_x_sign -= 1
                 if increment_x_sign == 0:
                     x_sign = True
@@ -203,11 +220,27 @@ class Sequence:
                 cv2.imshow("qr", img)
                 cv2.waitKey(0)
 
-            #try to decode qr
+            # try to decode qr
             try:
                 str = decode(img)
+                # FAIRE UN PARSER QUI PARSE ÇA
+                self.piece_color = "red"
+                self.piece_shape = "square"
+                self.depot_number = 1
                 print(str)
                 if str is not None:
                     break
             except Exception as ex:
                 print(ex)
+
+    def go_to_c_charge_station(self):
+        time.sleep(1)
+        self.__send_rotation_angle()
+        self.comm_pi.sendCoordinates("-340,-381,0\n")
+        # WAIT TO CHARGE
+        time.sleep(1)
+        # GET RESPONSE
+
+    def go_to_c_back_from_charge_station(self):
+        self.comm_pi.sendCoordinates("340,381,0\n")
+        time.sleep(1)

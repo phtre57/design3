@@ -1,11 +1,13 @@
 import cv2
 
-# LENGTH = 320
-# HEIGHT = 240
+LENGTH = 320
+HEIGHT = 240
 
-cap = cv2.VideoCapture(0)
+cap = cv2.VideoCapture(1)
 ret, img = cap.read()
 cap.set(cv2.CAP_PROP_AUTOFOCUS, 0)  # turn the autofocus off
+
+img = cv2.resize(img, (LENGTH, HEIGHT))
 
 cap.release()
 # img = cv2.resize(img, (LENGTH, HEIGHT))

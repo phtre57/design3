@@ -5,6 +5,7 @@ import numpy as np
 import cv2
 import os
 import inspect
+import time
 
 
 class DetectStartZoneTest(unittest.TestCase):
@@ -21,9 +22,21 @@ class DetectStartZoneTest(unittest.TestCase):
 
         frame = cv2.imread(path)
 
+        cap = cv2.VideoCapture(1)
+        time.sleep(1)
+        _, frame = cap.read()
+        time.sleep(5)
+
         shape = detect_start_zone(frame)
-        # cv2.imshow('EDGES', shape.frame)
-        # cv2.waitKey()
+
+        cv2.imshow('EDGES', shape.frame)
+        cv2.waitKey()
+
+        cv2.circle(shape.frame, (shape.center[0], shape.center[1]), 1,
+                   [255, 51, 51])
+
+        cv2.imshow('CENTER', shape.frame)
+        cv2.waitKey()
 
         self.assertEqual(shape.shapes, ['square'])
 

@@ -10,7 +10,7 @@ RED_HSV_LOW = np.array([150, 100, 100])
 RED_HSV_HIGH = hsv_high = np.array([180, 255, 255])
 RADIUS_OF_MARKER = 5
 
-debug = True
+debug = False
 
 
 class RobotDetector:

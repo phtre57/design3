@@ -23,6 +23,8 @@ parser.add_argument(
     '--d', dest='debug', type=bool, default=False, help='debug mode')
 args = parser.parse_args()
 
+comm_pi = Communication_pi()
+
 
 def pathfinding(path, x, y):
     frame = cv2.imread(path)
@@ -108,23 +110,8 @@ def calibrate():
         traceback.print_exc(file=sys.stdout)
 
 
-def sequence_loop(sequence):
-    print("## Starting path finding")
-    sequence.create_smooth_path()
-
-    print("## Rotating robot")
-    sequence.send_rotation_angle()
-
-    print("## Convert to X Y")
-    sequence.convert_to_xy()
-
-    print("## Send coordinates")
-    sequence.send_coordinates()
-
-
 def main_sequence():
     cap = start_cam()
-    comm_pi = Communication_pi()
     print("Now connecting...")
     comm_pi.connectToPi()
     pixel_to_xy_converter = calibrate()
@@ -134,10 +121,10 @@ def main_sequence():
 
     sequence = Sequence(cap, comm_pi, pixel_to_xy_converter)
     # sequence.set_end_point(X_END, Y_END)
-    # sequence.detect_start_zone()
+    # sequence.go_to_start_zone()
 
-    sequence.detect_zone_dep()
-    sequence_loop(sequence)
+    sequence.go_to_zone_dep()
+    sequence.start()
 
     init_conn_with_ui()
 
@@ -172,4 +159,9 @@ def main():
         init_conn_with_ui()
 
 
-main()
+try:
+    main()
+except KeyboardInterrupt:
+    comm_pi.disconnectFromPi()
+    print("bye")
+    traceback.print_exc(file=sys.stdout)
