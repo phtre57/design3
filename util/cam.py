@@ -4,16 +4,16 @@ import time
 LENGTH = 640
 HEIGHT = 480
 
-cap = cv2.VideoCapture(0)
+cap = cv2.VideoCapture(1)
 
 while True:
     if cap.isOpened():
         break
 
-cap.set(3, 1600)
-cap.set(4, 1200)
-cap.set(3, 640)
-cap.set(4, 480)
+# cap.set(3, 1600)
+# cap.set(4, 1200)
+# cap.set(3, 640)
+# cap.set(4, 480)
 
 img = None
 while True:
@@ -25,7 +25,7 @@ print(ret)
 
 # img = cv2.resize(img, (LENGTH, HEIGHT))
 
-cv2.imwrite('strat_code _qr.jpg', img)
+cv2.imwrite('zonedep.jpg', img)
 cv2.imshow('ok', img)
 
 cv2.waitKey()

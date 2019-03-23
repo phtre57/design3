@@ -10,7 +10,7 @@ from test.LargeTest.mock.cap import Cap_mock
 from sequence.Sequence import Sequence
 from test.LargeTest.TestConstants import *
 
-CANCER_MAC_USER = True
+CANCER_MAC_USER = False
 
 comm_pi = Communication_pi()
 
@@ -60,8 +60,8 @@ def main():
     # Y_END = Y_END_CHARGE
 
     sequence = Sequence(cap, comm_pi, pixel_to_xy_converter)
-    # sequence.set_end_point(X_END, Y_END)
     print("Go to start zone...")
+    # sequence.set_end_point(X_END_START, Y_END_START)
     sequence.go_to_start_zone()
     sequence.start()
     print("Go to start charge station...")
@@ -69,10 +69,10 @@ def main():
     print("Go back from start charge station...")
     sequence.go_to_c_back_from_charge_station()
     print("Go to qr...")
-    sequence.set_end_point(X_END_QR, Y_END_QR)
-    sequence.start()
+    # sequence.set_end_point(X_END_QR, Y_END_QR)
+    sequence.go_to_qr()
     print("Dance around QR...")
-    sequence.strats_dance_code_qr(1) # 1 is number one strategy
+    # sequence.strats_dance_code_qr(1)  # 1 is number one strategy
     sequence.end()
     print("Sad face we're done...")
 

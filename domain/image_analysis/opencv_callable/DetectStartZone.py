@@ -48,14 +48,13 @@ def detect_start_zone(frame):
     shapeDetector.set_radius_limiter(250, True)
     shape = shapeDetector.detect(output)
 
-    # cv2.imshow("ok", output)
-    # cv2.waitKey()
-
     output = cv2.bitwise_and(frame, frame, mask=shape.frameWithText)
 
     shape.set_frame(output)
 
-    if (len(shape.approx) > 1):
+    cv2.imshow("ok", output)
+    cv2.waitKey()
+    if (len(shape.approx) > 1 or len(shape.approx) == 0):
         print("Ça pas marché")
         shape.center = (0, 0)
         return shape

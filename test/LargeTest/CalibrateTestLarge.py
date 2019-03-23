@@ -6,15 +6,17 @@ from domain.image_analysis_pathfinding.PixelToXYCoordinatesConverter import *
 SHOW_IMAGE_CALIBRATION = True
 
 cap = cv2.VideoCapture(1)
-cap.set(3, 1600)
-cap.set(4, 1200)
-cap.set(3, 640)
-cap.set(4, 480)
+
+# cap.set(3, 1600)
+# cap.set(4, 1200)
+# cap.set(3, 640)
+# cap.set(4, 480)
 
 
 def take_image():
     print("Capture d'image en cours...")
     ret, img = cap.read()
+
     return img
 
 

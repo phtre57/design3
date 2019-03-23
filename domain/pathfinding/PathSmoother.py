@@ -1,4 +1,4 @@
-INCREMENT = 10
+INCREMENT = 30
 
 
 class PathSmoother:

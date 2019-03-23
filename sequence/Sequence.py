@@ -15,8 +15,12 @@ from domain.image_analysis.DetectBlurriness import *
 from domain.image_analysis_pathfinding.RobotDetector import *
 
 DEBUG = True
-ROBOT_DANCE_X_POSITIVE = "200,0,0\n"
-ROBOT_DANCE_X_NEGATIVE = "-200,0,0\n"
+ROBOT_DANCE_X_POSITIVE = "50,0,0\n"
+ROBOT_DANCE_X_NEGATIVE = "-50,0,0\n"
+
+STRAT_1_Y_CODE_QR = 145
+STRAT_2_Y_CODE_QR = 145
+STRAT_3_Y_CODE_QR = 145
 
 
 class Sequence:
@@ -195,29 +199,21 @@ class Sequence:
     def end(self):
         self.comm_pi.disconnectFromPi()
 
-    def __dance_to_code_qr(self, x_sign_movement, max_increment):
-        x_sign = x_sign_movement
+    def go_to_qr(self):
+        img = self.take_image()
+        # x_start, x_end = DetectObstacles(img, STRAT_1_Y_CODE_QR)
+        x_start, x_end = 0, 320 - 40
+        self.set_end_point(x_end, STRAT_1_Y_CODE_QR)
+        self.start()
+        self.__dance_to_code_qr(x_start, x_end, STRAT_1_Y_CODE_QR)
 
-        if x_sign_movement:
-            increment_x_sign = 0
-        else:
-            increment_x_sign = max_increment
+    def __dance_to_code_qr(self, x_start, x_end, y_axis):
+        x_dance_dist = x_end - x_start
+        if (x_dance_dist > 80):
+            x_dance_dist = 80
 
-        while True:
-            self.__send_rotation_angle()  # adjust angle of robot
-
-            # move robot to detect qr
-            if x_sign:
-                self.comm_pi.sendCoordinates(ROBOT_DANCE_X_POSITIVE)
-                increment_x_sign += 1
-                if increment_x_sign == max_increment:
-                    x_sign = False
-            else:
-                self.comm_pi.sendCoordinates(ROBOT_DANCE_X_NEGATIVE)
-                increment_x_sign -= 1
-                if increment_x_sign == 0:
-                    x_sign = True
-
+        it = round(x_dance_dist / 20)
+        for i in range(it):
             while True:
                 img = self.comm_pi.getImage()
                 if detect_blurriness(img) is False:
@@ -229,16 +225,25 @@ class Sequence:
 
             # try to decode qr
             try:
-                str = decode(img)
+                string = decode(img)
                 # FAIRE UN PARSER QUI PARSE ÇA
                 self.piece_color = "red"
                 self.piece_shape = "square"
                 self.depot_number = 1
-                print(str)
-                if str is not None:
+                print(string)
+                if string is not None:
                     break
             except Exception as ex:
                 print(ex)
+
+            if (i + 1 == it):
+                x_coord = round(x_dance_dist % it) * (i + 1)
+                self.set_end_point(x_end - x_coord, y_axis)
+                self.start()
+            else:
+                x_coord = round(x_dance_dist / it) * (i + 1)
+                self.set_end_point(x_end - x_coord, y_axis)
+                self.start()
 
     def strats_dance_code_qr(self, strat_number):
         if strat_number == 1:
@@ -252,7 +257,12 @@ class Sequence:
         elif strat_number == 5:
             self.__dance_to_code_qr(False, 4)
         else:
-            raise Exception("The number of the strategy for dancing around code qr does not exists")
+            raise Exception(
+                "The number of the strategy for dancing around code qr does not exists"
+            )
+
+    def get_tension(self):
+        self.comm_pi.getTension()
 
     def __get_image(self):
         img = None
@@ -264,10 +274,9 @@ class Sequence:
         return img
 
     def go_to_c_charge_station(self):
-        time.sleep(1)
         self.__send_rotation_angle()
         print("Sending coordinates: -340,-381,0\n")
-
+        time.sleep(0.5)
         self.comm_pi.sendCoordinates("-340,-381,0\n")
         # WAIT TO CHARGE
         time.sleep(1)
@@ -275,6 +284,6 @@ class Sequence:
 
     def go_to_c_back_from_charge_station(self):
         print("Sending coordinates: 340,381,0\n")
-
+        time.sleep(0.5)
         self.comm_pi.sendCoordinates("340,381,0\n")
         time.sleep(1)

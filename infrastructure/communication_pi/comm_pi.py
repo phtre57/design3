@@ -74,6 +74,7 @@ class Communication_pi():
 
     def robotReady(self):
         self.socket.recv(255)
+        print("Ready signal received")
 
     def changeCondensateur(self):
         signal = 'condensateurChange'
@@ -91,6 +92,12 @@ class Communication_pi():
         self.socket.sendall(signal.encode('utf-8'))
         self.socket.sendall(str.encode('utf-8'))
         print("Servo Vertical envoyees")
+
+    def getTension(self):
+        signal = 'gettension'
+        self.socket.sendall(signal.encode('utf-8'))
+        data = self.socket.recv(255)
+        print(data)
 
 
 def main():
