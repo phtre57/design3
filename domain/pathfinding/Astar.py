@@ -1,6 +1,7 @@
 import heapq
 from .Cell import Cell
 from domain.image_analysis.ImageToGridConverter import *
+from domain.pathfinding.Exceptions.NoPathFoundException import *
 
 INFINITE_WEIGHT = 9999999
 
@@ -111,6 +112,9 @@ class Astar(object):
                     else:
                         self.__update_cell(neighbour, cell)
                         heapq.heappush(self.open, (neighbour.net_cost, neighbour))
+
+        if len(self.path_in_pixel_coordinates) == 0:
+            raise NoPathFoundException()
 
         return self.path_in_pixel_coordinates
 

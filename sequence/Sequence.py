@@ -261,6 +261,9 @@ class Sequence:
                 "The number of the strategy for dancing around code qr does not exists"
             )
 
+    def make_dat_dance_to_decode_qr_boy(self):
+        print("wassup")
+
     def get_tension(self):
         self.comm_pi.getTension()
 
