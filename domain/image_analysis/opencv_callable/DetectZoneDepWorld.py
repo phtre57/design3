@@ -15,7 +15,7 @@ RADIUS_LIMITER_CHECK = False
 RADIUS_LIMITER = 30
 RAIDUS_POSITIVE = False
 
-DEBUG = false
+DEBUG = False
 
 def detect_zone_dep_world(og_frame):
     frame = og_frame.copy()

@@ -73,7 +73,7 @@ class ColorDetectorTest(unittest.TestCase):
 
         # cv2.imshow('EDGES', shape.frame)
         # cv2.imshow('EDGES', shape.res_contour[3])
-        # cv2.waitKey()
+        # cv2.waitKey()ww
 
         self.assertEqual(shape.shapes,
                          ['circle', 'rectangle', 'circle', 'pentagon'])

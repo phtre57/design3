@@ -30,7 +30,7 @@ X_11 = 320 - X_5
 X_13 = 320 - X_3
 X_15 = 320 - X_1
 
-DEBUG = True
+DEBUG = False
 
 
 class PixelToXYCoordinatesConverter:
@@ -162,7 +162,8 @@ class PixelToXYCoordinatesConverter:
     def correction_brillante(self, final_pixel_point, final_point):
         x = final_pixel_point[0] - (LENGTH / 2)
 
-        print(x)
+        if DEBUG:
+            # print(x)
 
         correction_factor = 1
         if (x < 0):
@@ -172,10 +173,12 @@ class PixelToXYCoordinatesConverter:
         top_angle = np.arctan(x / CAMERA_HEIGHT)
         correction = np.tan(top_angle) * ROBOT_HEIGHT
 
-        print("##############################################")
-        print("##############################################")
-        print("##############################################")
-        print(correction * correction_factor)
+        if DEBUG:
+            # print("##############################################")
+            # print("##############################################")
+            # print("##############################################")
+            # print(correction * correction_factor)
+            
         return (final_point[0] + (correction * correction_factor),
                 final_point[1])
 

@@ -101,16 +101,12 @@ class ShapeDetector:
                         or abs(hRect) < self.h_rect_limit):
                     continue
 
-            print(self.angle_limiter)
-            print(angleRect) 
             if (self.angle_limiter):
                 if (abs(angleRect) > 80):
                     if (90 - abs(angleRect) > 8):
-                        print("passsssssssss")
                         continue
                 else:
                     if (90 - abs(angleRect) < 82):
-                        print("passsssssssss")
                         continue
 
             ((x, y), radius) = cv2.minEnclosingCircle(c)

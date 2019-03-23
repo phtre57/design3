@@ -16,7 +16,7 @@ RADIUS_LIMITER = 150
 RAIDUS_POSITIVE = True
 ANGLE_LIMITER = True
 
-DEBUG = True
+DEBUG = False
 
 def detect_pickup_zone(og_frame, second_try = False):
     frame = og_frame.copy()
