@@ -53,8 +53,11 @@ def detect_pickup_zone(og_frame, second_try = False):
     vertical = cv2.erode(vertical, verticalStructure)
     vertical = cv2.dilate(vertical, verticalStructure)
     edges1 = vertical
-    cv2.imshow('CANNY AFTER MASK', edges1)
-    cv2.waitKey()
+
+    if DEBUG:
+        cv2.imshow('CANNY AFTER MASK', edges1)
+        cv2.waitKey()
+
     horizontal = edges.copy()
     cols = horizontal.shape[1]
     horizontal_size = round(cols / 30)
@@ -64,10 +67,18 @@ def detect_pickup_zone(og_frame, second_try = False):
     horizontal = cv2.erode(horizontal, horizontalStructure)
     horizontal = cv2.dilate(horizontal, horizontalStructure)
     edges2 = horizontal
-    cv2.imshow('CANNY AFTER MASK', edges2)
-    cv2.waitKey()
+
+    if DEBUG:
+        cv2.imshow('CANNY AFTER MASK', edges2)
+        cv2.waitKey()
+        
     edges = cv2.addWeighted(edges2, 1, edges1, 1, 0.0)
+    
     # edges = cv2.bitwise_and(edges2, edges2, mask=edges1)
+
+    if DEBUG:
+        cv2.imshow('CANNY', edges)
+        cv2.waitKey()
 
     edges = cv2.dilate(
         edges,
