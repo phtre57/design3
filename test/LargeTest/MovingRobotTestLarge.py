@@ -67,7 +67,7 @@ def main():
     print("Go to start charge station...")
     sequence.go_to_c_charge_station()
     print("Go back from start charge station...")
-    sequence.go_to_c_back_from_charge_station()
+    sequence.go_back_from_charge_station()
     print("Go to qr...")
     # sequence.set_end_point(X_END_QR, Y_END_QR)
     sequence.go_to_qr()

@@ -282,7 +282,19 @@ class Sequence:
         time.sleep(1)
         # GET RESPONSE
 
-    def go_to_c_back_from_charge_station(self):
+    def charge_dat_boy_at_charge_station(self):
+        while True:
+            coord = "0,-2,0\n"
+            print("Sending coordinates: " + coord)
+            self.comm_pi.sendCoordinates(coord) #move two milimeters in -y to get closer to charge station
+            tension = self.comm_pi.getTension()
+
+            time.sleep(3.5) #sleep because it takes 3 seconds for charge station to deliver current
+
+            if tension > 0:
+                break
+
+    def go_back_from_charge_station(self):
         print("Sending coordinates: 340,381,0\n")
         time.sleep(0.5)
         self.comm_pi.sendCoordinates("340,381,0\n")

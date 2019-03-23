@@ -97,7 +97,16 @@ class Communication_pi():
         signal = 'gettension'
         self.socket.sendall(signal.encode('utf-8'))
         data = self.socket.recv(255)
-        print(data)
+        data = str(data, "utf-8")
+        print("Received tension: " + str(data))
+
+        temp = ""
+        for i in range(len(data)):
+            if data[i] + data[i + 1] == "\r":
+                break
+            temp += data[i]
+
+        return float(temp)
 
 
 def main():
