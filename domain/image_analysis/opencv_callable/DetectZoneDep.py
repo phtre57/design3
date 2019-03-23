@@ -13,7 +13,8 @@ RAIDUS_POSITIVE = True
 CHECK_SHAPE_ONLY = "rectangle"
 
 
-def detect_zone_dep(frame):
+def detect_zone_dep(og_frame):
+    frame = og_frame.copy()
     frame.copy()
 
     edges = canny(frame, dilate_mask_zone_dep)
@@ -23,8 +24,8 @@ def detect_zone_dep(frame):
     shapeDetector.set_radius_limiter(RADIUS_LIMITER, RAIDUS_POSITIVE)
     shapeDetector.set_shape_only(CHECK_SHAPE_ONLY)
 
-    shape = shapeDetector.detect(edges)
-    shape = shapeDetector.detect(shape.frameCnts)
+    shape = shapeDetector.detect(edges, og_frame.copy())
+    shape = shapeDetector.detect(shape.frameCnts, og_frame.copy())
     shape.set_frame(shape.frameWithText)
 
     return shape

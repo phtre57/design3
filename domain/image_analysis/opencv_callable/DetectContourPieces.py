@@ -13,7 +13,8 @@ RADIUS_LIMITER_CHECK = True
 RADIUS_LIMITER = 90
 RAIDUS_POSITIVE = True
 
-def detect_contour_pieces(frame):
+def detect_contour_pieces(og_frame):
+    frame = og_frame.copy()
     frame = frame.copy()
 
     edges = canny(frame, dilate_mask)
@@ -22,8 +23,8 @@ def detect_contour_pieces(frame):
     shapeDetector.set_rect_limiter(RECT_W_LIMITER, RECT_H_LIMITER)
     shapeDetector.set_radius_limiter(RADIUS_LIMITER, RAIDUS_POSITIVE)
     
-    shape = shapeDetector.detect(edges)
-    shape = shapeDetector.detect(shape.frameCnts)
+    shape = shapeDetector.detect(edges, og_frame.copy())
+    shape = shapeDetector.detect(shape.frameCnts, og_frame.copy())
     shape.set_frame(shape.frameWithText)
 
     return shape

@@ -1,5 +1,6 @@
 import cv2
 import imutils
+import numpy as np
 
 from domain.image_analysis.ShapeValidator import ShapeValidator
 from domain.image_analysis.Shape import Shape
@@ -21,7 +22,7 @@ class ShapeDetector:
         self.radius_positive = True
         self.shape_only = None
 
-    def detect(self, frame):
+    def detect(self, frame, og_frame):
         frame = frame.copy()
 
         self.shapes = []
@@ -30,6 +31,13 @@ class ShapeDetector:
                                 cv2.CHAIN_APPROX_SIMPLE)
         cnts = imutils.grab_contours(cnts)
 
+        frame1 = frame.copy()
+        cv2.drawContours(frame1, cnts, -1, (0,255,0), 3)
+
+        if debug:
+            cv2.imshow('CNTS', frame1)
+            cv2.waitKey()
+
         if (len(cnts) <= 0):
             return None
 
@@ -37,10 +45,22 @@ class ShapeDetector:
 
         frameWithText = frame.copy()
         frameCnts = frame.copy()
-
+        height, width = frame.shape
+        frameClean = frame.copy()
+        kernelerode = np.ones((8, 8), np.uint8)
+        frameClean = cv2.erode(frameClean, kernelerode, iterations=6)
+        
         shapes_with_approx = []
 
         for c in cnts:
+
+            if debug:
+                frame1 = og_frame.copy()
+                cv2.drawContours(frame1, c, -1, (0,255,0), 3)
+
+                cv2.imshow('CNTS1', frame1)
+                cv2.waitKey()
+
             shape = "unidentified"
             peri = cv2.arcLength(c, True)
             if (self.peri_limiter):
@@ -104,9 +124,10 @@ class ShapeDetector:
             filler = cv2.convexHull(c)
             cv2.fillConvexPoly(frameWithText, filler, 255)
             cv2.fillConvexPoly(frameCnts, filler, 255)
+            cv2.fillConvexPoly(frameClean, filler, 255)
 
         return Shape(self.shapes, cnts, shapes_with_approx, frameWithText,
-                     frameCnts)
+                     frameCnts, frameClean)
 
     def get_center_of_wanted_shape(self, frame, p_shape):
         frame = frame.copy()

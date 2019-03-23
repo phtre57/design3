@@ -22,10 +22,10 @@ class DetectStartZoneTest(unittest.TestCase):
 
         frame = cv2.imread(path)
 
-        cap = cv2.VideoCapture(1)
-        time.sleep(1)
-        _, frame = cap.read()
-        time.sleep(5)
+        # cap = cv2.VideoCapture(1)
+        # time.sleep(1)
+        # _, frame = cap.read()
+        # time.sleep(5)
 
         shape = detect_start_zone(frame)
 

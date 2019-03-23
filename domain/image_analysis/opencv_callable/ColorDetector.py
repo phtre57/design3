@@ -28,7 +28,9 @@ def color_detector(frame, color):
     return shape
 
 
-def create_mask_for_color_detector(frame):
+def create_mask_for_color_detector(og_frame):
+    frame = og_frame.copy()
+
     edges = canny(frame, dilate_mask)
     shapeDetector = ShapeDetector(PERI_LIMITER_CHECK, RECT_LIMITER_CHECK,
                                   RADIUS_LIMITER_CHECK)
@@ -36,8 +38,8 @@ def create_mask_for_color_detector(frame):
     shapeDetector.set_rect_limiter(RECT_W_LIMITER, RECT_H_LIMITER)
     shapeDetector.set_radius_limiter(RADIUS_LIMITER, RAIDUS_POSITIVE)
 
-    shape = shapeDetector.detect(edges)
-    shape = shapeDetector.detect(shape.frameCnts)
+    shape = shapeDetector.detect(edges, og_frame.copy())
+    shape = shapeDetector.detect(shape.frameCnts, og_frame.copy())
 
     mask = cv2.bitwise_and(frame, frame, mask=shape.frameWithText)
 
