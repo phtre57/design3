@@ -13,6 +13,7 @@ from domain.image_analysis.opencv_callable.DetectZoneDepWorld import detect_zone
 from domain.image_analysis.opencv_callable.DetectQR import *
 from domain.image_analysis.DetectBlurriness import *
 from domain.image_analysis_pathfinding.RobotDetector import *
+from domain.pathfinding.Exceptions.NoPathFoundException import *
 
 DEBUG = True
 ROBOT_DANCE_X_POSITIVE = "50,0,0\n"
@@ -21,6 +22,10 @@ ROBOT_DANCE_X_NEGATIVE = "-50,0,0\n"
 STRAT_1_Y_CODE_QR = 145
 STRAT_2_Y_CODE_QR = 145
 STRAT_3_Y_CODE_QR = 145
+
+Y_ARRAY_FOR_QR_STRATEGY = [90, 120, 145, 170]
+
+X_RANGE_FOR_QR_STRATEGY = [200, 230, 260, 290]
 
 
 class Sequence:
@@ -262,7 +267,47 @@ class Sequence:
             )
 
     def make_dat_dance_to_decode_qr_boy(self):
-        print("wassup")
+        stop_outer_loop = False
+        for y in Y_ARRAY_FOR_QR_STRATEGY:
+            for x in X_RANGE_FOR_QR_STRATEGY:
+                try:
+                    self.set_end_point(x, y)
+                    self.start()
+                    self.__try_to_decode_qr()
+                    stop_outer_loop = True
+                    break
+
+                except Exception as ex:
+                    print(ex)
+                    traceback.print_exc(file=sys.stdout)
+
+            if stop_outer_loop:
+                break
+
+    def __try_to_decode_qr(self):
+        img = None
+        while True:
+            img = self.comm_pi.getImage()
+            if detect_blurriness(img) is False:
+                break
+
+        if DEBUG:
+            cv2.imshow("qr", img)
+            cv2.waitKey(0)
+
+        # try to decode qr
+        string = decode(img)
+        # FAIRE UN PARSER QUI PARSE ÇA
+        self.piece_color = "red"
+        self.piece_shape = "square"
+        self.depot_number = 1
+        print(string)
+
+        if string is None:
+            raise Exception("Could not decode QR code")
+
+        #assign attributes for further uses
+
 
     def get_tension(self):
         self.comm_pi.getTension()
