@@ -100,13 +100,18 @@ class Communication_pi():
         data = str(data, "utf-8")
         print("Received tension: " + str(data))
 
+        data = data.replace("\r", "")
+        data = data.replace("\n", "")
+
+        """
         temp = ""
         for i in range(len(data)):
             if data[i] + data[i + 1] == "\r":
                 break
             temp += data[i]
+        """
 
-        return float(temp)
+        return float(data)
 
 
 def main():
