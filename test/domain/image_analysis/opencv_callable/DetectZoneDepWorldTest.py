@@ -18,7 +18,7 @@ class DetectZoneDepWorldTest(unittest.TestCase):
         path = os.path.normpath(os.path.join(path, os.pardir))
         path = os.path.normpath(os.path.join(path, os.pardir))
         path = os.path.join(path,
-                            "./image_samples/real_image/zonedep.jpg")
+                            "./image_samples/real_image/globalmonde1.jpg")
 
         frame = cv2.imread(path)
 

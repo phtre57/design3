@@ -2,7 +2,7 @@ import cv2
 import numpy as np
 
 
-def canny(frame, maskFunc):
+def canny(frame, maskFunc, lower = 100, upper = 200):
     frame = cv2.GaussianBlur(frame, (5, 5), 1)
     frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
     kernel = np.ones((9, 9), np.uint8)
@@ -10,7 +10,7 @@ def canny(frame, maskFunc):
 
     mask = maskFunc(frame)
 
-    return cv2.Canny(mask, 100, 200)
+    return cv2.Canny(mask, lower, upper)
 
 
 def dilate_mask(frame):
@@ -47,6 +47,14 @@ def erode_mask(frame):
 
 
 def erode_mask_zone_dep(frame):
+    kernel = np.ones((9, 9), np.uint8)
+    kernelerode = np.ones((2, 2), np.uint8)
+    mask = cv2.morphologyEx(frame, cv2.MORPH_OPEN, kernel)
+    mask = cv2.erode(mask, kernelerode, iterations=1)
+    mask = cv2.GaussianBlur(mask, (1, 1), 0)
+    return mask
+
+def erode_mask_zone_dep_world(frame):
     kernel = np.ones((9, 9), np.uint8)
     kernelerode = np.ones((2, 2), np.uint8)
     mask = cv2.morphologyEx(frame, cv2.MORPH_OPEN, kernel)

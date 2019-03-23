@@ -9,7 +9,7 @@ debug = False
 
 
 class ShapeDetector:
-    def __init__(self, peri_limiter, rect_limiter, radius_limiter):
+    def __init__(self, peri_limiter, rect_limiter, radius_limiter, radius_large = False):
         self.shapes = []
         self.peri_limiter = peri_limiter
         self.peri_lower = 0
@@ -17,9 +17,12 @@ class ShapeDetector:
         self.rect_limiter = rect_limiter
         self.w_rect_limit = 0
         self.h_rect_limit = 0
+        self.angle_limiter = False
         self.radius_limiter = radius_limiter
         self.radius_limit = 0
         self.radius_positive = True
+        self.radius_large = radius_large
+        self.radius_large_limit = 0
         self.shape_only = None
 
     def detect(self, frame, og_frame):
@@ -31,10 +34,9 @@ class ShapeDetector:
                                 cv2.CHAIN_APPROX_SIMPLE)
         cnts = imutils.grab_contours(cnts)
 
-        frame1 = frame.copy()
-        cv2.drawContours(frame1, cnts, -1, (0,255,0), 3)
-
         if debug:
+            frame1 = og_frame.copy()
+            cv2.drawContours(frame1, cnts, -1, (0,255,0), 3)
             cv2.imshow('CNTS', frame1)
             cv2.waitKey()
 
@@ -49,7 +51,7 @@ class ShapeDetector:
         frameClean = frame.copy()
         kernelerode = np.ones((8, 8), np.uint8)
         frameClean = cv2.erode(frameClean, kernelerode, iterations=6)
-        
+
         shapes_with_approx = []
 
         for c in cnts:
@@ -57,44 +59,65 @@ class ShapeDetector:
             if debug:
                 frame1 = og_frame.copy()
                 cv2.drawContours(frame1, c, -1, (0,255,0), 3)
-
                 cv2.imshow('CNTS1', frame1)
                 cv2.waitKey()
 
+
             shape = "unidentified"
             peri = cv2.arcLength(c, True)
+            if debug:
+                print("Wave")
+                print(peri)
+
             if (self.peri_limiter):
                 if (peri > self.peri_upper):
                     continue
                 elif (peri < self.peri_lower):
                     continue
 
-            if debug:
-                print("Wave")
-                print(peri)
-
             approx = cv2.approxPolyDP(c, 0.02 * peri, True)
 
             ((xRect, yRect), (wRect, hRect), angleRect) = cv2.minAreaRect(c)
 
+            if debug:
+                print(wRect, hRect, angleRect)
+                # img = frameClean.copy()
+                # cv2.drawContours(img, c, -1, 255, 3)
+                # rect = cv2.minAreaRect(c)
+                # box = cv2.boxPoints(rect)
+                # box = np.int0(box)
+                # cv2.drawContours(img,[box],0,255,2)
+                # filler = cv2.convexHull(c)
+                # cv2.fillConvexPoly(img, filler, 255)
+                # cv2.imshow('SHAPE CHOSEN', img)
+                # cv2.waitKey()
+
             if (self.rect_limiter):
+                if (hRect > wRect):
+                    t = wRect
+                    wRect = hRect
+                    hRect = t
                 if (abs(wRect) < self.w_rect_limit
                         or abs(hRect) < self.h_rect_limit):
                     continue
 
-            if debug:
-                print(wRect, hRect)
+            print(self.angle_limiter)
+            print(angleRect) 
+            if (self.angle_limiter):
+                if (abs(angleRect) > 80):
+                    if (90 - abs(angleRect) > 8):
+                        print("passsssssssss")
+                        continue
+                else:
+                    if (90 - abs(angleRect) < 82):
+                        print("passsssssssss")
+                        continue
 
             ((x, y), radius) = cv2.minEnclosingCircle(c)
             # center = (round(int(x)), round(int(y)))
 
             if debug:
                 print(radius)
-
-                img = frameWithText.copy()
-                cv2.circle(img, (round(x), round(y)), 3, [0, 0, 255])
-                cv2.imshow("SHOW", img)
-                cv2.waitKey()
 
             if (self.radius_limiter):
                 if (self.radius_positive):
@@ -104,8 +127,33 @@ class ShapeDetector:
                     if (radius < self.radius_limit):
                         continue
 
+            if (self.radius_large and radius > self.radius_large_limit):
+                continue
+
+            if debug:
+                print(wRect, hRect, angleRect)
+
+                img = frameClean.copy()
+                cv2.drawContours(img, c, -1, 255, 3)
+                rect = cv2.minAreaRect(c)
+                box = cv2.boxPoints(rect)
+                box = np.int0(box)
+                cv2.drawContours(img,[box],0,255,2)
+                filler = cv2.convexHull(c)
+                cv2.fillConvexPoly(img, filler, 255)
+                cv2.imshow('SHAPE CHOSEN', img)
+                cv2.waitKey()
+
+                frame2 = frame.copy()
+                kernelerode = np.ones((8, 8), np.uint8)
+                frame2 = cv2.erode(frame2, kernelerode, iterations=6)
+                cv2.drawContours(frame2, c, -1, (0,255,0), 3)
+                cv2.imshow('SHAPE CHOSEN', frame2)
+                cv2.waitKey()
+
             shapeValidator = ShapeValidator()
             shape = shapeValidator.validate(approx)
+
 
             if (self.shape_only is not None):
                 if (shape != self.shape_only):
@@ -176,9 +224,10 @@ class ShapeDetector:
         self.peri_lower = peri_lower
         self.peri_upper = peri_upper
 
-    def set_rect_limiter(self, w_rect_limit, h_rect_limit):
+    def set_rect_limiter(self, w_rect_limit, h_rect_limit, angle_limiter = None):
         self.w_rect_limit = w_rect_limit
         self.h_rect_limit = h_rect_limit
+        self.angle_limiter = angle_limiter
 
     def set_radius_limiter(self, radius_limit, radius_positive):
         self.radius_limit = radius_limit
@@ -186,3 +235,6 @@ class ShapeDetector:
 
     def set_shape_only(self, shape):
         self.shape_only = shape
+
+    def set_radius_large_limit(self, radius_large_limit):
+        self.radius_large_limit = radius_large_limit

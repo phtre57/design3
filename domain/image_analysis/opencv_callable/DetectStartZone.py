@@ -22,8 +22,6 @@ def detect_start_zone(og_frame):
     edges = canny(frame, erode_mask)
     kernel = np.ones((9, 9), np.uint8)
     mask = cv2.morphologyEx(edges, cv2.MORPH_OPEN, kernel)
-    cv2.imshow("CANNY", edges)
-    cv2.waitKey()
 
     shapeDetector = ShapeDetector(PERI_LIMITER_CHECK, RECT_LIMITER_CHECK,
                                   RADIUS_LIMITER_CHECK)
