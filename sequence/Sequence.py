@@ -335,9 +335,8 @@ class Sequence:
             coord = "0,-2,0\n"
             print("Sending coordinates: " + coord)
             self.comm_pi.sendCoordinates(coord) #move two milimeters in -y to get closer to charge station
+            time.sleep(3.5)  # sleep because it takes 3 seconds for charge station to deliver current
             tension = self.comm_pi.getTension()
-
-            time.sleep(3.5) #sleep because it takes 3 seconds for charge station to deliver current
 
             if tension > 0:
                 break
