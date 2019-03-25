@@ -4,18 +4,21 @@ from util.color import Color
 from domain.image_analysis.ShapeDetector import ShapeDetector
 from domain.image_analysis.opencv_callable.Canny import canny, dilate_mask
 from domain.image_analysis.ShapeUtils import *
+from context.config import COLOR_DETECTOR_DEBUG
 
-RADIUS_LIMIT = 15
+RADIUS_LIMIT = 2
 
 PERI_LIMITER_CHECK = True
-PERI_LIMITER_UPPER = 700
-PERI_LIMITER_LOWER = 150
+PERI_LIMITER_UPPER = 160
+PERI_LIMITER_LOWER = 100
 RECT_LIMITER_CHECK = True
-RECT_W_LIMITER = 10
-RECT_H_LIMITER = 10
+RECT_W_LIMITER = 20
+RECT_H_LIMITER = 20
 RADIUS_LIMITER_CHECK = True
 RADIUS_LIMITER = 90
 RAIDUS_POSITIVE = True
+
+DEBUG = COLOR_DETECTOR_DEBUG
 
 
 def color_detector(frame, color):
@@ -23,8 +26,11 @@ def color_detector(frame, color):
 
     shape = create_mask_for_color_detector(frame)
 
-    res_contour = find_where_the_shape_is(shape, color, RADIUS_LIMIT)
-    shape.res_contour = res_contour
+    if (DEBUG):
+        cv2.imshow("SHAPE", shape.frame)
+        cv2.waitKey()
+
+    shape.res_contour = find_where_the_shape_is(shape, color, RADIUS_LIMIT)
     return shape
 
 
