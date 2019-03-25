@@ -6,7 +6,6 @@ import time
 import numpy as np
 import struct  # new
 import base64
-from io import StringIO
 
 # Host = Adresse ip du serveur (ici Raspberry pi)
 # Port = valeur predefinie (doit etre la meme pour le serveur)
@@ -85,12 +84,14 @@ class Communication_pi():
         self.socket.sendall(signal.encode('utf-8'))
         self.socket.sendall(str.encode('utf-8'))
         print("Servo Horizontal envoyees")
+        time.sleep(1)
 
     def changeServoVert(self, str):
         signal = 'servoVert'
         self.socket.sendall(signal.encode('utf-8'))
         self.socket.sendall(str.encode('utf-8'))
         print("Servo Vertical envoyees")
+        time.sleep(1)
 
     def getTension(self):
         signal = 'gettension'
@@ -101,6 +102,16 @@ class Communication_pi():
 
         data = data.replace("\r", "")
         data = data.replace("\n", "")
+<<<<<<< HEAD
+        """
+        temp = ""
+        for i in range(len(data)):
+            if data[i] + data[i + 1] == "\r":
+                break
+            temp += data[i]
+        """
+=======
+>>>>>>> 4990309f61a397fbd386ca43778c252dbbc87850
 
         return float(data)
 

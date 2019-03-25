@@ -10,6 +10,7 @@ from domain.image_analysis.ImageToGridConverter import *
 from domain.image_analysis_pathfinding.RobotDetector import RobotDetector
 from domain.image_analysis.opencv_callable.DetectStartZone import detect_start_zone
 from domain.image_analysis.opencv_callable.DetectZoneDepWorld import detect_zone_dep_world
+from domain.image_analysis.opencv_callable.DetectPickupZone import detect_pickup_zone
 from domain.image_analysis.opencv_callable.DetectQR import *
 from domain.image_analysis.DetectBlurriness import *
 from domain.image_analysis_pathfinding.RobotDetector import *
@@ -23,9 +24,9 @@ STRAT_1_Y_CODE_QR = 145
 STRAT_2_Y_CODE_QR = 145
 STRAT_3_Y_CODE_QR = 145
 
-Y_ARRAY_FOR_QR_STRATEGY = [90, 120, 145, 170]
+Y_ARRAY_FOR_QR_STRATEGY = [120, 145, 170, 90]
 
-X_RANGE_FOR_QR_STRATEGY = [200, 230, 260, 290]
+X_RANGE_FOR_QR_STRATEGY = [200, 230, 260, 285]
 
 
 class Sequence:
@@ -66,13 +67,20 @@ class Sequence:
             center_and_image['image'], center_and_image['center'][0],
             center_and_image['center'][1], self.X_END, self.Y_END)
 
-        astar = Astar(grid_converter.grid, HEIGHT, LENGTH)
-        path = astar.find_path()
+        smooth_path = None
 
-        path_smoother = PathSmoother(path)
-        smooth_path = path_smoother.smooth_path()
+        try:
+            astar = Astar(grid_converter.grid, HEIGHT, LENGTH)
+            path = astar.find_path()
 
-        self.__draw_path(smooth_path, grid_converter)
+            path_smoother = PathSmoother(path)
+            smooth_path = path_smoother.smooth_path()
+            self.__draw_path(smooth_path, grid_converter)
+        except Exception:
+            frame = self.take_image()
+            cv2.circle(frame, (self.X_END * 2, self.Y_END * 2), 1, [0, 0, 255])
+            cv2.imshow('BUG PATH', frame)
+            cv2.waitKey()
 
         return smooth_path
 
@@ -186,6 +194,7 @@ class Sequence:
         x, y = shape.center
         self.X_END = round(x / 2)
         self.Y_END = round(y / 2)
+        self.start()
 
     def go_to_zone_dep(self):
         img = self.take_image()
@@ -200,77 +209,44 @@ class Sequence:
 
         self.X_END = round(x / 2)
         self.Y_END = round(y / 2)
+        self.start()
+
+    def go_to_zone_pickup(self):
+        self.comm_pi.changeServoHori('2000')
+        img = self.take_image()
+        shape = detect_pickup_zone(img)
+        print(shape)
+        x, y = shape.center
+
+        cv2.circle(img, (x, y), 1, [0, 0, 255])
+
+        cv2.imshow("imageCourante", img)
+        cv2.waitKey()
+
+        self.X_END = round(x / 2)
+        self.Y_END = round(y / 2)
+        self.start()
 
     def end(self):
         self.comm_pi.disconnectFromPi()
 
-    def __dance_to_code_qr(self, x_start, x_end, y_axis):
-        x_dance_dist = x_end - x_start
-        if (x_dance_dist > 80):
-            x_dance_dist = 80
-
-        it = round(x_dance_dist / 20)
-        for i in range(it):
-            while True:
-                img = self.comm_pi.getImage()
-                if detect_blurriness(img) is False:
-                    break
-
-            if DEBUG:
-                cv2.imshow("qr", img)
-                cv2.waitKey(0)
-
-            # try to decode qr
-            try:
-                string = decode(img)
-                # FAIRE UN PARSER QUI PARSE ÇA
-                self.piece_color = "red"
-                self.piece_shape = "square"
-                self.depot_number = 1
-                print(string)
-                if string is not None:
-                    break
-            except Exception as ex:
-                print(ex)
-
-            if (i + 1 == it):
-                x_coord = round(x_dance_dist % it) * (i + 1)
-                self.set_end_point(x_end - x_coord, y_axis)
-                self.start()
-            else:
-                x_coord = round(x_dance_dist / it) * (i + 1)
-                self.set_end_point(x_end - x_coord, y_axis)
-                self.start()
-
-    def strats_dance_code_qr(self, strat_number):
-        if strat_number == 1:
-            self.__dance_to_code_qr(True, 6)
-        elif strat_number == 2:
-            self.__dance_to_code_qr(True, 5)
-        elif strat_number == 3:
-            self.__dance_to_code_qr(False, 5)
-        elif strat_number == 4:
-            self.__dance_to_code_qr(True, 4)
-        elif strat_number == 5:
-            self.__dance_to_code_qr(False, 4)
-        else:
-            raise Exception(
-                "The number of the strategy for dancing around code qr does not exists"
-            )
-
     def make_dat_dance_to_decode_qr_boy(self):
+        self.comm_pi.changeServoVert('6000')
+        self.comm_pi.changeServoHori('5500')
         stop_outer_loop = False
         for y in Y_ARRAY_FOR_QR_STRATEGY:
             for x in X_RANGE_FOR_QR_STRATEGY:
-                try:
-                    self.set_end_point(x, y)
-                    self.start()
-                    self.__try_to_decode_qr()
-                    stop_outer_loop = True
+                self.set_end_point(x, y)
 
+                try:
+                    self.start()
+                    stop_outer_loop = self.__try_to_decode_qr()
+                    if (stop_outer_loop):
+                        break
                 except Exception as ex:
                     print(ex)
-                    traceback.print_exc(file=sys.stdout)
+                    pass
+                    # traceback.print_exc(file=sys.stdout)
 
             if stop_outer_loop:
                 break
@@ -295,8 +271,9 @@ class Sequence:
         print(string)
 
         if string is None:
-            raise Exception("Could not decode QR code")
+            return False
 
+        return True
         #assign attributes for further uses
 
     def get_tension(self):
@@ -324,8 +301,12 @@ class Sequence:
         while True:
             coord = "0,-2,0\n"
             print("Sending coordinates: " + coord)
-            self.comm_pi.sendCoordinates(coord)  # move two milimeters in -y to get closer to charge station
-            time.sleep(3.5)  # sleep because it takes 3 seconds for charge station to deliver current
+            self.comm_pi.sendCoordinates(
+                coord
+            )  #move two milimeters in -y to get closer to charge station
+            time.sleep(
+                3.5
+            )  # sleep because it takes 3 seconds for charge station to deliver current
             tension = self.comm_pi.getTension()
 
             if tension > 0:

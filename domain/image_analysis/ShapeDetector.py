@@ -5,11 +5,15 @@ import numpy as np
 from domain.image_analysis.ShapeValidator import ShapeValidator
 from domain.image_analysis.Shape import Shape
 
-debug = False
+debug = True
 
 
 class ShapeDetector:
-    def __init__(self, peri_limiter, rect_limiter, radius_limiter, radius_large = False):
+    def __init__(self,
+                 peri_limiter,
+                 rect_limiter,
+                 radius_limiter,
+                 radius_large=False):
         self.shapes = []
         self.peri_limiter = peri_limiter
         self.peri_lower = 0
@@ -36,7 +40,7 @@ class ShapeDetector:
 
         if debug:
             frame1 = og_frame.copy()
-            cv2.drawContours(frame1, cnts, -1, (0,255,0), 3)
+            cv2.drawContours(frame1, cnts, -1, (0, 255, 0), 3)
             cv2.imshow('CNTS', frame1)
             cv2.waitKey()
 
@@ -58,10 +62,9 @@ class ShapeDetector:
 
             if debug:
                 frame1 = og_frame.copy()
-                cv2.drawContours(frame1, c, -1, (0,255,0), 3)
+                cv2.drawContours(frame1, c, -1, (0, 255, 0), 3)
                 cv2.imshow('CNTS1', frame1)
                 cv2.waitKey()
-
 
             shape = "unidentified"
             peri = cv2.arcLength(c, True)
@@ -134,7 +137,7 @@ class ShapeDetector:
                 rect = cv2.minAreaRect(c)
                 box = cv2.boxPoints(rect)
                 box = np.int0(box)
-                cv2.drawContours(img,[box],0,255,2)
+                cv2.drawContours(img, [box], 0, 255, 2)
                 filler = cv2.convexHull(c)
                 cv2.fillConvexPoly(img, filler, 255)
                 cv2.imshow('SHAPE CHOSEN', img)
@@ -143,13 +146,12 @@ class ShapeDetector:
                 frame2 = frame.copy()
                 kernelerode = np.ones((8, 8), np.uint8)
                 frame2 = cv2.erode(frame2, kernelerode, iterations=6)
-                cv2.drawContours(frame2, c, -1, (0,255,0), 3)
+                cv2.drawContours(frame2, c, -1, (0, 255, 0), 3)
                 cv2.imshow('SHAPE CHOSEN', frame2)
                 cv2.waitKey()
 
             shapeValidator = ShapeValidator()
             shape = shapeValidator.validate(approx)
-
 
             if (self.shape_only is not None):
                 if (shape != self.shape_only):
@@ -220,7 +222,7 @@ class ShapeDetector:
         self.peri_lower = peri_lower
         self.peri_upper = peri_upper
 
-    def set_rect_limiter(self, w_rect_limit, h_rect_limit, angle_limiter = None):
+    def set_rect_limiter(self, w_rect_limit, h_rect_limit, angle_limiter=None):
         self.w_rect_limit = w_rect_limit
         self.h_rect_limit = h_rect_limit
         self.angle_limiter = angle_limiter

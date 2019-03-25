@@ -175,10 +175,10 @@ class PixelToXYCoordinatesConverter:
 
         if DEBUG:
             print("##############################################")
-            # print("##############################################")
-            # print("##############################################")
-            # print(correction * correction_factor)
-            
+            print("##############################################")
+            print("##############################################")
+            print(correction * correction_factor)
+
         return (final_point[0] + (correction * correction_factor),
                 final_point[1])
 

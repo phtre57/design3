@@ -18,33 +18,32 @@ class DetectZoneDepWorldTest(unittest.TestCase):
         path = os.path.normpath(os.path.join(path, os.pardir))
         path = os.path.normpath(os.path.join(path, os.pardir))
 
-        path1 = os.path.join(path,
-                            "./image_samples/real_image/zonestart.jpg")
+        path1 = os.path.join(path, "./image_samples/real_image/zonestart.jpg")
         shape = self.test_loop(path1)
         self.assertEqual(len(shape.shapes), 1)
 
         path2 = os.path.join(path,
-                            "./image_samples/real_image/globalmonde.jpg")
+                             "./image_samples/real_image/globalmonde.jpg")
         shape = self.test_loop(path2)
         self.assertEqual(len(shape.shapes), 1)
 
         path3 = os.path.join(path,
-                            "./image_samples/real_image/globalmonde1.jpg")
+                             "./image_samples/real_image/globalmonde1.jpg")
         shape = self.test_loop(path3)
         self.assertEqual(len(shape.shapes), 1)
 
         path4 = os.path.join(path,
-                            "./image_samples/real_image/globalmonde2.jpg")
+                             "./image_samples/real_image/globalmonde2.jpg")
         shape = self.test_loop(path4)
         self.assertEqual(len(shape.shapes), 1)
 
         path5 = os.path.join(path,
-                            "./image_samples/real_image/globalmonde3.jpg")
+                             "./image_samples/real_image/globalmonde3.jpg")
         shape = self.test_loop(path5)
         self.assertEqual(len(shape.shapes), 1)
 
         path6 = os.path.join(path,
-                            "./image_samples/real_image/globalmonde4.jpg")
+                             "./image_samples/real_image/globalmonde4.jpg")
         shape = self.test_loop(path6)
         self.assertEqual(len(shape.shapes), 1)
 
@@ -52,8 +51,8 @@ class DetectZoneDepWorldTest(unittest.TestCase):
 
         frame = cv2.imread(path)
 
-        # cap = cv2.VideoCapture(1)
-        # ret, frame = cap.read()
+        cap = cv2.VideoCapture(1)
+        ret, frame = cap.read()
 
         shape = detect_pickup_zone(frame)
 
