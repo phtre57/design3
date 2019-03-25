@@ -21,6 +21,9 @@ class DetectZoneDepTest(unittest.TestCase):
 
         frame = cv2.imread(path)
 
+        cap = cv2.VideoCapture(1)
+        ret, frame = cap.read()
+
         shape = detect_zone_dep(frame)
         cv2.imshow('EDGES', shape.frame)
         cv2.waitKey()

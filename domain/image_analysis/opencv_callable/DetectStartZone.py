@@ -15,13 +15,28 @@ RADIUS_LIMITER_CHECK = False
 RADIUS_LIMITER = 250
 RAIDUS_POSITIVE = True
 
+DEBUG = True
+
 
 def detect_start_zone(og_frame):
     frame = og_frame.copy()
 
     edges = canny(frame, erode_mask)
+
+    if (DEBUG):
+        cv2.imshow('DEBUG', edges)
+        cv2.waitKey()
+
     kernel = np.ones((9, 9), np.uint8)
-    mask = cv2.morphologyEx(edges, cv2.MORPH_OPEN, kernel)
+    edges = cv2.morphologyEx(edges, cv2.MORPH_OPEN, kernel)
+    edges = cv2.dilate(
+        edges,
+        kernel=cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (10, 10)),
+        iterations=1)
+
+    if (DEBUG):
+        cv2.imshow('DEBUG', edges)
+        cv2.waitKey()
 
     shapeDetector = ShapeDetector(PERI_LIMITER_CHECK, RECT_LIMITER_CHECK,
                                   RADIUS_LIMITER_CHECK)
@@ -31,6 +46,11 @@ def detect_start_zone(og_frame):
     shape = shapeDetector.detect(edges, og_frame.copy())
 
     mask = shape.frameClean
+
+    if (DEBUG):
+        cv2.imshow('DEBUG', mask)
+        cv2.waitKey()
+
     output = cv2.bitwise_and(frame, frame, mask=mask)
 
     shape.set_frame(output)

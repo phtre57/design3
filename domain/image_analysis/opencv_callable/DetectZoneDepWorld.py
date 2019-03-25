@@ -15,7 +15,10 @@ RADIUS_LIMITER_CHECK = False
 RADIUS_LIMITER = 30
 RAIDUS_POSITIVE = False
 
-DEBUG = False
+OFFSET_PATHFINDING = 40
+
+DEBUG = True
+
 
 def detect_zone_dep_world(og_frame):
     frame = og_frame.copy()
@@ -27,7 +30,6 @@ def detect_zone_dep_world(og_frame):
         cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (5, 5)))
     kernelerode = np.ones((3, 3), np.uint8)
     edges = cv2.erode(edges, kernelerode, iterations=1)
-
 
     shapeDetector = ShapeDetector(PERI_LIMITER_CHECK, RECT_LIMITER_CHECK,
                                   RADIUS_LIMITER_CHECK)
@@ -59,6 +61,6 @@ def detect_zone_dep_world(og_frame):
 def adjust_start_zone_offset(point):
     # Faire les deux bords de la table avec un beau if
     if (point[1] > 120):
-        return (point[0], point[1] - 35)
+        return (point[0], point[1] - OFFSET_PATHFINDING)
     else:
-        return (point[0], point[1] + 35)
+        return (point[0], point[1] + OFFSET_PATHFINDING)

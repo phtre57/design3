@@ -25,7 +25,7 @@ print(ret)
 
 # img = cv2.resize(img, (LENGTH, HEIGHT))
 
-cv2.imwrite('zonedep.jpg', img)
+cv2.imwrite('./samples/sample9.jpg', img)
 cv2.imshow('ok', img)
 
 cv2.waitKey()
