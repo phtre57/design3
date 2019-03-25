@@ -30,8 +30,11 @@ Y_ARRAY_FOR_QR_STRATEGY = [120, 145, 170, 90]
 X_RANGE_FOR_QR_STRATEGY = [200, 230, 260, 285]
 
 logger = Logger(__name__)
+
+
 class Sequence:
-    def __init__(self, cap, comm_pi, world_cam_pixel_to_xy_converter, robot_cam_pixel_to_xy_converter):
+    def __init__(self, cap, comm_pi, world_cam_pixel_to_xy_converter,
+                 robot_cam_pixel_to_xy_converter):
         self.cap = cap
         self.X_END = None
         self.Y_END = None
@@ -97,7 +100,8 @@ class Sequence:
             self.__send_rotation_angle(self.smooth_path)
             x_coord = int(round(point[0] - self.starting_point[0], 0))
             y_coord = int(round(point[1] - self.starting_point[1], 0))
-            logger.log_info("Sending coordinates: " + str(x_coord) + "," + str(y_coord) + ",0")
+            logger.log_info("Sending coordinates: " + str(x_coord) + "," +
+                            str(y_coord) + ",0")
             self.comm_pi.sendCoordinates(
                 str(x_coord) + "," + str(y_coord) + ",0" + "\n")
 
@@ -125,7 +129,8 @@ class Sequence:
                 robot_angle = robot_detector.find_angle_of_robot()
                 turning_angle = int(round(robot_angle))
 
-                logger.log_info("Sending angle: " + "0,0," + str(turning_angle) + "\n")
+                logger.log_info("Sending angle: " + "0,0," +
+                                str(turning_angle) + "\n")
                 self.comm_pi.sendCoordinates("0,0," + str(turning_angle) +
                                              "\n")
 
@@ -275,7 +280,7 @@ class Sequence:
             return False
 
         return True
-        #assign attributes for further uses
+        # assign attributes for further uses
 
     def get_tension(self):
         self.comm_pi.getTension()
@@ -302,8 +307,12 @@ class Sequence:
         while True:
             coord = "0,-2,0\n"
             logger.log_info("Sending coordinates: " + coord)
-            self.comm_pi.sendCoordinates(coord)  # move two milimeters in -y to get closer to charge station
-            time.sleep(3.5)  # sleep because it takes 3 seconds for charge station to deliver current
+            self.comm_pi.sendCoordinates(
+                coord
+            )  # move two milimeters in -y to get closer to charge station
+            time.sleep(
+                3.5
+            )  # sleep because it takes 3 seconds for charge station to deliver current
             tension = self.comm_pi.getTension()
 
             if tension > 0:
@@ -319,8 +328,5 @@ class Sequence:
         self.comm_pi.sendCoordinates("340,381,0\n")
         time.sleep(1)
 
-
     def grab_piece(self):
         logger.log_info("Trying to grab piece...")
-
-
