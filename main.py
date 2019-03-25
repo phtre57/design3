@@ -17,6 +17,7 @@ from infrastructure.communication_pi.comm_pi import Communication_pi
 from infrastructure.communication_ui.comm_ui import Communication_ui
 from sequence.Sequence import Sequence
 from test.LargeTest.TestConstants import *
+from util.Logger import Logger
 
 parser = argparse.ArgumentParser(description='Process some integers.')
 parser.add_argument(
@@ -25,6 +26,7 @@ args = parser.parse_args()
 
 comm_pi = Communication_pi()
 
+logger = Logger(__name__)
 
 def pathfinding(path, x, y):
     frame = cv2.imread(path)
@@ -88,7 +90,7 @@ def main_sequence_old():
     pathfinding("./image_samples/real_image/globalmonde1ZoneBlanche.jpg", 75,
                 100)
 
-    print("Sequence done")
+    logger.log_info("Sequence done")
 
     init_conn_with_ui()
 
@@ -98,7 +100,7 @@ def start_cam():
 
 
 def calibrate():
-    print("Calibration phase: ")
+    logger.log_info("Calibration phase: ")
     pixel_to_xy_converter = None
     try:
         with open('calibration_data.pkl', 'rb') as input:
@@ -106,13 +108,13 @@ def calibrate():
 
         return pixel_to_xy_converter
     except Exception as ex:
-        print(ex)
-        traceback.print_exc(file=sys.stdout)
+        logger.log_info(ex)
+        traceback.logger.log_info_exc(file=sys.stdout)
 
 
 def main_sequence():
     cap = start_cam()
-    print("Now connecting...")
+    logger.log_info("Now connecting...")
     comm_pi.connectToPi()
     pixel_to_xy_converter = calibrate()
 
@@ -130,18 +132,18 @@ def main_sequence():
 
 
 def init_conn_with_ui():
-    print("Waiting start signal")
+    logger.log_info("Waiting start signal")
     sio = socketio.Client()
     sio.connect('http://localhost:4000?token=MainRobot')
 
     @sio.on('validation')
     def on_validation(v):
-        print('disconnect MainRobot')
+        logger.log_info('disconnect MainRobot')
         sio.disconnect()
 
     @sio.on('start')
     def on_start(v):
-        print('Start signal')
+        logger.log_info('Start signal')
         sio.emit("eventFromRobot", {
             'data': 'Started',
             'type': 'text',
@@ -151,8 +153,10 @@ def init_conn_with_ui():
 
 
 def main():
+    logger.increment_sequence_number()
+
     if (args.debug):
-        print("debug")
+        logger.log_info("debug")
         # connectToPi()
         # sendCoordinates('200 0\n')
     else:
@@ -163,5 +167,5 @@ try:
     main()
 except KeyboardInterrupt:
     comm_pi.disconnectFromPi()
-    print("bye")
-    traceback.print_exc(file=sys.stdout)
+    logger.log_info("bye")
+    traceback.logger.log_info_exc(file=sys.stdout)

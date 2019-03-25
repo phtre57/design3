@@ -30,8 +30,10 @@ def color_detector(frame, color):
         cv2.imshow("SHAPE", shape.frame)
         cv2.waitKey()
 
-    shape.res_contour = find_where_the_shape_is(shape, color, RADIUS_LIMIT)
-    return shape
+    shape.res_contour = find_where_the_shape_is(shape, color, RADIUS_LIMIT,
+                                                True)
+
+    return (shape.res_contour['point'][0], shape.res_contour['point'][1])
 
 
 def create_mask_for_color_detector(og_frame):

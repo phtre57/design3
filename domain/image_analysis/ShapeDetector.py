@@ -78,8 +78,10 @@ class ShapeDetector:
                     continue
                 elif (peri < self.peri_lower):
                     continue
-
-            approx = cv2.approxPolyDP(c, 0.02 * peri, True)
+            if (self.shape_only is not None and self.shape_only == 'circle'):
+                approx = cv2.approxPolyDP(c, 0.02 * peri, True)
+            else:
+                approx = cv2.approxPolyDP(c, 0.05 * peri, True)
 
             ((xRect, yRect), (wRect, hRect), angleRect) = cv2.minAreaRect(c)
 
@@ -131,8 +133,6 @@ class ShapeDetector:
                 continue
 
             if DEBUG:
-                print(wRect, hRect, angleRect)
-
                 img = frameClean.copy()
                 cv2.drawContours(img, c, -1, 255, 3)
                 rect = cv2.minAreaRect(c)
@@ -156,6 +156,9 @@ class ShapeDetector:
 
             if (self.shape_only is not None):
                 if (shape != self.shape_only):
+                    if (DEBUG):
+                        print(len(approx))
+                        print('SKIPPED NOT THE RIGHT SHAPE')
                     continue
 
             self.shapes.append(shape)

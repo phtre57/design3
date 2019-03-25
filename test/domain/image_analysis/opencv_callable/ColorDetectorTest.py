@@ -52,18 +52,15 @@ class ColorDetectorTest(unittest.TestCase):
         frame = cv2.imread(path)
 
         if (SHOW):
-            cv2.imshow('EDGES', frame)
+            cv2.imshow('FROM TEST - FRESH FRAME', frame)
             cv2.waitKey()
 
-        shape = color_detector(frame, color)
+        (x, y) = color_detector(frame, color)
 
         if (SHOW):
             frame1 = frame.copy()
-            cv2.circle(
-                frame1,
-                (shape.res_contour['point'][0], shape.res_contour['point'][1]),
-                round(10), [255, 51, 51])
-            cv2.imshow('CNTS1', frame1)
+            cv2.circle(frame1, (x, y), round(10), [255, 51, 51])
+            cv2.imshow('FROM TEST - SHAPE FRAME', frame1)
             cv2.waitKey()
 
         self.assertEqual(1, 1)
