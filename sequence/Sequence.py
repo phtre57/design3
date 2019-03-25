@@ -323,11 +323,22 @@ class Sequence:
         self.comm_pi.sendCoordinates("340,381,0\n")
         time.sleep(1)
 
-
     def grab_piece(self):
-        img = self.comm_pi.getImage()
-        height, width, channels = img.shape
-        x, y = detect_piece(img, self.piece_shape, self.piece_color)
+        robot_img = self.comm_pi.getImage()
+        height, width, channels = robot_img.shape
+        x, y = detect_piece(robot_img, self.piece_shape, self.piece_color)
+        x_from_center_of_image = x - width/2
+        y_from_center_of_image = y - height/2
+
+        world_img = self.cap.read()
+        robot_detector = RobotDetector(world_img)
+        angle = robot_detector.find_angle_of_robot()
+        real_x, real_y = self.robot_cam_pixel_to_xy_converter\
+            .convert_to_xy_point_given_angle((x_from_center_of_image, y_from_center_of_image), angle)
+
+        string_coord = str(real_x) + "," + str(real_y) + ",0\n"
+        logger.log_info("Sending coordinates: " + string_coord)
+        self.comm_pi.sendCoordinates(string_coord)
 
 
 
