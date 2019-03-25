@@ -7,13 +7,19 @@ from context.config import SHAPE_UTILS_DEBUG
 DEBUG = SHAPE_UTILS_DEBUG
 
 
-def find_where_the_shape_is(shape, color, radius_limit):
-    (lower, upper) = color.color_code
+def find_where_the_shape_is(shape, color, radius_limit, scan_hsv=False):
 
-    lower = np.array(lower, dtype="uint8")
-    upper = np.array(upper, dtype="uint8")
+    mask = None
+    if (scan_hsv):
+        (lower, upper) = color.color_code
 
-    mask = cv2.inRange(shape.frame, lower, upper)
+        lower = np.array(lower, dtype="uint8")
+        upper = np.array(upper, dtype="uint8")
+
+        mask = cv2.inRange(shape.frame, lower, upper)
+    else:
+        (lower, upper) = color.color_code_hsv
+        mask = cv2.inRange(shape.frame, lower, upper)
 
     if (DEBUG):
         cv2.imshow("COLOR FILTER", mask)

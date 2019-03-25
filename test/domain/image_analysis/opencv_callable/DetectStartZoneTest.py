@@ -25,7 +25,7 @@ class DetectStartZoneTest(unittest.TestCase):
         if (LIVE):
             cap = cv2.VideoCapture(1)
             ret, frame = cap.read()
-            shape = detect_zone_dep_world(frame)
+            shape = detect_start_zone(frame)
 
             cv2.imshow('SHAPE FRAME', shape.frame)
             cv2.waitKey()
