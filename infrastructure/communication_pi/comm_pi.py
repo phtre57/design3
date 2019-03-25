@@ -7,7 +7,6 @@ import numpy as np
 import struct  # new
 import base64
 from io import StringIO
-from PIL import Image
 
 # Host = Adresse ip du serveur (ici Raspberry pi)
 # Port = valeur predefinie (doit etre la meme pour le serveur)
