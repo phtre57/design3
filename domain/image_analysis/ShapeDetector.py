@@ -4,8 +4,9 @@ import numpy as np
 
 from domain.image_analysis.ShapeValidator import ShapeValidator
 from domain.image_analysis.Shape import Shape
+from context.config import SHAPE_DETECTOR_DEBUG
 
-debug = True
+DEBUG = SHAPE_DETECTOR_DEBUG
 
 
 class ShapeDetector:
@@ -38,7 +39,7 @@ class ShapeDetector:
                                 cv2.CHAIN_APPROX_SIMPLE)
         cnts = imutils.grab_contours(cnts)
 
-        if debug:
+        if DEBUG:
             frame1 = og_frame.copy()
             cv2.drawContours(frame1, cnts, -1, (0, 255, 0), 3)
             cv2.imshow('CNTS', frame1)
@@ -60,7 +61,7 @@ class ShapeDetector:
 
         for c in cnts:
 
-            if debug:
+            if DEBUG:
                 frame1 = og_frame.copy()
                 cv2.drawContours(frame1, c, -1, (0, 255, 0), 3)
                 cv2.imshow('CNTS1', frame1)
@@ -68,7 +69,7 @@ class ShapeDetector:
 
             shape = "unidentified"
             peri = cv2.arcLength(c, True)
-            if debug:
+            if DEBUG:
                 print("Wave")
                 print(peri)
 
@@ -82,24 +83,24 @@ class ShapeDetector:
 
             ((xRect, yRect), (wRect, hRect), angleRect) = cv2.minAreaRect(c)
 
-            if debug:
+            if DEBUG:
                 print(wRect, hRect, angleRect)
-                # img = frameClean.copy()
-                # cv2.drawContours(img, c, -1, 255, 3)
-                # rect = cv2.minAreaRect(c)
-                # box = cv2.boxPoints(rect)
-                # box = np.int0(box)
-                # cv2.drawContours(img,[box],0,255,2)
-                # filler = cv2.convexHull(c)
-                # cv2.fillConvexPoly(img, filler, 255)
-                # cv2.imshow('SHAPE CHOSEN', img)
-                # cv2.waitKey()
+                img = frameClean.copy()
+                cv2.drawContours(img, c, -1, 255, 3)
+                rect = cv2.minAreaRect(c)
+                box = cv2.boxPoints(rect)
+                box = np.int0(box)
+                cv2.drawContours(img, [box], 0, 255, 2)
+                filler = cv2.convexHull(c)
+                cv2.fillConvexPoly(img, filler, 255)
+                cv2.imshow('SHAPE CHOSEN', img)
+                cv2.waitKey()
 
             if (self.rect_limiter):
-                if (hRect > wRect):
-                    t = wRect
-                    wRect = hRect
-                    hRect = t
+                # if (hRect > wRect):
+                #     t = wRect
+                #     wRect = hRect
+                #     hRect = t
                 if (abs(wRect) < self.w_rect_limit
                         or abs(hRect) < self.h_rect_limit):
                     continue
@@ -115,7 +116,7 @@ class ShapeDetector:
             ((x, y), radius) = cv2.minEnclosingCircle(c)
             # center = (round(int(x)), round(int(y)))
 
-            if debug:
+            if DEBUG:
                 print(radius)
 
             if (self.radius_limiter):
@@ -129,7 +130,7 @@ class ShapeDetector:
             if (self.radius_large and radius > self.radius_large_limit):
                 continue
 
-            if debug:
+            if DEBUG:
                 print(wRect, hRect, angleRect)
 
                 img = frameClean.copy()

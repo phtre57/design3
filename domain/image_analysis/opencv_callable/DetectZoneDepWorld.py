@@ -4,6 +4,7 @@ import numpy as np
 from domain.image_analysis.ShapeDetector import ShapeDetector
 from domain.image_analysis.opencv_callable.Canny import *
 from domain.image_analysis.ShapeUtils import *
+from context.config import DETECT_ZONE_DEP_WORLD_DEBUG
 
 PERI_LIMITER_CHECK = False
 PERI_LIMITER_UPPER = 100000
@@ -17,7 +18,7 @@ RAIDUS_POSITIVE = False
 
 OFFSET_PATHFINDING = 40
 
-DEBUG = True
+DEBUG = DETECT_ZONE_DEP_WORLD_DEBUG
 
 
 def detect_zone_dep_world(og_frame):

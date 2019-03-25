@@ -28,11 +28,11 @@ def detect_start_zone(og_frame):
         cv2.waitKey()
 
     kernel = np.ones((9, 9), np.uint8)
-    edges = cv2.morphologyEx(edges, cv2.MORPH_OPEN, kernel)
-    edges = cv2.dilate(
-        edges,
-        kernel=cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (10, 10)),
-        iterations=1)
+    # edges = cv2.morphologyEx(edges, cv2.MORPH_OPEN, kernel)
+    # edges = cv2.dilate(
+    #     edges,
+    #     kernel=cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (10, 10)),
+    #     iterations=1)
 
     if (DEBUG):
         cv2.imshow('DEBUG', edges)
