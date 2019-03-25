@@ -52,8 +52,8 @@ class Sequence:
                 self.smooth_path = self.__get_smooth_path()
                 break
             except Exception as ex:
-                print(ex)
-                traceback.print_exc(file=sys.stdout)
+                logger.log_error(ex)
+                logger.log_critical(traceback.format_exc())
 
     def __get_smooth_path(self):
         center_and_image = None
@@ -63,7 +63,7 @@ class Sequence:
                 break
             except Exception as ex:
                 logger.log_error(ex)
-                traceback.print_exc(file=sys.stdout)
+                logger.log_critical(traceback.format_exc())
 
         grid_converter = ImageToGridConverter(
             center_and_image['image'], center_and_image['center'][0],
@@ -110,7 +110,7 @@ class Sequence:
                     break
                 except Exception as ex:
                     logger.log_error(ex)
-                    traceback.print_exc(file=sys.stdout)
+                    logger.log_critical(traceback.format_exc())
 
     def __find_current_center_robot(self):
         img = self.take_image_and_draw(self.smooth_path)
@@ -216,7 +216,7 @@ class Sequence:
         self.comm_pi.changeServoHori('2000')
         img = self.take_image()
         shape = detect_pickup_zone(img)
-        print(shape)
+        logger.log_info(shape)
         x, y = shape.center
 
         cv2.circle(img, (x, y), 1, [0, 0, 255])
@@ -301,27 +301,17 @@ class Sequence:
     def charge_robot_at_station(self):
         while True:
             coord = "0,-2,0\n"
-<<<<<<< Updated upstream
-            print("Sending coordinates: " + coord)
-            self.comm_pi.sendCoordinates(coord)  #move two milimeters in -y to get closer to charge station
-            time.sleep(3.5)  # sleep because it takes 3 seconds for charge station to deliver current
-=======
             logger.log_info("Sending coordinates: " + coord)
-            self.comm_pi.sendCoordinates(
-                coord
-            )  # move two milimeters in -y to get closer to charge station
-            time.sleep(
-                3.5
-            )  # sleep because it takes 3 seconds for charge station to deliver current
->>>>>>> Stashed changes
+            self.comm_pi.sendCoordinates(coord)  # move two milimeters in -y to get closer to charge station
+            time.sleep(3.5)  # sleep because it takes 3 seconds for charge station to deliver current
             tension = self.comm_pi.getTension()
 
             if tension > 0:
                 break
 
-        print("Charging robot waiting for that electric feel now...")
-        time.sleep(10) #code here to wait for robot to be charged
-        print("Robot is charged now!")
+        logger.log_info("Charging robot waiting for that electric feel now...")
+        time.sleep(10)  # code here to wait for robot to be charged
+        logger.log_info("Robot is charged now!")
 
     def go_back_from_charge_station(self):
         logger.log_info("Sending coordinates: 340,381,0\n")
@@ -331,6 +321,6 @@ class Sequence:
 
 
     def grab_piece(self):
-        print("Trying to grab piece...")
+        logger.log_info("Trying to grab piece...")
 
 
