@@ -212,7 +212,7 @@ class Sequence:
         self.start()
 
     def go_to_zone_pickup(self):
-        self.comm_pi.changeServoVert('2000')
+        self.comm_pi.changeServoHori('2000')
         img = self.take_image()
         shape = detect_pickup_zone(img)
         print(shape)

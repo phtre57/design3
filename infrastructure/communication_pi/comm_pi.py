@@ -102,6 +102,7 @@ class Communication_pi():
 
         data = data.replace("\r", "")
         data = data.replace("\n", "")
+<<<<<<< HEAD
         """
         temp = ""
         for i in range(len(data)):
@@ -109,6 +110,8 @@ class Communication_pi():
                 break
             temp += data[i]
         """
+=======
+>>>>>>> 4990309f61a397fbd386ca43778c252dbbc87850
 
         return float(data)
 

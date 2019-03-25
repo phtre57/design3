@@ -114,7 +114,7 @@ class Astar(object):
                         heapq.heappush(self.open, (neighbour.net_cost, neighbour))
 
         if len(self.path_in_pixel_coordinates) == 0:
-            raise NoPathFoundException()
+             raise NoPathFoundException()
 
         return self.path_in_pixel_coordinates
 
