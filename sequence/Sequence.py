@@ -204,14 +204,6 @@ class Sequence:
     def end(self):
         self.comm_pi.disconnectFromPi()
 
-    def go_to_qr(self):
-        img = self.take_image()
-        # x_start, x_end = DetectObstacles(img, STRAT_1_Y_CODE_QR)
-        x_start, x_end = 0, 320 - 40
-        self.set_end_point(x_end, STRAT_1_Y_CODE_QR)
-        self.start()
-        self.__dance_to_code_qr(x_start, x_end, STRAT_1_Y_CODE_QR)
-
     def __dance_to_code_qr(self, x_start, x_end, y_axis):
         x_dance_dist = x_end - x_start
         if (x_dance_dist > 80):
@@ -308,7 +300,6 @@ class Sequence:
 
         #assign attributes for further uses
 
-
     def get_tension(self):
         self.comm_pi.getTension()
 
@@ -334,7 +325,7 @@ class Sequence:
         while True:
             coord = "0,-2,0\n"
             print("Sending coordinates: " + coord)
-            self.comm_pi.sendCoordinates(coord) #move two milimeters in -y to get closer to charge station
+            self.comm_pi.sendCoordinates(coord)  # move two milimeters in -y to get closer to charge station
             time.sleep(3.5)  # sleep because it takes 3 seconds for charge station to deliver current
             tension = self.comm_pi.getTension()
 
