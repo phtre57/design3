@@ -275,7 +275,6 @@ class Sequence:
                     self.start()
                     self.__try_to_decode_qr()
                     stop_outer_loop = True
-                    break
 
                 except Exception as ex:
                     print(ex)

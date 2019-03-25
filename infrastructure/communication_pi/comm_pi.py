@@ -103,14 +103,6 @@ class Communication_pi():
         data = data.replace("\r", "")
         data = data.replace("\n", "")
 
-        """
-        temp = ""
-        for i in range(len(data)):
-            if data[i] + data[i + 1] == "\r":
-                break
-            temp += data[i]
-        """
-
         return float(data)
 
 

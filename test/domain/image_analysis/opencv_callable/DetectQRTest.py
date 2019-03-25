@@ -5,6 +5,7 @@ import numpy as np
 import cv2
 import os
 import inspect
+from domain.QRCodeDictionnary import *
 
 class QRTest(unittest.TestCase):
 
@@ -22,7 +23,10 @@ class QRTest(unittest.TestCase):
 
         obj = decode(frame)
 
-        self.assertEqual(str(obj.data), "b'0-rouge-Zone0'")
+        self.assertEqual(obj[COULEUR], "rouge")
+        self.assertEqual(obj[PIECE], None)
+        self.assertEqual(obj[ZONE], "Zone 0")
+
 
 if __name__ == '__main__':
     unittest.main()
