@@ -15,6 +15,8 @@ from domain.image_analysis.opencv_callable.DetectQR import *
 from domain.image_analysis.DetectBlurriness import *
 from domain.image_analysis_pathfinding.RobotDetector import *
 from domain.pathfinding.Exceptions.NoPathFoundException import *
+from domain.image_analysis.opencv_callable.DetectPiece import *
+from domain.QRCodeDictionnary import *
 from util.Logger import Logger
 
 DEBUG = True
@@ -264,14 +266,13 @@ class Sequence:
             cv2.waitKey(0)
 
         # try to decode qr
-        string = decode(img)
-        # FAIRE UN PARSER QUI PARSE ÇA
-        self.piece_color = "red"
-        self.piece_shape = "square"
-        self.depot_number = 1
-        logger.log_info(string)
+        dict_of_values = decode(img)
+        self.piece_color = dict_of_values[COULEUR]
+        self.piece_shape = dict_of_values[PIECE]
+        self.depot_number = dict_of_values[ZONE]
+        logger.log_info("Values of qr code: " +  str(dict_of_values))
 
-        if string is None:
+        if dict_of_values is None:
             return False
 
         return True
@@ -299,6 +300,7 @@ class Sequence:
         # GET RESPONSE
 
     def charge_robot_at_station(self):
+        increment = 0
         while True:
             coord = "0,-2,0\n"
             logger.log_info("Sending coordinates: " + coord)
@@ -306,8 +308,10 @@ class Sequence:
             time.sleep(3.5)  # sleep because it takes 3 seconds for charge station to deliver current
             tension = self.comm_pi.getTension()
 
-            if tension > 0:
+            if tension > 0 or increment == 5:
                 break
+
+            increment += 1
 
         logger.log_info("Charging robot waiting for that electric feel now...")
         time.sleep(10)  # code here to wait for robot to be charged
@@ -321,6 +325,10 @@ class Sequence:
 
 
     def grab_piece(self):
-        logger.log_info("Trying to grab piece...")
+        img = self.comm_pi.getImage()
+        height, width, channels = img.shape
+        x, y = detect_piece(img, self.piece_shape, self.piece_color)
+
+
 
 
