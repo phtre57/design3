@@ -11,14 +11,16 @@ def find_where_the_shape_is(shape, color, radius_limit, scan_hsv=False):
 
     mask = None
     if (scan_hsv):
+        hsv_frame = shape.frame.copy()
+        hsv_frame = cv2.cvtColor(hsv_frame, cv2.COLOR_BGR2HSV)
+        (lower, upper) = color.color_code_hsv
+        mask = cv2.inRange(hsv_frame, lower, upper)
+    else:
         (lower, upper) = color.color_code
 
         lower = np.array(lower, dtype="uint8")
         upper = np.array(upper, dtype="uint8")
 
-        mask = cv2.inRange(shape.frame, lower, upper)
-    else:
-        (lower, upper) = color.color_code_hsv
         mask = cv2.inRange(shape.frame, lower, upper)
 
     if (DEBUG):

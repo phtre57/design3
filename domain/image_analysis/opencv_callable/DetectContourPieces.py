@@ -2,6 +2,7 @@ import cv2
 
 from domain.image_analysis.ShapeDetector import ShapeDetector
 from domain.image_analysis.opencv_callable.Canny import canny, dilate_mask
+from domain.image_analysis.ShapeUtils import find_center
 
 PERI_LIMITER_CHECK = True
 PERI_LIMITER_UPPER = 160
@@ -29,4 +30,9 @@ def detect_contour_pieces(og_frame, str_shape):
     shape = shapeDetector.detect(edges, og_frame.copy())
     shape.set_frame(shape.frameWithText)
 
-    return shape
+    if (len(shape.approx) != 1):
+        raise Exception('Detect con tour pieces have found multiple shape')
+
+    (x, y) = find_center(shape.approx[0][1], 4, shape)
+
+    return (x, y)

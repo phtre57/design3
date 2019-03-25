@@ -6,6 +6,8 @@ import cv2
 import os
 import inspect
 
+SHOW = False
+
 
 class DetectContourPiecesTest(unittest.TestCase):
     def setUp(self):
@@ -45,10 +47,11 @@ class DetectContourPiecesTest(unittest.TestCase):
         cv2.imshow('FROM TEST - FRESH FRAME', frame)
         cv2.waitKey()
 
-        shape = detect_contour_pieces(frame, str_shape)
-
-        cv2.imshow('FROM TEST - SHAPE FRAME', shape.frame)
-        cv2.waitKey()
+        if (SHOW):
+            (x, y) = detect_contour_pieces(frame, str_shape)
+            cv2.circle(frame, (x, y), 1, [255, 51, 51])
+            cv2.imshow('FROM TEST - SHAPE FRAME', frame)
+            cv2.waitKey()
 
         self.assertEqual(1, 1)
 
