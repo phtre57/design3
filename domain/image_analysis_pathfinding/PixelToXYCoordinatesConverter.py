@@ -57,6 +57,10 @@ class PixelToXYCoordinatesConverter:
 
         self.__init_xy_factors()
 
+    def __init__(self, x_factor, y_factor):
+        self.x_pixel_to_mm_factor = x_factor
+        self.y_pixel_to_mm_factor = y_factor
+
     def __create_real_world_object_points(self):
         self.object_points[:, :2] = np.mgrid[0:self.nb_lines, 0:self.
                                              nb_columns].T.reshape(-1, 2)

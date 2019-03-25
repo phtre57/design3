@@ -32,6 +32,8 @@ Y_ARRAY_FOR_QR_STRATEGY = [120, 145, 170, 90]
 X_RANGE_FOR_QR_STRATEGY = [200, 230, 260, 285]
 
 logger = Logger(__name__)
+
+
 class Sequence:
     def __init__(self, cap, comm_pi, world_cam_pixel_to_xy_converter, robot_cam_pixel_to_xy_converter):
         self.cap = cap
