@@ -163,7 +163,7 @@ class PixelToXYCoordinatesConverter:
         x = final_pixel_point[0] - (LENGTH / 2)
 
         if DEBUG:
-            # print(x)
+            print(x)
 
         correction_factor = 1
         if (x < 0):
@@ -174,7 +174,7 @@ class PixelToXYCoordinatesConverter:
         correction = np.tan(top_angle) * ROBOT_HEIGHT
 
         if DEBUG:
-            # print("##############################################")
+            print("##############################################")
             # print("##############################################")
             # print("##############################################")
             # print(correction * correction_factor)
