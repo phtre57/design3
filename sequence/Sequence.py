@@ -30,12 +30,13 @@ X_RANGE_FOR_QR_STRATEGY = [200, 230, 260, 285]
 
 
 class Sequence:
-    def __init__(self, cap, comm_pi, pixel_to_xy_converter):
+    def __init__(self, cap, comm_pi, world_cam_pixel_to_xy_converter, robot_cam_pixel_to_xy_converter):
         self.cap = cap
         self.X_END = None
         self.Y_END = None
         self.comm_pi = comm_pi
-        self.pixel_to_xy_converter = pixel_to_xy_converter
+        self.world_cam_pixel_to_xy_converter = world_cam_pixel_to_xy_converter
+        self.robot_cam_pixel_to_xy_converter = robot_cam_pixel_to_xy_converter
         self.real_path = None
         self.starting_point = None
         self.smooth_path = None
@@ -85,7 +86,7 @@ class Sequence:
         return smooth_path
 
     def __convert_to_xy(self):
-        self.real_path = self.pixel_to_xy_converter.convert_to_xy(
+        self.real_path = self.world_cam_pixel_to_xy_converter.convert_to_xy(
             self.smooth_path)
         self.starting_point = self.real_path[0]
         self.real_path = self.real_path[1:]
@@ -103,7 +104,7 @@ class Sequence:
             while True:
                 try:
                     center_and_image = self.__find_current_center_robot()
-                    self.starting_point = self.pixel_to_xy_converter.convert_to_xy_point(
+                    self.starting_point = self.world_cam_pixel_to_xy_converter.convert_to_xy_point(
                         (center_and_image['center'][0],
                          center_and_image['center'][1]))
                     break
@@ -230,7 +231,7 @@ class Sequence:
     def end(self):
         self.comm_pi.disconnectFromPi()
 
-    def make_dat_dance_to_decode_qr_boy(self):
+    def move_to_decode_qr(self):
         self.comm_pi.changeServoVert('6000')
         self.comm_pi.changeServoHori('5500')
         stop_outer_loop = False
@@ -297,23 +298,29 @@ class Sequence:
         time.sleep(1)
         # GET RESPONSE
 
-    def charge_dat_boy_at_charge_station(self):
+    def charge_robot_at_station(self):
         while True:
             coord = "0,-2,0\n"
             print("Sending coordinates: " + coord)
-            self.comm_pi.sendCoordinates(
-                coord
-            )  #move two milimeters in -y to get closer to charge station
-            time.sleep(
-                3.5
-            )  # sleep because it takes 3 seconds for charge station to deliver current
+            self.comm_pi.sendCoordinates(coord)  #move two milimeters in -y to get closer to charge station
+            time.sleep(3.5)  # sleep because it takes 3 seconds for charge station to deliver current
             tension = self.comm_pi.getTension()
 
             if tension > 0:
                 break
+
+        print("Charging robot waiting for that electric feel now...")
+        time.sleep(10) #code here to wait for robot to be charged
+        print("Robot is charged now!")
 
     def go_back_from_charge_station(self):
         print("Sending coordinates: 340,381,0\n")
         time.sleep(0.5)
         self.comm_pi.sendCoordinates("340,381,0\n")
         time.sleep(1)
+
+
+    def grab_piece(self):
+        print("Trying to grab piece...")
+
+
