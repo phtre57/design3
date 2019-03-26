@@ -19,6 +19,7 @@ from domain.pathfinding.Exceptions.NoBeginingPointException import *
 from domain.image_analysis.opencv_callable.DetectPiece import *
 from domain.QRCodeDictionnary import *
 from util.Logger import Logger
+from domain.image_analysis.Cardinal import *
 
 DEBUG = False
 ROBOT_DANCE_X_POSITIVE = "50,0,0\n"
@@ -423,10 +424,28 @@ class Sequence:
         string_coord = str(real_x) + "," + str(real_y) + ",0\n"
         self.comm_pi.sendCoordinates(string_coord)
 
+    def rotate_robot_on_zone_dep(self):
+        self.__rotate_robot_on_zone_plane(self.zone_dep_cardinal)
+
+    def rotate_robot_on_zone_pickup(self):
+        self.__rotate_robot_on_zone_plane(self.zone_pickup_cardinal)
+
     def __rotate_robot_on_zone_plane(self, cardinal_point):
         img = self.take_image()
         robot_detector = RobotDetector(img)
-        angle = robot_detector.find_angle_of_robot()
+        robot_angle = robot_detector.find_angle_of_robot()
+
+        if cardinal_point == EAST():
+            self.__rotate_to_east(robot_angle)
+
+        if cardinal_point == SOUTH():
+            self.__rotate_to_south(robot_angle)
+
+        if cardinal_point == WEST():
+            self.__rotate_to_west(robot_angle)
+
+        if cardinal_point == NORTH():
+            self.__rotate_to_north(robot_angle)
 
     def __rotate_to_north(self, current_robot_angle):
         rotate_angle = round(90 - current_robot_angle)
