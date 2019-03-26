@@ -2,29 +2,37 @@ import os
 import logging
 import datetime
 
+
 class Logger(object):
     def __init__(self, module_name):
         # File paths from root
-        self.sequence_count_path = os.path.normpath(os.path.join(os.path.dirname(__file__), "sequence_count.txt"))
-        self.log_path = os.path.normpath(os.path.join(os.path.dirname(__file__), "log/sequenceX.log"))
+        self.sequence_count_path = os.path.normpath(
+            os.path.join(os.path.dirname(__file__), "sequence_count.txt"))
+        self.log_path = os.path.normpath(
+            os.path.join(os.path.dirname(__file__), "log/sequenceX.log"))
 
         # Create the logger
         self.logger = logging.getLogger(module_name)
         self.logger.setLevel(logging.DEBUG)
 
         # Time and message formatter
-        logger_formatter = logging.Formatter('%(asctime)s : %(name)s \n%(levelname)s - %(message)s')
+        logger_formatter = logging.Formatter(
+            '%(asctime)s : %(name)s \n%(levelname)s - %(message)s')
 
         # File handler
         file_number = open(self.sequence_count_path).read()
         file_name = self.log_path.replace("X", file_number)
+
+        # File Check
+        f = open(file_name, 'a+')
+        f.close()
 
         logger_handler = logging.FileHandler(file_name)
         logger_handler.setLevel(logging.DEBUG)
         logger_handler.setFormatter(logger_formatter)
 
         self.logger.addHandler(logger_handler)
-    
+
     def increment_sequence_number(self):
         file_number = open(self.sequence_count_path).read()
 
@@ -51,7 +59,7 @@ class Logger(object):
     def log_debug(self, message):
         print(message)
         self.logger.debug(message)
-    
+
     def log_error(self, message):
         print(message)
         self.logger.error(message)

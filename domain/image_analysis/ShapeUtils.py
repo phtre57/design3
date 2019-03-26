@@ -90,7 +90,7 @@ def validate_if_contour_is_too_small(c, radius_limit, shape):
 
 def find_center_for_zone_dep(shape, radius_limit):
     c = shape.approx[0][2]
-    if (validate_if_contour_is_too_small(c, radius_limit)):
+    if (validate_if_contour_is_too_small(c, radius_limit, shape)):
         return (0, 0)
 
     ((x, y), radius) = cv2.minEnclosingCircle(c)

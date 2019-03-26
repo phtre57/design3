@@ -19,13 +19,16 @@ from domain.image_analysis.opencv_callable.DetectPiece import *
 from domain.QRCodeDictionnary import *
 from util.Logger import Logger
 
-DEBUG = True
+DEBUG = False
 ROBOT_DANCE_X_POSITIVE = "50,0,0\n"
 ROBOT_DANCE_X_NEGATIVE = "-50,0,0\n"
 
 STRAT_1_Y_CODE_QR = 145
 STRAT_2_Y_CODE_QR = 145
 STRAT_3_Y_CODE_QR = 145
+
+X_END_START_ZONE = 81
+Y_END_START_ZONE = 121
 
 Y_ARRAY_FOR_QR_STRATEGY = [120, 145, 170, 90]
 
@@ -84,10 +87,13 @@ class Sequence:
             smooth_path = path_smoother.smooth_path()
             self.__draw_path(smooth_path, grid_converter)
         except Exception:
-            frame = self.take_image()
-            cv2.circle(frame, (self.X_END * 2, self.Y_END * 2), 1, [0, 0, 255])
-            cv2.imshow('BUG PATH', frame)
-            cv2.waitKey()
+            if (DEBUG):
+                frame = self.take_image()
+                cv2.circle(frame, (self.X_END * 2, self.Y_END * 2), 1,
+                           [0, 0, 255])
+                cv2.imshow('OBSTACLE PATH', frame)
+                cv2.waitKey()
+            raise Exception('Can\'t find any path')
 
         return smooth_path
 
@@ -194,12 +200,12 @@ class Sequence:
     def go_to_start_zone(self):
         img = self.take_image()
 
-        shape = detect_start_zone(img)
-
-        cv2.imshow('ZoneDep', shape.frame)
-        cv2.waitKey()
-
-        x, y = shape.center
+        try:
+            (x, y) = detect_start_zone(img)
+        except Exception:
+            logger.log_critical(
+                'START ZONE NOT DETECTED, FALL BACK TO HARDCODED')
+            (x, y) = (X_END_START_ZONE, Y_END_START_ZONE)
         self.X_END = round(x / 2)
         self.Y_END = round(y / 2)
         self.start()
@@ -253,6 +259,9 @@ class Sequence:
                         break
                 except Exception as ex:
                     logger.log_error(ex)
+                    logger.log_debug(
+                        'Decode QR fallback to other point, obstacle in the way'
+                    )
                     pass
                     # traceback.print_exc(file=sys.stdout)
 
@@ -307,7 +316,7 @@ class Sequence:
     def charge_robot_at_station(self):
         increment = 0
         while True:
-            coord = "0,-2,0\n"
+            coord = "0,-7,0\n"
             logger.log_info("Sending coordinates: " + coord)
             self.comm_pi.sendCoordinates(
                 coord

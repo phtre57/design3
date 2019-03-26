@@ -28,6 +28,8 @@ comm_pi = Communication_pi()
 
 logger = Logger(__name__)
 
+CANCER_MAC_USER = False
+
 
 def connect(comm_pi):
     if comm_pi is None:
@@ -109,10 +111,23 @@ def start_cam():
 
 
 def calibrate():
-    logger.log_info("Calibration phase: ")
+    logger.log_info("Calibration World Cam phase: ")
     pixel_to_xy_converter = None
     try:
         with open('calibration_data.pkl', 'rb') as input:
+            pixel_to_xy_converter = pickle.load(input)
+
+        return pixel_to_xy_converter
+    except Exception as ex:
+        logger.log_info(ex)
+        traceback.logger.log_info_exc(file=sys.stdout)
+
+
+def calibrateEmbark():
+    logger.log_info("Calibration Embark Cam phase: ")
+    pixel_to_xy_converter = None
+    try:
+        with open('calibration_embark.pkl', 'rb') as input:
             pixel_to_xy_converter = pickle.load(input)
 
         return pixel_to_xy_converter
@@ -135,28 +150,28 @@ def main_sequence(ui=True):
 
     connect(comm_pi)
     pixel_to_xy_converter = calibrate()
+    robot_cam_pixel_to_xy_converter = calibrateEmbark()
 
-    # X_END = X_END_START
-    # Y_END = Y_END_START
-
-    # X_END = X_END_CHARGE
-    # Y_END = Y_END_CHARGE
-
-    sequence = Sequence(cap, comm_pi, pixel_to_xy_converter)
-    print("Go to start zone...")
+    sequence = Sequence(cap, comm_pi, pixel_to_xy_converter,
+                        robot_cam_pixel_to_xy_converter)
+    logger.log_info('Go to start zone...')
     # sequence.set_end_point(X_END_START, Y_END_START)
     # sequence.start()
     sequence.go_to_start_zone()
-    print("Go to start charge station...")
-    sequence.go_to_c_charge_station()
-    print("Go back from start charge station...")
-    sequence.go_back_from_charge_station()
-    print("Go to qr...")
-    # sequence.make_dat_dance_to_decode_qr_boy()
+    logger.log_info('Go to start charge station...')
+    # sequence.go_to_c_charge_station()
+    logger.log_info('Charging at charge station')
+    # sequence.charge_robot_at_station()
+    logger.log_info('Go back from start charge station...')
+    # sequence.go_back_from_charge_station()
+    logger.log_info('Go to qr...')
+    sequence.move_to_decode_qr()
+    sequence.go_to_start_zone()
     # sequence.go_to_zone_dep()
-    sequence.go_to_zone_pickup()
+    # sequence.go_to_zone_pickup()
+
     sequence.end()
-    print("Sad face we're done...")
+    logger.log_info('Sequence is done...')
 
     # sequence.go_to_zone_dep()
 
@@ -193,11 +208,10 @@ def main():
     logger.increment_sequence_number()
 
     if (args.debug):
-        logger.log_info("debug")
+        logger.log_info("debug mode")
         init_conn_without_ui()
-        # connectToPi()
-        # sendCoordinates('200 0\n')
     else:
+        logger.log_info("ui mode")
         init_conn_with_ui()
 
 
@@ -206,4 +220,4 @@ try:
 except KeyboardInterrupt:
     comm_pi.disconnectFromPi()
     logger.log_info("bye")
-    traceback.logger.log_info_exc(file=sys.stdout)
+    logger.log_critical(traceback.format_exc())

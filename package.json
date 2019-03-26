@@ -13,8 +13,9 @@
     "main": "python -m main",
     "start": "node ui/node_server/index.js",
     "client": "cd ./ui/web_client && yarn start",
-    "test-l": "python -m test.LargeTest.MovingRobotTestLarge",
-    "deco": "python -m test.LargeTest.DecoTestLarge"
+    "test-l": "python -m main --d True",
+    "deco": "python -m test.LargeTest.DecoTestLarge",
+    "calibrate": "python -m util.CalibrateCams"
   },
   "repository": {
     "type": "git",

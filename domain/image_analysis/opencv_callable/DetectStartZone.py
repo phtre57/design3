@@ -4,18 +4,30 @@ import numpy as np
 from domain.image_analysis.ShapeDetector import ShapeDetector
 from domain.image_analysis.opencv_callable.Canny import canny, erode_mask
 from domain.image_analysis.ShapeUtils import *
+from context.config import *
+from util.Logger import Logger
 
 PERI_LIMITER_CHECK = True
-PERI_LIMITER_UPPER = 1000
-PERI_LIMITER_LOWER = 300
+PERI_LIMITER_UPPER = 3000
+PERI_LIMITER_LOWER = 700
 RECT_LIMITER_CHECK = True
-RECT_W_LIMITER = 150
-RECT_H_LIMITER = 150
+RECT_W_LIMITER = 155
+RECT_H_LIMITER = 155
+RECT_W_LIMITER_UP = 240
+RECT_H_LIMITER_UP = 240
+
+HC_RECT_W_LIMITER = 165
+HC_RECT_H_LIMITER = 165
+HC_RECT_W_LIMITER_UP = None
+HC_RECT_H_LIMITER_UP = None
+
 RADIUS_LIMITER_CHECK = False
 RADIUS_LIMITER = 250
 RAIDUS_POSITIVE = True
 
-DEBUG = True
+DEBUG = DETECT_START_ZONE_DEBUG
+
+logger = Logger(__name__)
 
 
 def detect_start_zone(og_frame):
@@ -27,40 +39,38 @@ def detect_start_zone(og_frame):
         cv2.imshow('DEBUG', edges)
         cv2.waitKey()
 
-    kernel = np.ones((9, 9), np.uint8)
-    # edges = cv2.morphologyEx(edges, cv2.MORPH_OPEN, kernel)
-    # edges = cv2.dilate(
-    #     edges,
-    #     kernel=cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (10, 10)),
-    #     iterations=1)
-
-    if (DEBUG):
-        cv2.imshow('DEBUG', edges)
-        cv2.waitKey()
-
     shapeDetector = ShapeDetector(PERI_LIMITER_CHECK, RECT_LIMITER_CHECK,
                                   RADIUS_LIMITER_CHECK)
     shapeDetector.set_peri_limiter(PERI_LIMITER_LOWER, PERI_LIMITER_UPPER)
-    shapeDetector.set_rect_limiter(RECT_W_LIMITER, RECT_H_LIMITER)
+    shapeDetector.set_rect_limiter(RECT_W_LIMITER, RECT_H_LIMITER, None,
+                                   RECT_W_LIMITER_UP, RECT_H_LIMITER_UP)
 
     shape = shapeDetector.detect(edges, og_frame.copy())
 
     mask = shape.frameClean
 
     if (DEBUG):
-        cv2.imshow('DEBUG', mask)
+        cv2.imshow('FRAME CLEAN', mask)
         cv2.waitKey()
 
     output = cv2.bitwise_and(frame, frame, mask=mask)
 
     shape.set_frame(output)
 
-    if (len(shape.approx) > 1 or len(shape.approx) == 0):
-        raise Exception("Can't find start zone")
+    if (len(shape.approx) == 0):
+        cv2.imshow('RAISE', shape.frame)
+        cv2.waitKey()
+        raise Exception("Can't find start zone", len(shape.approx))
+    elif (len(shape.approx) > 1):
+        shape.approx = shape.approx[:1]
+        logger.log_warning(
+            'Found multiples possible start zone, took the first one')
+    else:
+        logger.log_debug('Detect start zone with success')
 
     shape.center = find_center_for_zone_dep(shape, 100)
 
     cv2.circle(shape.frame, (shape.center[0], shape.center[1]), 1,
                [255, 51, 51])
 
-    return shape
+    return (shape.center[0], shape.center[1])

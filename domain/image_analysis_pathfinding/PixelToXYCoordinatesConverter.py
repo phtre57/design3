@@ -5,8 +5,11 @@ from domain.image_analysis.ImageToGridConverter import *
 CRITERIA = (cv2.TERM_CRITERIA_EPS + cv2.TERM_CRITERIA_MAX_ITER, 30, 0.001)
 NUMBER_OF_COLUMNS = 7
 NUMBER_OF_LINES = 7
+EMBARK_NUMBER_OF_COLUMNS = 3
+EMBARK_NUMBER_OF_LINES = 4
 CHESS_SQUARE_WIDTH = 64  # real constant used with chessboard
 EMBARKED_CHESS_SQUARE_WIDTH = 10  # real constant with small chessboard fo rembark camera
+EMBARKED_PIXEL_WIDTH = 21  # real constant with small chessboard fo rembark camera
 IMAGE_SCALE_FACTOR = 2
 INVERSE_SIGN = -1
 CAMERA_HEIGHT = 2010
@@ -39,23 +42,30 @@ class PixelToXYCoordinatesConverter:
                  square_width,
                  number_of_lines,
                  number_of_columns,
-                 show_image=False):
-        self.nb_lines = number_of_lines
-        self.nb_columns = number_of_columns
-        self.image = image.copy()
-        self.square_width = square_width
-        self.object_points = np.zeros((self.nb_columns * self.nb_lines, 3),
-                                      np.int32)
-        self.real_object_points = []
-        self.image_points = []
-        self.__create_real_object_points_and_image_points(show_image)
+                 show_image=False,
+                 embark=False):
+        if (embark):
+            self.x_pixel_to_mm_factor = (
+                EMBARKED_CHESS_SQUARE_WIDTH / EMBARKED_PIXEL_WIDTH)
+            self.y_pixel_to_mm_factor = (
+                EMBARKED_CHESS_SQUARE_WIDTH / EMBARKED_PIXEL_WIDTH)
+        else:
+            self.nb_lines = number_of_lines
+            self.nb_columns = number_of_columns
+            self.image = image.copy()
+            self.square_width = square_width
+            self.object_points = np.zeros((self.nb_columns * self.nb_lines, 3),
+                                          np.int32)
+            self.real_object_points = []
+            self.image_points = []
+            self.__create_real_object_points_and_image_points(show_image)
 
-        self.x_pixel_square_width = None
-        self.y_pixel_square_width = None
-        self.x_pixel_to_mm_factor = None
-        self.y_pixel_to_mm_factor = None
+            self.x_pixel_square_width = None
+            self.y_pixel_square_width = None
+            self.x_pixel_to_mm_factor = None
+            self.y_pixel_to_mm_factor = None
 
-        self.__init_xy_factors()
+            self.__init_xy_factors()
 
     def __create_real_world_object_points(self):
         self.object_points[:, :2] = np.mgrid[0:self.nb_lines, 0:self.
@@ -66,7 +76,7 @@ class PixelToXYCoordinatesConverter:
 
         ret, corners = cv2.findChessboardCorners(
             gray, (self.nb_lines, self.nb_columns), None)
-        # print("Ret value: " + str(ret))
+        print("Ret value: " + str(ret))
 
         if ret:
             self.__create_real_world_object_points()

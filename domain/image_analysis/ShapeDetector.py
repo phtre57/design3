@@ -29,6 +29,8 @@ class ShapeDetector:
         self.radius_large = radius_large
         self.radius_large_limit = 0
         self.shape_only = None
+        self.w_rect_limit_up = None
+        self.h_rect_limit_up = None
 
     def detect(self, frame, og_frame):
         frame = frame.copy()
@@ -95,7 +97,7 @@ class ShapeDetector:
                 cv2.drawContours(img, [box], 0, 255, 2)
                 filler = cv2.convexHull(c)
                 cv2.fillConvexPoly(img, filler, 255)
-                cv2.imshow('SHAPE CHOSEN', img)
+                cv2.imshow('SHAPE CHOSEN RECT', img)
                 cv2.waitKey()
 
             if (self.rect_limiter):
@@ -106,6 +108,14 @@ class ShapeDetector:
                 if (abs(wRect) < self.w_rect_limit
                         or abs(hRect) < self.h_rect_limit):
                     continue
+                if (self.w_rect_limit_up is not None
+                        and self.h_rect_limit_up is not None
+                        and (abs(wRect) > self.w_rect_limit_up
+                             or abs(hRect) > self.h_rect_limit_up)):
+                    continue
+
+                if DEBUG:
+                    print('Rect passed')
 
             if (self.angle_limiter):
                 if (abs(angleRect) > 80):
@@ -114,6 +124,9 @@ class ShapeDetector:
                 else:
                     if (90 - abs(angleRect) < 82):
                         continue
+
+                if DEBUG:
+                    print('Angle passed')
 
             ((x, y), radius) = cv2.minEnclosingCircle(c)
             # center = (round(int(x)), round(int(y)))
@@ -129,6 +142,9 @@ class ShapeDetector:
                     if (radius < self.radius_limit):
                         continue
 
+                if DEBUG:
+                    print('Radius passed')
+
             if (self.radius_large and radius > self.radius_large_limit):
                 continue
 
@@ -141,14 +157,14 @@ class ShapeDetector:
                 cv2.drawContours(img, [box], 0, 255, 2)
                 filler = cv2.convexHull(c)
                 cv2.fillConvexPoly(img, filler, 255)
-                cv2.imshow('SHAPE CHOSEN', img)
+                cv2.imshow('SHAPE CHOSEN RADIUS', img)
                 cv2.waitKey()
 
                 frame2 = frame.copy()
                 kernelerode = np.ones((8, 8), np.uint8)
                 frame2 = cv2.erode(frame2, kernelerode, iterations=6)
                 cv2.drawContours(frame2, c, -1, (0, 255, 0), 3)
-                cv2.imshow('SHAPE CHOSEN', frame2)
+                cv2.imshow('SHAPE CHOSEN RADIUS', frame2)
                 cv2.waitKey()
 
             shapeValidator = ShapeValidator()
@@ -183,10 +199,17 @@ class ShapeDetector:
         self.peri_lower = peri_lower
         self.peri_upper = peri_upper
 
-    def set_rect_limiter(self, w_rect_limit, h_rect_limit, angle_limiter=None):
+    def set_rect_limiter(self,
+                         w_rect_limit,
+                         h_rect_limit,
+                         angle_limiter=None,
+                         h_rect_limit_up=None,
+                         w_rect_limit_up=None):
         self.w_rect_limit = w_rect_limit
         self.h_rect_limit = h_rect_limit
         self.angle_limiter = angle_limiter
+        self.h_rect_limit_up = h_rect_limit_up
+        self.w_rect_limit_up = w_rect_limit_up
 
     def set_radius_limiter(self, radius_limit, radius_positive):
         self.radius_limit = radius_limit
