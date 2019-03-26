@@ -101,7 +101,6 @@ class Sequence:
             self.__send_rotation_angle(self.smooth_path)
             x_coord = int(round(point[0] - self.starting_point[0], 0))
             y_coord = int(round(point[1] - self.starting_point[1], 0))
-            logger.log_info("Sending coordinates: " + str(x_coord) + "," + str(y_coord) + ",0")
             self.comm_pi.sendCoordinates(
                 str(x_coord) + "," + str(y_coord) + ",0" + "\n")
 
@@ -129,7 +128,6 @@ class Sequence:
                 robot_angle = robot_detector.find_angle_of_robot()
                 turning_angle = int(round(robot_angle))
 
-                logger.log_info("Sending angle: " + "0,0," + str(turning_angle) + "\n")
                 self.comm_pi.sendCoordinates("0,0," + str(turning_angle) +
                                              "\n")
 
@@ -272,7 +270,7 @@ class Sequence:
         self.piece_color = dict_of_values[COULEUR]
         self.piece_shape = dict_of_values[PIECE]
         self.depot_number = dict_of_values[ZONE]
-        logger.log_info("Values of qr code: " +  str(dict_of_values))
+        logger.log_info("Values of qr code: " + str(dict_of_values))
 
         if dict_of_values is None:
             return False
@@ -294,7 +292,6 @@ class Sequence:
 
     def go_to_c_charge_station(self):
         self.__send_rotation_angle()
-        logger.log_info("Sending coordinates: -340,-381,0\n")
         time.sleep(0.5)
         self.comm_pi.sendCoordinates("-340,-381,0\n")
         # WAIT TO CHARGE
@@ -305,7 +302,6 @@ class Sequence:
         increment = 0
         while True:
             coord = "0,-2,0\n"
-            logger.log_info("Sending coordinates: " + coord)
             self.comm_pi.sendCoordinates(coord)  # move two milimeters in -y to get closer to charge station
             time.sleep(3.5)  # sleep because it takes 3 seconds for charge station to deliver current
             tension = self.comm_pi.getTension()
@@ -320,7 +316,6 @@ class Sequence:
         logger.log_info("Robot is charged now!")
 
     def go_back_from_charge_station(self):
-        logger.log_info("Sending coordinates: 340,381,0\n")
         time.sleep(0.5)
         self.comm_pi.sendCoordinates("340,381,0\n")
         time.sleep(1)
@@ -339,7 +334,6 @@ class Sequence:
             .convert_to_xy_point_given_angle((x_from_center_of_image, y_from_center_of_image), angle)
 
         string_coord = str(real_x) + "," + str(real_y) + ",0\n"
-        logger.log_info("Sending coordinates: " + string_coord)
         self.comm_pi.sendCoordinates(string_coord)
 
 
