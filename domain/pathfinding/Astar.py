@@ -61,6 +61,10 @@ class Astar(object):
     def __rewind_path(self):
         print(self.path)
         cell = self.ending_cell
+
+        if len(self.path_in_pixel_coordinates) == 0:
+            raise NoPathFoundException()
+
         while cell.parent is not self.starting_cell:
             self.path.append(cell)
             cell = cell.parent
