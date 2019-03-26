@@ -407,6 +407,34 @@ class Sequence:
         self.comm_pi.sendCoordinates("340,381,0\n")
         time.sleep(1)
 
+    def move_robot_around_pickup_zone(self):
+        mm_movement_point = (30, 0)
+        number_of_increment = 5
+
+        if self.zone_pickup_cardinal == SOUTH():
+            logger.log_info("Move around south pick up...")
+            for i in range(number_of_increment):
+                x, y = self.robot_cam_pixel_to_xy_converter.convert_real_xy_given_angle(mm_movement_point, -90)
+                self.comm_pi.sendCoordinates(str(x) + "," + str(y) + ",0\n")
+
+        if self.zone_pickup_cardinal == NORTH():
+            logger.log_info("Move around north pick up...")
+            for i in range(number_of_increment):
+                x, y = self.robot_cam_pixel_to_xy_converter.convert_real_xy_given_angle(mm_movement_point, 90)
+                self.comm_pi.sendCoordinates(str(x) + "," + str(y) + ",0\n")
+
+        if self.zone_pickup_cardinal == EAST():
+            logger.log_info("Move around north pick up...")
+            for i in range(number_of_increment):
+                x, y = self.robot_cam_pixel_to_xy_converter.convert_real_xy_given_angle(mm_movement_point, 0)
+                self.comm_pi.sendCoordinates(str(x) + "," + str(y) + ",0\n")
+
+        if self.zone_pickup_cardinal == WEST():
+            logger.log_info("Move around north pick up...")
+            for i in range(number_of_increment):
+                x, y = self.robot_cam_pixel_to_xy_converter.convert_real_xy_given_angle(mm_movement_point, 180)
+                self.comm_pi.sendCoordinates(str(x) + "," + str(y) + ",0\n")
+
     def grab_piece(self):
         logger.log_info("Trying to grab piece...")
         robot_img = self.comm_pi.getImage()
@@ -425,9 +453,11 @@ class Sequence:
         self.comm_pi.sendCoordinates(string_coord)
 
     def rotate_robot_on_zone_dep(self):
+        logger.log_info("Rotate on sone dep plane...")
         self.__rotate_robot_on_zone_plane(self.zone_dep_cardinal)
 
     def rotate_robot_on_zone_pickup(self):
+        logger.log_info("Rotate on pickup zone plane...")
         self.__rotate_robot_on_zone_plane(self.zone_pickup_cardinal)
 
     def __rotate_robot_on_zone_plane(self, cardinal_point, first_it=True):
@@ -436,21 +466,25 @@ class Sequence:
         robot_angle = robot_detector.find_angle_of_robot()
 
         if cardinal_point == EAST():
+            logger.log_info("Rotate to east...")
             self.__rotate_to_east(robot_angle)
             if first_it:
                 self.__rotate_robot_on_zone_plane(EAST(), False)
 
         if cardinal_point == SOUTH():
+            logger.log_info("Rotate to south...")
             self.__rotate_to_south(robot_angle)
             if first_it:
                 self.__rotate_robot_on_zone_plane(SOUTH(), False)
 
         if cardinal_point == WEST():
+            logger.log_info("Rotate to west...")
             self.__rotate_to_west(robot_angle)
             if first_it:
                 self.__rotate_robot_on_zone_plane(WEST(), False)
 
         if cardinal_point == NORTH():
+            logger.log_info("Rotate to north...")
             self.__rotate_to_north(robot_angle)
             if first_it:
                 self.__rotate_robot_on_zone_plane(NORTH(), False)
