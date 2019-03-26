@@ -366,3 +366,24 @@ class Sequence:
 
         string_coord = str(real_x) + "," + str(real_y) + ",0\n"
         self.comm_pi.sendCoordinates(string_coord)
+
+    def __rotate_robot_on_zone_plane(self):
+        img = self.take_image()
+        robot_detector = RobotDetector(img)
+        angle = robot_detector.find_angle_of_robot()
+
+    def __rotate_to_north(self, current_robot_angle):
+        rotate_angle = round(90 - current_robot_angle)
+        self.comm_pi.sendAngle(rotate_angle)
+
+    def __rotate_to_east(self, current_robot_angle):
+        rotate_angle = round(0 - current_robot_angle)
+        self.comm_pi.sendAngle(rotate_angle)
+
+    def __rotate_to_south(self, current_robot_angle):
+        rotate_angle = round(-90 - current_robot_angle)
+        self.comm_pi.sendAngle(rotate_angle)
+
+    def __rotate_to_west(self, current_robot_angle):
+        rotate_angle = round(180 - current_robot_angle)
+        self.comm_pi.sendAngle(rotate_angle)

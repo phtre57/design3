@@ -71,6 +71,13 @@ class Communication_pi():
         logger.log_info("Coordonnees envoyees: " + str)
         self.robotReady()
 
+    def sendAngle(self, angle):
+        angle = str(angle)
+        logger.log_info("Angle envoyees: " + angle)
+        coord_angle = "0,0," + angle + "\n"
+
+        self.sendCoordinates(coord_angle)
+
     def disconnectFromPi(self):
         signal = 'deconnect'
         self.socket.sendall(signal.encode('utf-8'))
