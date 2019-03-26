@@ -15,6 +15,7 @@ from domain.image_analysis.opencv_callable.DetectQR import *
 from domain.image_analysis.DetectBlurriness import *
 from domain.image_analysis_pathfinding.RobotDetector import *
 from domain.pathfinding.Exceptions.NoPathFoundException import *
+from domain.pathfinding.Exceptions.NoBeginingPointException import *
 from domain.image_analysis.opencv_callable.DetectPiece import *
 from domain.QRCodeDictionnary import *
 from util.Logger import Logger
@@ -63,7 +64,7 @@ class Sequence:
                 logger.log_error(ex)
                 logger.log_critical(traceback.format_exc())
 
-    def __get_smooth_path(self):
+    def __get_smooth_path(self, unsecure_fallback = False):
         center_and_image = None
         while True:
             try:
@@ -73,9 +74,14 @@ class Sequence:
                 logger.log_error(ex)
                 logger.log_critical(traceback.format_exc())
 
-        grid_converter = ImageToGridConverter(
-            center_and_image['image'], center_and_image['center'][0],
-            center_and_image['center'][1], self.X_END, self.Y_END)
+        if unsecure_fallback:
+            grid_converter = ImageToGridConverter(
+                center_and_image['image'], center_and_image['center'][0],
+                center_and_image['center'][1], self.X_END, self.Y_END)
+        else:
+            grid_converter = ImageToGridConverter(
+                center_and_image['image'], center_and_image['center'][0],
+                center_and_image['center'][1], self.X_END, self.Y_END)
 
         smooth_path = None
 
@@ -86,6 +92,8 @@ class Sequence:
             path_smoother = PathSmoother(path)
             smooth_path = path_smoother.smooth_path()
             self.__draw_path(smooth_path, grid_converter)
+        except NoBeginingPointException as ex:
+            self.__get_smooth_path(True)
         except Exception as ex:
             if (DEBUG):
                 frame = self.take_image()
