@@ -62,6 +62,9 @@ class Communication_pi():
         return cv2.imread('./test.jpg')
 
     def sendCoordinates(self, str):
+        if (str == '0,0,0\n'):
+            return
+
         signal = 'sendPosition'
         self.socket.sendall(signal.encode('utf-8'))
         self.socket.sendall(str.encode('utf-8'))
@@ -86,7 +89,7 @@ class Communication_pi():
         signal = 'servoHori'
         self.socket.sendall(signal.encode('utf-8'))
         self.socket.sendall(str.encode('utf-8'))
-        logger.log_info("Signal envoye pour condensateur: " + str)
+        logger.log_info("Servo Horizontal envoyees: " + str)
         time.sleep(1)
 
     def changeServoVert(self, str):

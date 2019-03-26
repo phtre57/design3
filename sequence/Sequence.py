@@ -54,17 +54,9 @@ class Sequence:
         self.piece_color = None
         self.depot_number = None
         self.piece_shape = None
+        self.retry = 0
 
-    def __create_smooth_path(self):
-        while True:
-            try:
-                self.smooth_path = self.__get_smooth_path()
-                break
-            except Exception as ex:
-                logger.log_error(ex)
-                logger.log_critical(traceback.format_exc())
-
-    def __get_smooth_path(self,  old_grid_converter=None):
+    def __create_smooth_path(self, unsecure=False):
         center_and_image = None
         while True:
             try:
@@ -74,39 +66,50 @@ class Sequence:
                 logger.log_error(ex)
                 logger.log_critical(traceback.format_exc())
 
-        if old_grid_converter is not None:
-            grid_converter = ImageToGridConverter(
-                center_and_image['image'], center_and_image['center'][0],
-                center_and_image['center'][1], self.X_END, self.Y_END,
-                old_grid_converter.get_obstacle_border() - 5, old_grid_converter.get_left_obstacle_border() - 5)
-            logger.log_critical("Unsecure pathfinding with new grid converter with new value for obstacle border: "
-                                + str(grid_converter.get_obstacle_border()))
-        else:
-            grid_converter = ImageToGridConverter(
-                center_and_image['image'], center_and_image['center'][0],
-                center_and_image['center'][1], self.X_END, self.Y_END)
-
-        smooth_path = None
-
+        grid_converter = None
         try:
+            if unsecure:
+                self.retry = self.retry + 1
+                print(self.retry)
+                print(OBSTACLE_BORDER - 5 * self.retry)
+                grid_converter = ImageToGridConverter(
+                    center_and_image['image'], center_and_image['center'][0],
+                    center_and_image['center'][1], self.X_END, self.Y_END,
+                    OBSTACLE_BORDER - 5 * self.retry,
+                    LEFT_OBSTACLE_BORDER - 5 * self.retry)
+                logger.log_critical(
+                    "Unsecure pathfinding with new grid converter with new value for obstacle border: "
+                    + str(grid_converter.get_obstacle_border()))
+            else:
+                grid_converter = ImageToGridConverter(
+                    center_and_image['image'], center_and_image['center'][0],
+                    center_and_image['center'][1], self.X_END, self.Y_END)
+
             astar = Astar(grid_converter.grid, HEIGHT, LENGTH)
             path = astar.find_path()
 
             path_smoother = PathSmoother(path)
             smooth_path = path_smoother.smooth_path()
             self.__draw_path(smooth_path, grid_converter)
-        except NoBeginingPointException as ex:
-            self.__get_smooth_path(grid_converter)
-        except Exception as ex:
-            if (DEBUG):
-                frame = self.take_image()
-                cv2.circle(frame, (self.X_END * 2, self.Y_END * 2), 1,
-                           [0, 0, 255])
-                cv2.imshow('OBSTACLE PATH', frame)
-                cv2.waitKey()
-            raise ex
 
-        return smooth_path
+            self.smooth_path = smooth_path
+        except Exception as ex:
+            if (isinstance(ex, NoBeginingPointException)):
+                logger.log_debug('NoBeginingPointException have been raised')
+                logger.log_debug(ex)
+                logger.log_debug(traceback.format_exc())
+                self.__create_smooth_path(True)
+                pass
+            else:
+                logger.log_debug(ex)
+                logger.log_debug(traceback.format_exc())
+                if (DEBUG):
+                    frame = self.take_image()
+                    cv2.circle(frame, (self.X_END * 2, self.Y_END * 2), 1,
+                               [0, 0, 255])
+                    cv2.imshow('OBSTACLE PATH', frame)
+                    cv2.waitKey()
+                raise ex
 
     def __convert_to_xy(self):
         self.real_path = self.world_cam_pixel_to_xy_converter.convert_to_xy(
@@ -147,11 +150,10 @@ class Sequence:
                 turning_angle = int(round(robot_angle))
                 self.comm_pi.sendCoordinates("0,0," + str(turning_angle) +
                                              "\n")
-
                 break
             except Exception as ex:
                 logger.log_error(ex)
-                traceback.print_exc(file=sys.stdout)
+                logger.log_debug(traceback.format_exc())
 
     def __draw_path(self, smooth_path, grid_converter):
         for point in smooth_path:
@@ -171,8 +173,9 @@ class Sequence:
             for point in smooth_path:
                 cv2.circle(img, (point[0] * 2, point[1] * 2), 1, [0, 0, 255])
 
-        # cv2.imshow("imageCourante", img)
-        # cv2.waitKey()
+        if (DEBUG):
+            cv2.imshow("imageCourante", img)
+            cv2.waitKey()
 
         cv2.destroyAllWindows()
 
@@ -206,11 +209,15 @@ class Sequence:
     def go_to_start_zone(self):
         img = self.take_image()
 
+        cv2.imshow('ok', img)
+        cv2.waitKey()
+
         try:
             (x, y) = detect_start_zone(img)
         except Exception:
             logger.log_critical(
                 'START ZONE NOT DETECTED, FALL BACK TO HARDCODED')
+            logger.log_debug(traceback.format_exc())
             (x, y) = (X_END_START_ZONE, Y_END_START_ZONE)
         self.X_END = round(x / 2)
         self.Y_END = round(y / 2)
@@ -267,8 +274,8 @@ class Sequence:
                     logger.log_debug(
                         'Decode QR fallback to other point, obstacle in the way'
                     )
+                    logger.log_debug(traceback.format_exc())
                     pass
-                    # traceback.print_exc(file=sys.stdout)
 
             if stop_outer_loop:
                 break

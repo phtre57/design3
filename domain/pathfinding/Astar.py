@@ -62,9 +62,6 @@ class Astar(object):
     def __rewind_path(self):
         cell = self.ending_cell
 
-        if cell.parent is None:
-            raise NoBeginingPointException()
-
         while cell.parent is not self.starting_cell:
             self.path.append(cell)
             cell = cell.parent

@@ -7,7 +7,7 @@ import os
 import inspect
 import time
 
-LIVE = False
+LIVE = True
 
 
 class DetectStartZoneTest(unittest.TestCase):
@@ -25,9 +25,12 @@ class DetectStartZoneTest(unittest.TestCase):
         if (LIVE):
             cap = cv2.VideoCapture(1)
             ret, frame = cap.read()
-            shape = detect_start_zone(frame)
+            time.sleep(3)
 
-            cv2.imshow('SHAPE FRAME', shape.frame)
+            (x, y) = detect_start_zone(frame)
+
+            cv2.circle(frame, (x, y), 1, [255, 51, 51])
+            cv2.imshow('SHAPE FRAME', frame)
             cv2.waitKey()
 
             self.assertEqual(len(shape.shapes), 1)

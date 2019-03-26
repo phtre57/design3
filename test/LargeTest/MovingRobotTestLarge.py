@@ -36,6 +36,18 @@ def calibrate():
         traceback.print_exc(file=sys.stdout)
 
 
+def calibrateEmbark():
+    pixel_to_xy_converter = None
+    try:
+        with open('calibration_embark.pkl', 'rb') as input:
+            pixel_to_xy_converter = pickle.load(input)
+
+        return pixel_to_xy_converter
+    except Exception as ex:
+        print(ex)
+        traceback.print_exc(file=sys.stdout)
+
+
 def main():
     cap = cv2.VideoCapture(1)
     if CANCER_MAC_USER:
@@ -52,6 +64,7 @@ def main():
 
     connect(comm_pi)
     pixel_to_xy_converter = calibrate()
+    robot_cam_pixel_to_xy_converter = calibrateEmbark()
 
     # X_END = X_END_START
     # Y_END = Y_END_START
@@ -59,10 +72,11 @@ def main():
     # X_END = X_END_CHARGE
     # Y_END = Y_END_CHARGE
 
-    sequence = Sequence(cap, comm_pi, pixel_to_xy_converter)
+    sequence = Sequence(cap, comm_pi, pixel_to_xy_converter,
+                        robot_cam_pixel_to_xy_converter)
     print("Go to start zone...")
-    sequence.set_end_point(X_END_START, Y_END_START)
-    sequence.start()
+    # sequence.set_end_point(X_END_START, Y_END_START)
+    # sequence.start()
     # sequence.go_to_start_zone()
     print("Go to start charge station...")
     # sequence.go_to_c_charge_station()
@@ -71,7 +85,8 @@ def main():
     print("Go to qr...")
     # sequence.make_dat_dance_to_decode_qr_boy()
     # sequence.go_to_zone_dep()
-    sequence.go_to_zone_pickup()
+    # sequence.go_to_zone_pickup()
+    sequence.go_to_start_zone()
     sequence.end()
     print("Sad face we're done...")
 
@@ -84,20 +99,21 @@ def main_test():
     comm_pi = Communication_pi_mock()
     connect(comm_pi)
     pixel_to_xy_converter = calibrate()
+    robot_cam_pixel_to_xy_converter = calibrateEmbark()
 
     # X_END = X_END_CHARGE
     # Y_END = Y_END_CHARGE
 
-    sequence = Sequence(cap, comm_pi, pixel_to_xy_converter)
+    sequence = Sequence(cap, comm_pi, pixel_to_xy_converter,
+                        robot_cam_pixel_to_xy_converter)
     sequence.go_to_start_zone()
     sequence.start()
 
 
 try:
-    main()
+    # main()
+    main_test()
 except KeyboardInterrupt:
     comm_pi.disconnectFromPi()
     print("bye")
     traceback.print_exc(file=sys.stdout)
-
-# main_test()

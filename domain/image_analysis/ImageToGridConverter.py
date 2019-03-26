@@ -2,6 +2,9 @@ import numpy as np
 import sys
 import cv2
 import imutils
+
+from domain.pathfinding.Exceptions.NoBeginingPointException import NoBeginingPointException
+
 np.set_printoptions(threshold=sys.maxsize)
 
 LENGTH = 320
@@ -28,10 +31,16 @@ BLUR_TUPLE = (3, 3)
 
 
 class ImageToGridConverter(object):
-    def __init__(self, image, x_start, y_start, x_end, y_end,
-                 obstacle_border=OBSTACLE_BORDER, left_border_obstacle=LEFT_OBSTACLE_BORDER):
-        self.left_obstacle_border = obstacle_border
-        self.obstacle_border = left_border_obstacle
+    def __init__(self,
+                 image,
+                 x_start,
+                 y_start,
+                 x_end,
+                 y_end,
+                 obstacle_border=OBSTACLE_BORDER,
+                 left_obstacle_border=LEFT_OBSTACLE_BORDER):
+        self.obstacle_border = obstacle_border
+        self.left_obstacle_border = left_obstacle_border
         self.image = image.copy()
         self.image = cv2.resize(self.image, (LENGTH, HEIGHT))
         self.image = cv2.GaussianBlur(self.image, BLUR_TUPLE, 0)
@@ -55,6 +64,18 @@ class ImageToGridConverter(object):
         self.grid[y_end][x_end] = ENDING_MARKER
 
     def mark_starting_point(self, x_start, y_start):
+        hsv = cv2.cvtColor(self.image, cv2.COLOR_BGR2HSV)
+
+        mask = cv2.inRange(hsv, BLUE_HSV_LOW, BLUE_HSV_HIGH)
+        obstacles_center_array = self.__find_center_of_obstacle(mask)
+
+        for point in obstacles_center_array:
+            x_obs, y_obs = point
+
+            if (abs(x_start - x_obs) < self.left_obstacle_border
+                    or abs(y_start - y_obs) < self.obstacle_border):
+                raise NoBeginingPointException()
+
         self.grid[y_start][x_start] = STARTING_MARKER
 
     def __find_center_of_obstacle(self, mask):
