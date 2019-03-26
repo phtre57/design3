@@ -16,7 +16,7 @@ def test():
     time.sleep(5)
 
     point = (5, 10)
-    real_point = small_converter.convert_to_xy_point_given_angle(point, 0)
+    real_point = small_converter.convert_pixel_to_xy_point_given_angle(point, 0)
     x_coord = round(real_point[0])
     y_coord = round(real_point[1])
     print("Real point in mm: " + str(real_point))
@@ -24,7 +24,7 @@ def test():
 
     input("Press enter:")
 
-    real_point = small_converter.convert_to_xy_point_given_angle(point, 90)
+    real_point = small_converter.convert_pixel_to_xy_point_given_angle(point, 90)
     x_coord = round(real_point[0])
     y_coord = round(real_point[1])
     print("Real point in mm: " + str(real_point))
@@ -32,7 +32,7 @@ def test():
 
     input("Press enter:")
 
-    real_point = small_converter.convert_to_xy_point_given_angle(point, 180)
+    real_point = small_converter.convert_pixel_to_xy_point_given_angle(point, 180)
     x_coord = round(real_point[0])
     y_coord = round(real_point[1])
     print("Real point in mm: " + str(real_point))
@@ -40,7 +40,7 @@ def test():
 
     input("Press enter:")
 
-    real_point = small_converter.convert_to_xy_point_given_angle(point, -90)
+    real_point = small_converter.convert_pixel_to_xy_point_given_angle(point, -90)
     x_coord = round(real_point[0])
     y_coord = round(real_point[1])
     print("Real point in mm: " + str(real_point))

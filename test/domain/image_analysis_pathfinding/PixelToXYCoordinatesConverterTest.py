@@ -49,31 +49,31 @@ class PixelToXYCoordinatesConverterTest(unittest.TestCase):
 
     def test_givenAngle0deg_whenConvertingtoMM_thenYsignISNegative(self):
         point = (1, 4)
-        real_point = self.smallConverter.convert_to_xy_point_given_angle(point, 0)
+        real_point = self.smallConverter.convert_pixel_to_xy_point_given_angle(point, 0)
         self.assertGreaterEqual(real_point[0], 0)
         self.assertLessEqual(real_point[1], 0)
 
     def test_givenAngle90Deg_whenConvertintoMM_thenxySignIsNegative(self):
         point = (1, 4)
-        real_point = self.smallConverter.convert_to_xy_point_given_angle(point, 90)
+        real_point = self.smallConverter.convert_pixel_to_xy_point_given_angle(point, 90)
         self.assertLessEqual(real_point[0], 0)
         self.assertLessEqual(real_point[1], 0)
 
     def test_givenAngle180Deg_whenConvertintoMM_thenxSignIsNegative(self):
         point = (1, 4)
-        real_point = self.smallConverter.convert_to_xy_point_given_angle(point, 180)
+        real_point = self.smallConverter.convert_pixel_to_xy_point_given_angle(point, 180)
         self.assertLessEqual(real_point[0], 0)
         self.assertGreaterEqual(real_point[1], 0)
 
     def test_givenAngleminus180Deg_whenConvertintoMM_thenxSignIsNegative(self):
         point = (1, 4)
-        real_point = self.smallConverter.convert_to_xy_point_given_angle(point, -180)
+        real_point = self.smallConverter.convert_pixel_to_xy_point_given_angle(point, -180)
         self.assertLessEqual(real_point[0], 0)
         self.assertGreaterEqual(real_point[1], 0)
 
     def test_givenAngleminus90Deg_whenConvertintoMM_thenxySignIsPositive(self):
         point = (1, 4)
-        real_point = self.smallConverter.convert_to_xy_point_given_angle(point, -90)
+        real_point = self.smallConverter.convert_pixel_to_xy_point_given_angle(point, -90)
         self.assertGreaterEqual(real_point[0], 0)
         self.assertGreaterEqual(real_point[1], 0)
 

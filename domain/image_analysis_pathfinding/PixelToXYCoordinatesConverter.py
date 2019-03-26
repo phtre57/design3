@@ -152,7 +152,7 @@ class PixelToXYCoordinatesConverter:
         return (point[0] * self.x_pixel_to_mm_factor,
                 point[1] * self.y_pixel_to_mm_factor)
 
-    def convert_to_xy_point_given_angle(self, point, angle):
+    def convert_pixel_to_xy_point_given_angle(self, point, angle):
         if angle > -10 and angle < 10:
             return (point[0] * self.x_pixel_to_mm_factor,
                     point[1] * self.y_pixel_to_mm_factor * -1)
@@ -167,7 +167,7 @@ class PixelToXYCoordinatesConverter:
 
         if angle < -80 and angle > -100:
             return (point[1] * self.y_pixel_to_mm_factor,
-                    point[0] * self.x_pixel_to_mm_factor)
+                    point[0] * -1 * self.x_pixel_to_mm_factor)
 
     def convert_real_xy_given_angle(self, point, angle):
         if angle > -10 and angle < 10:

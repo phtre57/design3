@@ -454,7 +454,7 @@ class Sequence:
         robot_detector = RobotDetector(world_img)
         angle = robot_detector.find_angle_of_robot()
         real_x, real_y = self.robot_cam_pixel_to_xy_converter\
-            .convert_to_xy_point_given_angle((x_from_center_of_image, y_from_center_of_image), angle)
+            .convert_pixel_to_xy_point_given_angle((x_from_center_of_image, y_from_center_of_image), angle)
 
         string_coord = str(real_x) + "," + str(real_y) + ",0\n"
         self.comm_pi.sendCoordinates(string_coord)
