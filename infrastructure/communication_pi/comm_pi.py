@@ -6,11 +6,14 @@ import time
 import numpy as np
 import struct  # new
 import base64
+from util.Logger import *
 
 # Host = Adresse ip du serveur (ici Raspberry pi)
 # Port = valeur predefinie (doit etre la meme pour le serveur)
 host = '192.168.0.38'
 port = 15555
+
+logger = Logger(__name__)
 
 
 class Communication_pi():
@@ -20,7 +23,7 @@ class Communication_pi():
     def connectToPi(self):
         print(host)
         self.socket.connect((host, port))
-        print("Connecte au serveur")
+        logger.log_info("Connecte au serveur")
         time.sleep(5)
 
     def __recv_msg(self):
@@ -62,7 +65,7 @@ class Communication_pi():
         signal = 'sendPosition'
         self.socket.sendall(signal.encode('utf-8'))
         self.socket.sendall(str.encode('utf-8'))
-        print("Coordonnees envoyees")
+        logger.log_info("Coordonnees envoyees: " + str)
         self.robotReady()
 
     def disconnectFromPi(self):
@@ -72,25 +75,25 @@ class Communication_pi():
 
     def robotReady(self):
         self.socket.recv(255)
-        print("Ready signal received")
+        logger.log_info("Ready signal received")
 
     def changeCondensateur(self):
         signal = 'condensateurChange'
         self.socket.sendall(signal.encode('utf-8'))
-        print("Signal envoye!")
+        logger.log_info("Signal envoye pour condensateur!")
 
     def changeServoHori(self, str):
         signal = 'servoHori'
         self.socket.sendall(signal.encode('utf-8'))
         self.socket.sendall(str.encode('utf-8'))
-        print("Servo Horizontal envoyees")
+        logger.log_info("Signal envoye pour condensateur: " + str)
         time.sleep(1)
 
     def changeServoVert(self, str):
         signal = 'servoVert'
         self.socket.sendall(signal.encode('utf-8'))
         self.socket.sendall(str.encode('utf-8'))
-        print("Servo Vertical envoyees")
+        logger.log_info("Servo Vertical envoyees: " + str)
         time.sleep(1)
 
     def getTension(self):
@@ -98,7 +101,7 @@ class Communication_pi():
         self.socket.sendall(signal.encode('utf-8'))
         data = self.socket.recv(255)
         data = str(data, "utf-8")
-        print("Received tension: " + str(data))
+        logger.log_info("Received tension: " + str(data))
 
         data = data.replace("\r", "")
         data = data.replace("\n", "")

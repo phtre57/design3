@@ -19,7 +19,7 @@ from domain.image_analysis.opencv_callable.DetectPiece import *
 from domain.QRCodeDictionnary import *
 from util.Logger import Logger
 
-DEBUG = False
+DEBUG = True
 ROBOT_DANCE_X_POSITIVE = "50,0,0\n"
 ROBOT_DANCE_X_NEGATIVE = "-50,0,0\n"
 
@@ -86,14 +86,14 @@ class Sequence:
             path_smoother = PathSmoother(path)
             smooth_path = path_smoother.smooth_path()
             self.__draw_path(smooth_path, grid_converter)
-        except Exception:
+        except Exception as ex:
             if (DEBUG):
                 frame = self.take_image()
                 cv2.circle(frame, (self.X_END * 2, self.Y_END * 2), 1,
                            [0, 0, 255])
                 cv2.imshow('OBSTACLE PATH', frame)
                 cv2.waitKey()
-            raise Exception('Can\'t find any path')
+            raise ex
 
         return smooth_path
 
@@ -108,8 +108,6 @@ class Sequence:
             self.__send_rotation_angle(self.smooth_path)
             x_coord = int(round(point[0] - self.starting_point[0], 0))
             y_coord = int(round(point[1] - self.starting_point[1], 0))
-            logger.log_info("Sending coordinates: " + str(x_coord) + "," +
-                            str(y_coord) + ",0")
             self.comm_pi.sendCoordinates(
                 str(x_coord) + "," + str(y_coord) + ",0" + "\n")
 
@@ -136,9 +134,6 @@ class Sequence:
                 robot_detector = RobotDetector(img)
                 robot_angle = robot_detector.find_angle_of_robot()
                 turning_angle = int(round(robot_angle))
-
-                logger.log_info("Sending angle: " + "0,0," +
-                                str(turning_angle) + "\n")
                 self.comm_pi.sendCoordinates("0,0," + str(turning_angle) +
                                              "\n")
 
@@ -306,7 +301,6 @@ class Sequence:
 
     def go_to_c_charge_station(self):
         self.__send_rotation_angle()
-        logger.log_info("Sending coordinates: -340,-381,0\n")
         time.sleep(0.5)
         self.comm_pi.sendCoordinates("-340,-381,0\n")
         # WAIT TO CHARGE
@@ -317,7 +311,6 @@ class Sequence:
         increment = 0
         while True:
             coord = "0,-7,0\n"
-            logger.log_info("Sending coordinates: " + coord)
             self.comm_pi.sendCoordinates(
                 coord
             )  # move two milimeters in -y to get closer to charge station
@@ -336,7 +329,6 @@ class Sequence:
         logger.log_info("Robot is charged now!")
 
     def go_back_from_charge_station(self):
-        logger.log_info("Sending coordinates: 340,381,0\n")
         time.sleep(0.5)
         self.comm_pi.sendCoordinates("340,381,0\n")
         time.sleep(1)
@@ -356,5 +348,4 @@ class Sequence:
             .convert_to_xy_point_given_angle((x_from_center_of_image, y_from_center_of_image), angle)
 
         string_coord = str(real_x) + "," + str(real_y) + ",0\n"
-        logger.log_info("Sending coordinates: " + string_coord)
         self.comm_pi.sendCoordinates(string_coord)

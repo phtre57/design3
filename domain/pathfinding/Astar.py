@@ -53,11 +53,13 @@ class Astar(object):
 
     def __update_cell(self, selected_cell, current_cell):
         selected_cell.cost = current_cell.cost + 1
-        selected_cell.heuristic = self.__calculate_heuristic(selected_cell.i, selected_cell.j)
+        selected_cell.heuristic = self.__calculate_heuristic(
+            selected_cell.i, selected_cell.j)
         selected_cell.parent = current_cell
         selected_cell.net_cost = selected_cell.cost + selected_cell.heuristic
 
     def __rewind_path(self):
+        print(self.path)
         cell = self.ending_cell
         while cell.parent is not self.starting_cell:
             self.path.append(cell)
@@ -73,26 +75,31 @@ class Astar(object):
         neighbour_cells = []
 
         if self.current_cell.j > 0:
-            left_cell = self.__find_cell(self.current_cell.i, self.current_cell.j - 1)
+            left_cell = self.__find_cell(self.current_cell.i,
+                                         self.current_cell.j - 1)
             neighbour_cells.append(left_cell)
 
         if self.current_cell.i > 0:
-            up_cell = self.__find_cell(self.current_cell.i - 1, self.current_cell.j)
+            up_cell = self.__find_cell(self.current_cell.i - 1,
+                                       self.current_cell.j)
             neighbour_cells.append(up_cell)
 
         if self.current_cell.j < self.number_of_columns - 1:
-            right_cell = self.__find_cell(self.current_cell.i, self.current_cell.j + 1)
+            right_cell = self.__find_cell(self.current_cell.i,
+                                          self.current_cell.j + 1)
             neighbour_cells.append(right_cell)
 
         if self.current_cell.i < self.number_of_rows - 1:
-            bottom_cell = self.__find_cell(self.current_cell.i + 1, self.current_cell.j)
+            bottom_cell = self.__find_cell(self.current_cell.i + 1,
+                                           self.current_cell.j)
             neighbour_cells.append(bottom_cell)
 
         return neighbour_cells
 
     def find_path(self):
         heapq.heapify(self.open)
-        heapq.heappush(self.open, (self.starting_cell.net_cost, self.starting_cell))
+        heapq.heappush(self.open,
+                       (self.starting_cell.net_cost, self.starting_cell))
 
         while len(self.open):
             net_cost, cell = heapq.heappop(self.open)
@@ -111,10 +118,10 @@ class Astar(object):
                             self.__update_cell(neighbour, cell)
                     else:
                         self.__update_cell(neighbour, cell)
-                        heapq.heappush(self.open, (neighbour.net_cost, neighbour))
+                        heapq.heappush(self.open,
+                                       (neighbour.net_cost, neighbour))
 
         if len(self.path_in_pixel_coordinates) == 0:
-             raise NoPathFoundException()
+            raise NoPathFoundException()
 
         return self.path_in_pixel_coordinates
-
