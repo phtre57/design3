@@ -59,6 +59,10 @@ class Astar(object):
 
     def __rewind_path(self):
         cell = self.ending_cell
+
+        if len(self.path_in_pixel_coordinates) == 0:
+            raise NoPathFoundException()
+
         while cell.parent is not self.starting_cell:
             self.path.append(cell)
             cell = cell.parent
@@ -112,9 +116,6 @@ class Astar(object):
                     else:
                         self.__update_cell(neighbour, cell)
                         heapq.heappush(self.open, (neighbour.net_cost, neighbour))
-
-        if len(self.path_in_pixel_coordinates) == 0:
-             raise NoPathFoundException()
 
         return self.path_in_pixel_coordinates
 

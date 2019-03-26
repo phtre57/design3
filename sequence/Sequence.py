@@ -240,7 +240,6 @@ class Sequence:
         for y in Y_ARRAY_FOR_QR_STRATEGY:
             for x in X_RANGE_FOR_QR_STRATEGY:
                 self.set_end_point(x, y)
-
                 try:
                     self.start()
                     stop_outer_loop = self.__try_to_decode_qr()
