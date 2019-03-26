@@ -25,12 +25,15 @@ class DetectZoneDepWorldTest(unittest.TestCase):
         if (LIVE):
             cap = cv2.VideoCapture(1)
             ret, frame = cap.read()
-            shape = detect_zone_dep_world(frame)
+            res = detect_zone_dep_world(frame)
 
-            cv2.imshow('SHAPE FRAME', shape.frame)
+            cv2.circle(frame, res['point'], 1, [255, 51, 51])
+
+            cv2.imshow('SHAPE FRAME', frame)
             cv2.waitKey()
 
-            self.assertEqual(len(shape.shapes), 1)
+            self.assertNotEqual(res['point'], (0, 0))
+
         else:
             path01 = os.path.join(path, "./samples/sample1.jpg")
             self.call_path(path01)

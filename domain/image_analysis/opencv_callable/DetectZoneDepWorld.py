@@ -105,28 +105,34 @@ def detect_zone_dep_world(og_frame,
     shape.center = find_center(shape.approx[0][2], 10, shape)
 
     if (flipped):
-        center = adjust_start_zone_offset_upside_down(shape.center, IMG_WIDTH)
+        center = adjust_start_zone_offset_upside_down(shape.center, IMG_WIDTH,
+                                                      shape.approx[0][3])
         logger.log_debug('ZONE DEPOT WORLD - Found center ' + str(center[0]) +
                          ' ' + str(center[1]) + ' ' + center[2])
         return {'point': (center[0], center[1]), 'cardinal': center[2]}
     else:
-        center = adjust_start_zone_offset(shape.center, IMG_HEIGHT)
+        center = adjust_start_zone_offset(shape.center, IMG_HEIGHT,
+                                          shape.approx[0][3])
         logger.log_debug('ZONE DEPOT WORLD - Found center ' + str(center[0]) +
                          ' ' + str(center[1]) + ' ' + center[2])
 
         return {'point': (center[0], center[1]), 'cardinal': center[2]}
 
 
-def adjust_start_zone_offset_upside_down(point, width):
+def adjust_start_zone_offset_upside_down(point, width, w_h_rect):
     if (point[0] > width / 2):
-        return (point[0] - OFFSET_PATHFINDING, point[1], EAST())
+        return (point[0] - OFFSET_PATHFINDING,
+                point[1] - round(w_h_rect[1] / 2), EAST())
     else:
-        return (point[0] + OFFSET_PATHFINDING, point[1], WEST())
+        return (point[0] + OFFSET_PATHFINDING,
+                point[1] + round(w_h_rect[1] / 2), WEST())
 
 
-def adjust_start_zone_offset(point, height):
+def adjust_start_zone_offset(point, height, w_h_rect):
     # Faire les deux bords de la table avec un beau if
     if (point[1] > height / 2):
-        return (point[0], point[1] - OFFSET_PATHFINDING, SOUTH())
+        return (point[0] + round(w_h_rect[0] / 2),
+                point[1] - OFFSET_PATHFINDING, SOUTH())
     else:
-        return (point[0], point[1] + OFFSET_PATHFINDING, NORTH())
+        return (point[0] - round(w_h_rect[0] / 2),
+                point[1] + OFFSET_PATHFINDING, NORTH())

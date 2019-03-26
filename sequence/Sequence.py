@@ -81,36 +81,38 @@ class Sequence:
         cv2.waitKey(0)
 
     def __detect_start_zone(self):
-        img = self.take_image()
 
         i = 0
         while True:
             try:
+                img = self.take_image()
                 i = i + 1
                 (x, y) = detect_start_zone(img)
-                self.zone_start_point = (round(x / 2), round(y / 2))
-            except Exception:
-                logger.log_debug('START ZONE NOT DETECTED RETRYING' + str(i))
                 if (i > 20):
                     logger.log_critical(
                         'START ZONE NOT DETECTED, FALL BACK TO HARDCODED')
                     logger.log_debug(traceback.format_exc())
                     self.zone_start_point = (X_END_START_ZONE,
                                              Y_END_START_ZONE)
-                    pass
-            break
+                    break
+
+                self.zone_start_point = (round(x / 2), round(y / 2))
+                break
+            except Exception:
+                logger.log_debug('START ZONE NOT DETECTED RETRYING' + str(i))
 
     def __detect_zone_dep(self):
-        img = self.take_image()
 
         i = 0
         while True:
             try:
+                img = self.take_image()
                 i = i + 1
                 res = detect_zone_dep_world(img)
                 (x, y) = res['point']
                 self.zone_dep_point = (round(x / 2), round(y / 2))
                 self.zone_dep_cardinal = res['cardinal']
+                break
             except Exception:
                 logger.log_debug('ZONE DEP WORLD NOT DETECTED RETRYING' +
                                  str(i))
@@ -122,19 +124,19 @@ class Sequence:
                     raise Exception(
                         'ZONE DEP WORLD NOT DETECTED PROBLEMS, PROBLEMS, PROBLEMS'
                     )
-            break
 
     def __detect_pickup_zone(self):
-        img = self.take_image()
 
         i = 0
         while True:
             try:
+                img = self.take_image()
                 i = i + 1
                 res = detect_pickup_zone(img)
                 (x, y) = res['point']
                 self.zone_pickup_point = (round(x / 2), round(y / 2))
                 self.zone_pickup_cardinal = res['cardinal']
+                break
             except Exception:
                 logger.log_debug('PICKUP ZONE NOT DETECTED RETRYING' + str(i))
                 if (i > 20):
@@ -145,7 +147,6 @@ class Sequence:
                     raise Exception(
                         'PICKUP ZONE NOT DETECTED PROBLEMS, PROBLEMS, PROBLEMS'
                     )
-            break
 
     def __create_smooth_path(self, unsecure=False):
         center_and_image = None
@@ -239,8 +240,7 @@ class Sequence:
                 robot_detector = RobotDetector(img)
                 robot_angle = robot_detector.find_angle_of_robot()
                 turning_angle = int(round(robot_angle))
-                self.comm_pi.sendCoordinates("0,0," + str(turning_angle) +
-                                             "\n")
+                self.comm_pi.sendAngle(turning_angle)
                 break
             except Exception as ex:
                 logger.log_error(ex)
@@ -314,7 +314,7 @@ class Sequence:
     def end(self):
         self.comm_pi.disconnectFromPi()
 
-    def move_to_decode_qr(self):
+    def go_to_decode_qr(self):
         self.comm_pi.changeServoVert('6000')
         self.comm_pi.changeServoHori('5500')
         stop_outer_loop = False
@@ -430,35 +430,43 @@ class Sequence:
     def rotate_robot_on_zone_pickup(self):
         self.__rotate_robot_on_zone_plane(self.zone_pickup_cardinal)
 
-    def __rotate_robot_on_zone_plane(self, cardinal_point):
+    def __rotate_robot_on_zone_plane(self, cardinal_point, first_it=True):
         img = self.take_image()
         robot_detector = RobotDetector(img)
         robot_angle = robot_detector.find_angle_of_robot()
 
         if cardinal_point == EAST():
             self.__rotate_to_east(robot_angle)
+            if first_it:
+                self.__rotate_robot_on_zone_plane(EAST(), False)
 
         if cardinal_point == SOUTH():
             self.__rotate_to_south(robot_angle)
+            if first_it:
+                self.__rotate_robot_on_zone_plane(SOUTH(), False)
 
         if cardinal_point == WEST():
             self.__rotate_to_west(robot_angle)
+            if first_it:
+                self.__rotate_robot_on_zone_plane(WEST(), False)
 
         if cardinal_point == NORTH():
             self.__rotate_to_north(robot_angle)
+            if first_it:
+                self.__rotate_robot_on_zone_plane(NORTH(), False)
 
     def __rotate_to_north(self, current_robot_angle):
-        rotate_angle = round(90 - current_robot_angle)
+        rotate_angle = round(90 - current_robot_angle) * -1
         self.comm_pi.sendAngle(rotate_angle)
 
     def __rotate_to_east(self, current_robot_angle):
-        rotate_angle = round(0 - current_robot_angle)
+        rotate_angle = round(0 - current_robot_angle) * -1
         self.comm_pi.sendAngle(rotate_angle)
 
     def __rotate_to_south(self, current_robot_angle):
-        rotate_angle = round(-90 - current_robot_angle)
+        rotate_angle = round(-90 - current_robot_angle) * -1
         self.comm_pi.sendAngle(rotate_angle)
 
     def __rotate_to_west(self, current_robot_angle):
-        rotate_angle = round(180 - current_robot_angle)
+        rotate_angle = round(180 - current_robot_angle) * -1
         self.comm_pi.sendAngle(rotate_angle)

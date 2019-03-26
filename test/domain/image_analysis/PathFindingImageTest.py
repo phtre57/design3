@@ -125,3 +125,7 @@ def test_on_real_image(show_images):
 class PathFindingImageTest(unittest.TestCase):
     def test_pathfinding_on_real_image(self):
         test_on_real_image(True)
+
+
+if __name__ == '__main__':
+    unittest.main()

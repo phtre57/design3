@@ -99,11 +99,17 @@ class ShapeDetector:
 
             if DEBUG:
                 print('Width and Height ', wRect, hRect)
-                print('W rect ', abs(wRect) < self.w_rect_limit, self.w_rect_limit)
-                print('H rect ', abs(hRect) < self.h_rect_limit, self.h_rect_limit)
-                if(self.w_rect_limit_up is not None):
-                    print('W rect up ', abs(wRect) > self.w_rect_limit_up, self.w_rect_limit_up)
-                    print('H rect up ', abs(hRect) > self.h_rect_limit_up, self.h_rect_limit_up)
+                print('W rect ',
+                      abs(wRect) < self.w_rect_limit, self.w_rect_limit)
+                print('H rect ',
+                      abs(hRect) < self.h_rect_limit, self.h_rect_limit)
+                if (self.w_rect_limit_up is not None):
+                    print('W rect up ',
+                          abs(wRect) > self.w_rect_limit_up,
+                          self.w_rect_limit_up)
+                    print('H rect up ',
+                          abs(hRect) > self.h_rect_limit_up,
+                          self.h_rect_limit_up)
                 img = frameClean.copy()
                 cv2.drawContours(img, c, -1, 255, 3)
                 rect = cv2.minAreaRect(c)
@@ -131,10 +137,10 @@ class ShapeDetector:
 
                 if DEBUG:
                     print('Rect passed')
-                    
 
             if (self.angle_limiter):
-                raise Exception('Warning angle limiter is not supported anymore')
+                raise Exception(
+                    'Warning angle limiter is not supported anymore')
                 if (abs(angleRect) > 80):
                     if (90 - abs(angleRect) > 8):
                         continue
@@ -195,7 +201,7 @@ class ShapeDetector:
                     continue
 
             self.shapes.append(shape)
-            shapes_with_approx.append([shape, approx, c])
+            shapes_with_approx.append([shape, approx, c, (wRect, hRect)])
 
             cv2.drawContours(frameWithText, [c], -1, (70, 0, 255), 10)
             cv2.putText(frameWithText, shape,

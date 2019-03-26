@@ -43,6 +43,7 @@ class ImageToGridConverter(object):
                  left_obstacle_border=LEFT_OBSTACLE_BORDER):
         self.obstacle_border = obstacle_border
         self.left_obstacle_border = left_obstacle_border
+        self.obstacles_center_array = None
         self.image = image.copy()
         self.image = cv2.resize(self.image, (LENGTH, HEIGHT))
         self.image = cv2.GaussianBlur(self.image, BLUR_TUPLE, 0)
@@ -71,17 +72,26 @@ class ImageToGridConverter(object):
     def mark_ending_point(self, x_end, y_end):
         self.grid[y_end][x_end] = ENDING_MARKER
 
-    def mark_starting_point(self, x_start, y_start):
-        hsv = cv2.cvtColor(self.image, cv2.COLOR_BGR2HSV)
-
-        mask = cv2.inRange(hsv, BLUE_HSV_LOW, BLUE_HSV_HIGH)
-        obstacles_center_array = self.__find_center_of_obstacle(mask)
-
-        for point in obstacles_center_array:
-            x_obs, y_obs = point
+    def validate_robot_not_obstacle(self, x_obs, y_obs, x_start, y_start):
+        # Positif, compare left
+        side = x_obs - x_start > 0
+        if (side):
             if (abs(x_start - x_obs) < self.left_obstacle_border
                     and abs(y_start - y_obs) < self.obstacle_border):
                 raise NoBeginingPointException()
+        else:
+            if (abs(x_start - x_obs) < self.obstacle_border
+                    and abs(y_start - y_obs) < self.obstacle_border):
+                raise NoBeginingPointException()
+
+    def mark_starting_point(self, x_start, y_start):
+        for point in self.obstacles_center_array:
+            x_obs, y_obs = point
+            # print(abs(x_start - x_obs) < self.left_obstacle_border)
+            # print(abs(y_start - y_obs) < self.obstacle_border)
+            # print(x_start, x_obs)
+            # print(y_start, y_obs)
+            self.validate_robot_not_obstacle(x_obs, y_obs, x_start, y_start)
 
         self.grid[y_start][x_start] = STARTING_MARKER
 
@@ -106,9 +116,9 @@ class ImageToGridConverter(object):
         hsv = cv2.cvtColor(self.image, cv2.COLOR_BGR2HSV)
 
         mask = cv2.inRange(hsv, BLUE_HSV_LOW, BLUE_HSV_HIGH)
-        obstacles_center_array = self.__find_center_of_obstacle(mask)
+        self.obstacles_center_array = self.__find_center_of_obstacle(mask)
 
-        for point in obstacles_center_array:
+        for point in self.obstacles_center_array:
             x, y = point
 
             # loop for upper border

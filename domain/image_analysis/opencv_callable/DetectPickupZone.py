@@ -13,7 +13,7 @@ PERI_LIMITER_CHECK = False
 PERI_LIMITER_UPPER = 100000
 PERI_LIMITER_LOWER = 150
 RECT_LIMITER_CHECK = True
-RECT_W_LIMITER = 75
+RECT_W_LIMITER = 85
 RECT_H_LIMITER = 15
 RECT_W_LIMITER_UP = 110
 RECT_H_LIMITER_UP = 45
@@ -225,18 +225,18 @@ def detect_pickup_zone_the_other_side(og_frame):
 
 def adjust_start_zone_offset_upside_down(point, wRect, hRect, width):
     if (point[0] > width / 2):
-        return (point[0] - OFFSET_PATHFINDING + round(wRect / 2),
-                point[1] + round(hRect / 2), EAST())
+        return (point[0] - OFFSET_PATHFINDING + round(wRect / 2), point[1],
+                EAST())
     else:
         return (point[0] + OFFSET_PATHFINDING + round(wRect / 2),
-                point[1] + round(hRect / 2), WEST())
+                point[1] + round(hRect), WEST())
 
 
 def adjust_start_zone_offset(point, wRect, hRect, height):
     # Faire les deux bords de la table avec un beau if
     if (point[1] > height / 2):
-        return (point[0] + round(wRect / 2),
+        return (point[0] + round(wRect),
                 point[1] - OFFSET_PATHFINDING + round(hRect / 2), SOUTH())
     else:
-        return (point[0] + round(wRect / 2),
-                point[1] + OFFSET_PATHFINDING + round(hRect / 2), NORTH())
+        return (point[0], point[1] + OFFSET_PATHFINDING + round(hRect / 2),
+                NORTH())
