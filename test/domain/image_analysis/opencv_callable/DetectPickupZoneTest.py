@@ -8,6 +8,7 @@ import inspect
 
 LIVE = False
 
+
 class DetectZoneDepWorldTest(unittest.TestCase):
     def setUp(self):
         print("In method ", self._testMethodName)
@@ -58,34 +59,44 @@ class DetectZoneDepWorldTest(unittest.TestCase):
             path8 = os.path.join(path, "./samples/sample9.jpg")
             self.call_path(path8)
 
-            path01 = os.path.join(path, "./image_samples/real_image/globalmonde.jpg")
+            path01 = os.path.join(
+                path, "./image_samples/real_image/globalmonde.jpg")
             self.call_path(path01)
 
-            path02 = os.path.join(path, "./image_samples/real_image/globalmonde1.jpg")
+            path02 = os.path.join(
+                path, "./image_samples/real_image/globalmonde1.jpg")
             self.call_path(path02)
 
-            path03 = os.path.join(path, "./image_samples/real_image/globalmonde2.jpg")
+            path03 = os.path.join(
+                path, "./image_samples/real_image/globalmonde2.jpg")
             self.call_path(path03)
 
-            path04 = os.path.join(path, "./image_samples/real_image/globalmonde3.jpg")
+            path04 = os.path.join(
+                path, "./image_samples/real_image/globalmonde3.jpg")
             self.call_path(path04)
 
-            path05 = os.path.join(path, "./image_samples/real_image/globalmonde4.jpg")
+            path05 = os.path.join(
+                path, "./image_samples/real_image/globalmonde4.jpg")
             self.call_path(path05)
 
-            path06 = os.path.join(path, "./image_samples/real_image/globalmonde5.jpg")
+            path06 = os.path.join(
+                path, "./image_samples/real_image/globalmonde5.jpg")
             self.call_path(path06)
 
-            path07 = os.path.join(path, "./image_samples/real_image/globalmonde6.jpg")
+            path07 = os.path.join(
+                path, "./image_samples/real_image/globalmonde6.jpg")
             self.call_path(path07)
 
-            path08 = os.path.join(path, "./image_samples/real_image/globalmonde7.jpg")
+            path08 = os.path.join(
+                path, "./image_samples/real_image/globalmonde7.jpg")
             self.call_path(path08)
 
-            path09 = os.path.join(path, "./image_samples/real_image/globalmonde8.jpg")
+            path09 = os.path.join(
+                path, "./image_samples/real_image/globalmonde8.jpg")
             self.call_path(path09)
 
-            path010 = os.path.join(path, "./image_samples/real_image/globalmonde9.jpg")
+            path010 = os.path.join(
+                path, "./image_samples/real_image/globalmonde9.jpg")
             self.call_path(path010)
 
     def call_path(self, path):
@@ -101,7 +112,7 @@ class DetectZoneDepWorldTest(unittest.TestCase):
         cv2.imshow('SHAPE FRAME', frame)
         cv2.waitKey()
 
-        self.assertEqual((x, y) is not (0, 0))
+        self.assertNotEqual((x, y), (0, 0))
 
         print('Done with ', path)
 
