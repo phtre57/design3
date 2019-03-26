@@ -35,7 +35,8 @@ logger = Logger(__name__)
 
 
 class Sequence:
-    def __init__(self, cap, comm_pi, world_cam_pixel_to_xy_converter, robot_cam_pixel_to_xy_converter):
+    def __init__(self, cap, comm_pi, world_cam_pixel_to_xy_converter,
+                 robot_cam_pixel_to_xy_converter):
         self.cap = cap
         self.X_END = None
         self.Y_END = None
@@ -127,7 +128,6 @@ class Sequence:
                 robot_detector = RobotDetector(img)
                 robot_angle = robot_detector.find_angle_of_robot()
                 turning_angle = int(round(robot_angle))
-
                 self.comm_pi.sendCoordinates("0,0," + str(turning_angle) +
                                              "\n")
 
@@ -276,7 +276,7 @@ class Sequence:
             return False
 
         return True
-        #assign attributes for further uses
+        # assign attributes for further uses
 
     def get_tension(self):
         self.comm_pi.getTension()
@@ -321,11 +321,12 @@ class Sequence:
         time.sleep(1)
 
     def grab_piece(self):
+        logger.log_info("Trying to grab piece...")
         robot_img = self.comm_pi.getImage()
         height, width, channels = robot_img.shape
         x, y = detect_piece(robot_img, self.piece_shape, self.piece_color)
-        x_from_center_of_image = x - width/2
-        y_from_center_of_image = y - height/2
+        x_from_center_of_image = x - width / 2
+        y_from_center_of_image = y - height / 2
 
         world_img = self.cap.read()
         robot_detector = RobotDetector(world_img)
@@ -334,8 +335,5 @@ class Sequence:
             .convert_to_xy_point_given_angle((x_from_center_of_image, y_from_center_of_image), angle)
 
         string_coord = str(real_x) + "," + str(real_y) + ",0\n"
+        logger.log_info("Sending coordinates: " + string_coord)
         self.comm_pi.sendCoordinates(string_coord)
-
-
-
-

@@ -28,6 +28,15 @@ comm_pi = Communication_pi()
 
 logger = Logger(__name__)
 
+
+def connect(comm_pi):
+    if comm_pi is None:
+        return
+    logger.log_info("Now connecting...")
+    comm_pi.connectToPi()
+    time.sleep(5)
+
+
 def pathfinding(path, x, y):
     frame = cv2.imread(path)
 
@@ -112,23 +121,47 @@ def calibrate():
         traceback.logger.log_info_exc(file=sys.stdout)
 
 
-def main_sequence():
+def main_sequence(ui=True):
+
     cap = start_cam()
-    logger.log_info("Now connecting...")
-    comm_pi.connectToPi()
+    if CANCER_MAC_USER:
+        cap.set(3, 1600)
+        cap.set(4, 1200)
+        cap.set(3, 640)
+        cap.set(4, 480)
+
+    time.sleep(5)
+    _, frame = cap.read()
+
+    connect(comm_pi)
     pixel_to_xy_converter = calibrate()
+
+    # X_END = X_END_START
+    # Y_END = Y_END_START
 
     # X_END = X_END_CHARGE
     # Y_END = Y_END_CHARGE
 
     sequence = Sequence(cap, comm_pi, pixel_to_xy_converter)
-    # sequence.set_end_point(X_END, Y_END)
-    # sequence.go_to_start_zone()
+    print("Go to start zone...")
+    # sequence.set_end_point(X_END_START, Y_END_START)
+    # sequence.start()
+    sequence.go_to_start_zone()
+    print("Go to start charge station...")
+    sequence.go_to_c_charge_station()
+    print("Go back from start charge station...")
+    sequence.go_back_from_charge_station()
+    print("Go to qr...")
+    # sequence.make_dat_dance_to_decode_qr_boy()
+    # sequence.go_to_zone_dep()
+    sequence.go_to_zone_pickup()
+    sequence.end()
+    print("Sad face we're done...")
 
-    sequence.go_to_zone_dep()
-    sequence.start()
+    # sequence.go_to_zone_dep()
 
-    init_conn_with_ui()
+    if (ui):
+        init_conn_with_ui()
 
 
 def init_conn_with_ui():
@@ -152,11 +185,16 @@ def init_conn_with_ui():
         main_sequence()
 
 
+def init_conn_without_ui():
+    main_sequence(False)
+
+
 def main():
     logger.increment_sequence_number()
 
     if (args.debug):
         logger.log_info("debug")
+        init_conn_without_ui()
         # connectToPi()
         # sendCoordinates('200 0\n')
     else:
