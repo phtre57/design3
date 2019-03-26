@@ -73,9 +73,12 @@ def detect_zone_dep_world(og_frame, canny_down=110, canny_up=150, flipped=False)
             logger.log_critical('ZONE DEPOT WORLD - Couldn\'nt find the zone depot world')
             raise Exception("Can't find zone depot world")
         if(canny_down == 70):
+            logger.log_debug('ZONE DEPOT WORLD - Fallback to lowest (10) bracket canny strategy')
+            return detect_zone_dep_world(og_frame, 10, 150)
+        if(canny_down == 10):
             logger.log_debug('ZONE DEPOT WORLD - Fallback to upper zone strategy')
             return detect_zone_dep_world(og_frame, 10, 150, True)
-        logger.log_debug('ZONE DEPOT WORLD - Fallback to lower bracket canny strategy')
+        logger.log_debug('ZONE DEPOT WORLD - Fallback to lower (70) bracket canny strategy')
         return detect_zone_dep_world(og_frame, 70, 150)
 
     shape.center = find_center(shape.approx[0][2], 10, shape)

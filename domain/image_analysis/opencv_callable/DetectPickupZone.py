@@ -12,10 +12,10 @@ PERI_LIMITER_CHECK = False
 PERI_LIMITER_UPPER = 100000
 PERI_LIMITER_LOWER = 150
 RECT_LIMITER_CHECK = True
-RECT_W_LIMITER = 60
+RECT_W_LIMITER = 75
 RECT_H_LIMITER = 15
-RECT_W_LIMITER_UP = 100
-RECT_H_LIMITER_UP = 40
+RECT_W_LIMITER_UP = 110
+RECT_H_LIMITER_UP = 45
 RADIUS_LIMITER_CHECK = True
 RADIUS_LIMITER = 150
 RAIDUS_POSITIVE = True
@@ -57,10 +57,8 @@ def detect_pickup_zone(og_frame):
     vertical = edges.copy()
     rows = vertical.shape[0]
     verticalsize = round(rows / 30)
-    # Create structure element for extracting vertical lines through morphology operations
     verticalStructure = cv2.getStructuringElement(cv2.MORPH_RECT,
                                                   (1, verticalsize))
-    # Apply morphology operations
     vertical = cv2.erode(vertical, verticalStructure)
     vertical = cv2.dilate(vertical, verticalStructure)
     edges = vertical
@@ -69,32 +67,10 @@ def detect_pickup_zone(og_frame):
         cv2.imshow('CANNY AFTER MASK', edges)
         cv2.waitKey()
 
-    # horizontal = edges.copy()
-    # cols = horizontal.shape[1]
-    # horizontal_size = round(cols / 30)
-    # # Create structure element for extracting horizontal lines through morphology operations
-    # horizontalStructure = cv2.getStructuringElement(cv2.MORPH_RECT,
-    #                                                 (horizontal_size, 1))
-    # # Apply morphology operations
-    # horizontal = cv2.erode(horizontal, horizontalStructure)
-    # horizontal = cv2.dilate(horizontal, horizontalStructure)
-    # edges2 = horizontal
-
-    # if DEBUG:
-    #     cv2.imshow('CANNY AFTER MASK', edges2)
-    #     cv2.waitKey()
-
-    # edges = cv2.addWeighted(edges2, 1, edges1, 1, 0.0)
-
-    # edges = cv2.bitwise_and(edges2, edges2, mask=edges1)
-
     edges = cv2.dilate(
         edges,
         kernel=cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (10, 10)),
         iterations=1)
-
-    # kernelerode = np.ones((2, 2), np.uint8)
-    # edges = cv2.erode(edges, kernelerode, iterations=1)
 
     if DEBUG:
         cv2.imshow('CANNY AFTER MASK', edges)
@@ -114,16 +90,16 @@ def detect_pickup_zone(og_frame):
 
             new_k = np.concatenate((c, cc))
 
-            ((xRect, yRect), (wRect, hRect), angleRect) = cv2.minAreaRect(new_k)
+            xRect, yRect, wRect, hRect = cv2.boundingRect(new_k)
             
             if DEBUG:
-                # frame1 = og_frame.copy()
-                # frame1 = cv2.convertScaleAbs(frame1, alpha=0, beta=0)
-                # filler = cv2.convexHull(new_k)
-                # cv2.fillConvexPoly(frame1, filler, 255)
-                # cv2.imshow('DEBUG CONTOUR', frame1)
-                # cv2.waitKey()
-                print('')
+                frame1 = og_frame.copy()
+                frame1 = cv2.convertScaleAbs(frame1, alpha=0, beta=0)
+                filler = cv2.convexHull(new_k)
+                cv2.fillConvexPoly(frame1, filler, 255)
+                print(wRect, hRect)
+                cv2.imshow('DEBUG CONTOUR', frame1)
+                cv2.waitKey()
 
             if (abs(wRect) < RECT_W_LIMITER
                 or abs(hRect) < RECT_H_LIMITER):
@@ -138,7 +114,7 @@ def detect_pickup_zone(og_frame):
                 cv2.imshow('FOUND', frame1)
                 cv2.waitKey()
             
-            return adjust_start_zone_offset((round(xRect), round(yRect)))
+            return adjust_start_zone_offset((round(xRect), round(yRect)), wRect, hRect)
     
     return detect_pickup_zone_the_other_side(og_frame)
 
@@ -172,10 +148,8 @@ def detect_pickup_zone_the_other_side(og_frame):
     horizontal = edges.copy()
     cols = horizontal.shape[1]
     horizontal_size = round(cols / 30)
-    # Create structure element for extracting horizontal lines through morphology operations
     horizontalStructure = cv2.getStructuringElement(cv2.MORPH_RECT,
                                                     (horizontal_size, 1))
-    # Apply morphology operations
     horizontal = cv2.erode(horizontal, horizontalStructure)
     horizontal = cv2.dilate(horizontal, horizontalStructure)
     edges = horizontal
@@ -207,7 +181,7 @@ def detect_pickup_zone_the_other_side(og_frame):
 
             new_k = np.concatenate((c, cc))
 
-            ((xRect, yRect), (wRect, hRect), angleRect) = cv2.minAreaRect(new_k)
+            xRect, yRect, wRect, hRect = cv2.boundingRect(new_k)
             
             if DEBUG:
                 # frame1 = og_frame.copy()
@@ -232,20 +206,20 @@ def detect_pickup_zone_the_other_side(og_frame):
                 cv2.imshow('FOUND', frame1)
                 cv2.waitKey()
             
-            return adjust_start_zone_offset_upside_down((round(xRect), round(yRect)))
+            return adjust_start_zone_offset_upside_down((round(xRect), round(yRect)), wRect, hRect)
 
     logger.log_critical('PICKUP ZONE - Can\'t find pickup zone')
     raise Exception('Can\'t find pickup zone')
 
-def adjust_start_zone_offset_upside_down(point):
+def adjust_start_zone_offset_upside_down(point, wRect, hRect):
     if (point[0] > 320/2):
-        return (point[0] - OFFSET_PATHFINDING, point[1])
+        return (point[0] - OFFSET_PATHFINDING + round(wRect / 2), point[1] + round(hRect / 2))
     else:
-        return (point[0] + OFFSET_PATHFINDING, point[1])
+        return (point[0] + OFFSET_PATHFINDING + round(wRect / 2), point[1] + round(hRect / 2))
 
-def adjust_start_zone_offset(point):
+def adjust_start_zone_offset(point, wRect, hRect):
     # Faire les deux bords de la table avec un beau if
     if (point[1] > 120):
-        return (point[0], point[1] - OFFSET_PATHFINDING)
+        return (point[0] + round(wRect / 2), point[1] - OFFSET_PATHFINDING + round(hRect / 2))
     else:
-        return (point[0], point[1] + OFFSET_PATHFINDING)
+        return (point[0] + round(wRect / 2), point[1] + OFFSET_PATHFINDING + round(hRect / 2))

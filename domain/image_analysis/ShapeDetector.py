@@ -94,16 +94,16 @@ class ShapeDetector:
             else:
                 approx = cv2.approxPolyDP(c, 0.05 * peri, True)
 
-            ((xRect, yRect), (wRect, hRect), angleRect) = cv2.minAreaRect(c)
+            xRect, yRect, wRect, hRect = cv2.boundingRect(c)
+            # ((xRect, yRect), (wRect, hRect), angleRect) = cv2.minAreaRect(c)
 
             if DEBUG:
-                print(wRect, hRect, angleRect)
-                print(self.w_rect_limit)
-                print('W rect ', abs(wRect) < self.w_rect_limit)
-                print('H rect ', abs(hRect) < self.h_rect_limit)
+                print('Width and Height ', wRect, hRect)
+                print('W rect ', abs(wRect) < self.w_rect_limit, self.w_rect_limit)
+                print('H rect ', abs(hRect) < self.h_rect_limit, self.h_rect_limit)
                 if(self.w_rect_limit_up is not None):
-                    print('W rect up ', abs(wRect) > self.w_rect_limit_up)
-                    print('H rect up ', abs(hRect) > self.h_rect_limit_up)
+                    print('W rect up ', abs(wRect) > self.w_rect_limit_up, self.w_rect_limit_up)
+                    print('H rect up ', abs(hRect) > self.h_rect_limit_up, self.h_rect_limit_up)
                 img = frameClean.copy()
                 cv2.drawContours(img, c, -1, 255, 3)
                 rect = cv2.minAreaRect(c)
@@ -134,6 +134,7 @@ class ShapeDetector:
                     
 
             if (self.angle_limiter):
+                raise Exception('Warning angle limiter is not supported anymore')
                 if (abs(angleRect) > 80):
                     if (90 - abs(angleRect) > 8):
                         continue
