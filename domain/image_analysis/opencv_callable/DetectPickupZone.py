@@ -114,8 +114,11 @@ def detect_pickup_zone(og_frame):
                 cv2.imshow('FOUND', frame1)
                 cv2.waitKey()
             
-            return adjust_start_zone_offset((round(xRect), round(yRect)), wRect, hRect)
+            center = adjust_start_zone_offset((round(xRect), round(yRect)), wRect, hRect)
+            logger.log_debug('PICKUP ZONE - Found center ' + str(center[0]) + ' ' + str(center[1]))
+            return center
     
+    logger.log_debug('PICKUP ZONE - Fallback to upside down strategy')
     return detect_pickup_zone_the_other_side(og_frame)
 
 def detect_pickup_zone_the_other_side(og_frame):
@@ -206,7 +209,9 @@ def detect_pickup_zone_the_other_side(og_frame):
                 cv2.imshow('FOUND', frame1)
                 cv2.waitKey()
             
-            return adjust_start_zone_offset_upside_down((round(xRect), round(yRect)), wRect, hRect)
+            center = adjust_start_zone_offset_upside_down((round(xRect), round(yRect)), wRect, hRect)
+            logger.log_debug('PICKUP ZONE - Found center ' + str(center[0]) + ' ' + str(center[1]))
+            return center
 
     logger.log_critical('PICKUP ZONE - Can\'t find pickup zone')
     raise Exception('Can\'t find pickup zone')

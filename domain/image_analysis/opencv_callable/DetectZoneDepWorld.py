@@ -84,9 +84,13 @@ def detect_zone_dep_world(og_frame, canny_down=110, canny_up=150, flipped=False)
     shape.center = find_center(shape.approx[0][2], 10, shape)
 
     if (flipped):
-        return adjust_start_zone_offset_upside_down(shape.center)
+        center = adjust_start_zone_offset_upside_down(shape.center)
+        logger.log_debug('ZONE DEPOT WORLD - Found center ' + str(center[0]) + ' ' + str(center[1]))
+        return center
     else:
-        return adjust_start_zone_offset(shape.center)
+        center = adjust_start_zone_offset(shape.center)
+        logger.log_debug('ZONE DEPOT WORLD - Found center ' + str(center[0]) + ' ' + str(center[1]))
+        return center
 
 def adjust_start_zone_offset_upside_down(point):
     if (point[0] > 320/2):
