@@ -6,25 +6,30 @@ import cv2
 import os
 import inspect
 
-class DetectZoneDepTest(unittest.TestCase):
 
+class DetectZoneDepTest(unittest.TestCase):
     def setUp(self):
-        print ("In method ", self._testMethodName)
+        print("In method ", self._testMethodName)
 
     def test_givenFrameOfZoneDep_thenZoneDepIsDetected(self):
-        path = os.path.normpath(os.path.join(os.path.dirname(__file__), os.pardir))
+        path = os.path.normpath(
+            os.path.join(os.path.dirname(__file__), os.pardir))
         path = os.path.normpath(os.path.join(path, os.pardir))
         path = os.path.normpath(os.path.join(path, os.pardir))
         path = os.path.normpath(os.path.join(path, os.pardir))
-        path = os.path.join(path, "./image_samples/real_image/zonedep.jpg")
+        path = os.path.join(path, "./image_samples/real_image/zonedep1.jpg")
 
         frame = cv2.imread(path)
 
-        shape = detect_zone_dep(frame)
-        # cv2.imshow('EDGES', shape.frame)
-        # cv2.waitKey()
+        cap = cv2.VideoCapture(1)
+        ret, frame = cap.read()
 
-        self.assertEqual(shape.shapes, ['rectangle'])
+        shape = detect_zone_dep(frame)
+        cv2.imshow('EDGES', shape.frame)
+        cv2.waitKey()
+
+        self.assertEqual(len(shape.shapes), 1)
+
 
 if __name__ == '__main__':
     unittest.main()

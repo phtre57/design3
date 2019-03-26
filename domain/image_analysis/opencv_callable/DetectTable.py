@@ -12,21 +12,25 @@ RECT_W_LIMITER = 90
 RECT_H_LIMITER = 90
 RADIUS_LIMITER_CHECK = False
 
-def detect_table(frame):
+
+def detect_table(og_frame):
+    frame = og_frame.copy()
+
     frame = frame.copy()
-    
+
     edges = canny(frame, erode_mask)
-    shapeDetector = ShapeDetector(PERI_LIMITER_CHECK, RECT_LIMITER_CHECK, RADIUS_LIMITER_CHECK)
+    shapeDetector = ShapeDetector(PERI_LIMITER_CHECK, RECT_LIMITER_CHECK,
+                                  RADIUS_LIMITER_CHECK)
     shapeDetector.set_peri_limiter(PERI_LIMITER_LOWER, PERI_LIMITER_UPPER)
     shapeDetector.set_rect_limiter(RECT_W_LIMITER, RECT_H_LIMITER)
 
-    shape = shapeDetector.detect(edges)
-    shape = shapeDetector.detect(shape.frameCnts)
+    shape = shapeDetector.detect(edges, og_frame.copy())
+    shape = shapeDetector.detect(shape.frameCnts, og_frame.copy())
 
-    kernelerode = np.ones((2,2),np.uint8)
+    kernelerode = np.ones((2, 2), np.uint8)
     kernel = np.ones((9, 9), np.uint8)
 
-    mask = cv2.erode(shape.frameWithText,kernelerode,iterations = 1)
+    mask = cv2.erode(shape.frameWithText, kernelerode, iterations=1)
 
     output = cv2.bitwise_and(frame, frame, mask=mask)
 

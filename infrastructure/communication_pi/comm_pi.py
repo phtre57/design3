@@ -1,89 +1,127 @@
 import socket
-import sys  
-import cv2  
+import sys
+import cv2
 import pickle
 import time
 import numpy as np
-import struct ## new        
-     
+import struct  # new
+import base64
+from util.Logger import *
+
 # Host = Adresse ip du serveur (ici Raspberry pi)
-# Port = valeur predefinie (doit etre la meme pour le serveur)  
+# Port = valeur predefinie (doit etre la meme pour le serveur)
 host = '192.168.0.38'
-port = 15555    
+port = 15555
+
+logger = Logger(__name__)
+
 
 class Communication_pi():
+    def __init__(self):
+        self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
-	def __init__(self):
-		self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    def connectToPi(self):
+        print(host)
+        self.socket.connect((host, port))
+        logger.log_info("Connecte au serveur")
+        time.sleep(5)
 
-	def connectToPi(self):         
-		print(host)
-		self.socket.connect((host, port))
-		print("Connecte au serveur")
+    def __recv_msg(self):
+        raw_msglen = self.__recvall(4)
+        if not raw_msglen:
+            return None
+        msglen = struct.unpack('>I', raw_msglen)[0]
+        return self.__recvall(msglen)
 
-	def getImage(self):
-		data = b""
-		payload_size = struct.calcsize(">L")
-		print("payload_size: {}".format(payload_size))
+    def __recvall(self, n):
+        data = b''
+        while len(data) < n:
+            packet = self.socket.recv(n - len(data))
+            if not packet:
+                return None
+            data += packet
+        return data
 
-		output = "getImage"
-		self.socket.send(output.encode('utf-8'))
+    def send_msg(self, msg):
+        msg = struct.pack('>I', len(msg)) + msg
+        self.socket.sendall(msg)
 
-		while len(data) < payload_size:
-			print("Recv: {}".format(len(data)))
-			data = self.socket.recv(4096)
+    def getImage(self):
+        output = "getImage"
+        self.socket.send(output.encode('utf-8'))
 
-		print("Done Recv: {}".format(len(data)))
-		
-		packed_msg_size = data[:payload_size]
-		data = data[payload_size:]
-		msg_size = struct.unpack(">L", packed_msg_size)[0]
-		print("msg_size: {}".format(msg_size))
+        data = self.__recv_msg()
+        data = str(data, 'utf-8')
+        frame_data = base64.b64decode(data)
 
-		while len(data) < msg_size:
-				data += self.socket.recv(4096)
-		frame_data = data[:msg_size]
-		data = data[msg_size:]
+        with open('test.jpg', 'wb') as f_output:
+            f_output.write(frame_data)
 
-		frame=pickle.loads(frame_data, fix_imports=True, encoding="bytes")
-		# cv2.imwrite('messigray.png',frame)
-		return cv2.imdecode(frame, cv2.IMREAD_COLOR)
+        time.sleep(1)
 
-	def sendCoordinates(self, str):
-		signal = 'sendPosition'
-		self.socket.sendall(signal.encode('utf-8'))
-		self.socket.sendall(str.encode('utf-8'))
-		print("Coordonnees envoyees")
-		self.robotReady()
+        return cv2.imread('./test.jpg')
 
-		# while True:
-		# 	recv = self.socket.recv(255)
-		# 	print("Waiting")
-		# 	time.sleep(0.5)
-		# 	if ('validationSendPosition' == recv):
-		# 		print("Response recv")
-		# 		break
+    def sendCoordinates(self, str):
+        if (str == '0,0,0\n'):
+            return
 
-	def disconnectFromPi(self):
-		self.socket.close()
+        signal = 'sendPosition'
+        self.socket.sendall(signal.encode('utf-8'))
+        self.socket.sendall(str.encode('utf-8'))
+        logger.log_info("Coordonnees envoyees: " + str)
+        self.robotReady()
 
-	def robotReady(self):
-		okSignal = self.socket.recv(255)
+    def disconnectFromPi(self):
+        signal = 'deconnect'
+        self.socket.sendall(signal.encode('utf-8'))
+        self.socket.close()
 
-	def changeCondensateur(self):
-		signal = 'condensateurChange'
-		self.socket.sendall(signal.encode('utf-8'))
-		print("Signal envoye!")
+    def robotReady(self):
+        self.socket.recv(255)
+        logger.log_info("Ready signal received")
+
+    def changeCondensateur(self):
+        signal = 'condensateurChange'
+        self.socket.sendall(signal.encode('utf-8'))
+        logger.log_info("Signal envoye pour condensateur!")
+
+    def changeServoHori(self, str):
+        signal = 'servoHori'
+        self.socket.sendall(signal.encode('utf-8'))
+        self.socket.sendall(str.encode('utf-8'))
+        logger.log_info("Servo Horizontal envoyees: " + str)
+        time.sleep(1)
+
+    def changeServoVert(self, str):
+        signal = 'servoVert'
+        self.socket.sendall(signal.encode('utf-8'))
+        self.socket.sendall(str.encode('utf-8'))
+        logger.log_info("Servo Vertical envoyees: " + str)
+        time.sleep(1)
+
+    def getTension(self):
+        signal = 'gettension'
+        self.socket.sendall(signal.encode('utf-8'))
+        data = self.socket.recv(255)
+        data = str(data, "utf-8")
+        logger.log_info("Received tension: " + str(data))
+
+        data = data.replace("\r", "")
+        data = data.replace("\n", "")
+
+        return float(data)
+
 
 def main():
-	communication_pi = Communication_pi()
-	communication_pi.connectToPi()
-	time.sleep(2)
-	communication_pi.getImage()
-	time.sleep(2)
-	communication_pi.sendCoordinates("2")
-	time.sleep(2)
-	communication_pi.disconnectFromPi()
+    communication_pi = Communication_pi()
+    communication_pi.connectToPi()
+    time.sleep(2)
+    communication_pi.getImage()
+    time.sleep(2)
+    communication_pi.sendCoordinates("2")
+    time.sleep(2)
+    communication_pi.disconnectFromPi()
+
 
 if __name__ == "__main__":
     # execute only if run as a script

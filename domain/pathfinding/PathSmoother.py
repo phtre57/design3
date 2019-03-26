@@ -1,9 +1,7 @@
-
-
 INCREMENT = 30
 
-class PathSmoother:
 
+class PathSmoother:
     def __init__(self, path):
         self.path = path
         self.smoother_path = []

@@ -18,15 +18,15 @@ class DetectContourPiecesTest(unittest.TestCase):
         path = os.path.normpath(os.path.join(path, os.pardir))
         path = os.path.join(path, "./image_samples/real_image/pieces.jpg")
 
-        frame = cv2.imread(path)
-
+        og_frame = cv2.imread(path)
+        frame = og_frame.copy()
         frame = canny(frame, dilate_mask)
         shapeDetector = ShapeDetector(True, True, True)
         shapeDetector.set_peri_limiter(150, 750)
         shapeDetector.set_rect_limiter(10, 10)
         shapeDetector.set_radius_limiter(90, True)
-        shape = shapeDetector.detect(frame)
-        shape = shapeDetector.detect(shape.frameCnts)
+        shape = shapeDetector.detect(frame, og_frame)
+        shape = shapeDetector.detect(shape.frameCnts, og_frame)
 
         # cv2.imshow('EDGES', shape.frameWithText)
         # cv2.waitKey()
