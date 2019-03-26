@@ -57,6 +57,10 @@ class Sequence:
         self.retry = 0
         self.zone_dep_cardinal = None
         self.zone_pickup_cardinal = None
+        self.__init_zones()
+
+    def __init_zones():
+        print('temp')
 
     def __create_smooth_path(self, unsecure=False):
         center_and_image = None
