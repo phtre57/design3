@@ -31,6 +31,7 @@ class ShapeDetector:
         self.shape_only = None
         self.w_rect_limit_up = None
         self.h_rect_limit_up = None
+        self.comparator_cnts = None
 
     def detect(self, frame, og_frame):
         frame = frame.copy()
@@ -69,17 +70,25 @@ class ShapeDetector:
                 cv2.imshow('CNTS1', frame1)
                 cv2.waitKey()
 
+            if self.comparator_cnts is not None:
+                dist = cv2.matchShapes(c, self.comparator_cnts, 1, 0)
+                if DEBUG:
+                    print('dist ', dist)
+
             shape = "unidentified"
             peri = cv2.arcLength(c, True)
             if DEBUG:
                 print("Wave")
                 print(peri)
+                print('Upper peri', peri > self.peri_upper)
+                print('Lower peri ', peri < self.peri_lower)
 
             if (self.peri_limiter):
                 if (peri > self.peri_upper):
                     continue
                 elif (peri < self.peri_lower):
                     continue
+
             if (self.shape_only is not None and self.shape_only == 'circle'):
                 approx = cv2.approxPolyDP(c, 0.02 * peri, True)
             else:
@@ -89,6 +98,12 @@ class ShapeDetector:
 
             if DEBUG:
                 print(wRect, hRect, angleRect)
+                print(self.w_rect_limit)
+                print('W rect ', abs(wRect) < self.w_rect_limit)
+                print('H rect ', abs(hRect) < self.h_rect_limit)
+                if(self.w_rect_limit_up is not None):
+                    print('W rect up ', abs(wRect) > self.w_rect_limit_up)
+                    print('H rect up ', abs(hRect) > self.h_rect_limit_up)
                 img = frameClean.copy()
                 cv2.drawContours(img, c, -1, 255, 3)
                 rect = cv2.minAreaRect(c)
@@ -116,6 +131,7 @@ class ShapeDetector:
 
                 if DEBUG:
                     print('Rect passed')
+                    
 
             if (self.angle_limiter):
                 if (abs(angleRect) > 80):
@@ -220,3 +236,6 @@ class ShapeDetector:
 
     def set_radius_large_limit(self, radius_large_limit):
         self.radius_large_limit = radius_large_limit
+
+    def set_comparator_shape(self, comparator_cnts):
+        self.comparator_cnts = comparator_cnts
