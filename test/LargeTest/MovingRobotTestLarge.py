@@ -77,16 +77,17 @@ def main():
     print("Go to start zone...")
     # sequence.set_end_point(X_END_START, Y_END_START)
     # sequence.start()
-    # sequence.go_to_start_zone()
+    sequence.go_to_start_zone()
     print("Go to start charge station...")
     # sequence.go_to_c_charge_station()
     print("Go back from start charge station...")
     # sequence.go_back_from_charge_station()
     print("Go to qr...")
-    # sequence.make_dat_dance_to_decode_qr_boy()
-    # sequence.go_to_zone_dep()
-    # sequence.go_to_zone_pickup()
-    sequence.go_to_start_zone()
+    sequence.go_to_zone_dep()
+    sequence.rotate_robot_on_zone_dep()
+    sequence.go_to_zone_pickup()
+    sequence.rotate_robot_on_zone_pickup()
+    # sequence.go_to_start_zone()
     sequence.end()
     print("Sad face we're done...")
 
@@ -106,7 +107,11 @@ def main_test():
 
     sequence = Sequence(cap, comm_pi, pixel_to_xy_converter,
                         robot_cam_pixel_to_xy_converter)
-    sequence.go_to_start_zone()
+    # sequence.go_to_start_zone()
+    sequence.go_to_zone_dep()
+    sequence.rotate_robot_on_zone_dep()
+    sequence.go_to_zone_pickup()
+    sequence.rotate_robot_on_zone_pickup()
 
 
 try:
