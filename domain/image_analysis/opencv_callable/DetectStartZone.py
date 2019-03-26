@@ -7,7 +7,7 @@ from domain.image_analysis.ShapeUtils import *
 from context.config import *
 from util.Logger import Logger
 
-PERI_LIMITER_CHECK = True
+PERI_LIMITER_CHECK = False
 PERI_LIMITER_UPPER = 3000
 PERI_LIMITER_LOWER = 700
 RECT_LIMITER_CHECK = True
@@ -30,9 +30,10 @@ DEBUG = DETECT_START_ZONE_DEBUG
 logger = Logger(__name__)
 
 
-def detect_start_zone(og_frame):
+def detect_start_zone(og_frame, alpha=1.5):
     frame = og_frame.copy()
 
+    frame = cv2.convertScaleAbs(frame, alpha=alpha, beta=100)
     edges = canny(frame, erode_mask)
 
     if (DEBUG):
@@ -61,14 +62,15 @@ def detect_start_zone(og_frame):
         cv2.imshow('RAISE', shape.frame)
         cv2.waitKey()
         raise Exception("Can't find start zone", len(shape.approx))
-    elif (len(shape.approx) > 1):
+    else:
         shape.approx = shape.approx[:1]
         logger.log_warning(
             'Found multiples possible start zone, took the first one')
-    else:
-        logger.log_debug('Detect start zone with success')
 
     shape.center = find_center_for_zone_dep(shape, 100)
+
+    logger.log_debug('START ZONE - Found center ' + str(shape.center[0]) +
+                     ' ' + str(shape.center[1]))
 
     cv2.circle(shape.frame, (shape.center[0], shape.center[1]), 1,
                [255, 51, 51])
