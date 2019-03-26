@@ -73,7 +73,7 @@ class ImageToGridConverter(object):
             x_obs, y_obs = point
 
             if (abs(x_start - x_obs) < self.left_obstacle_border
-                    or abs(y_start - y_obs) < self.obstacle_border):
+                    and abs(y_start - y_obs) < self.obstacle_border):
                 raise NoBeginingPointException()
 
         self.grid[y_start][x_start] = STARTING_MARKER
