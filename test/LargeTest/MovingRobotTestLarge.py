@@ -106,7 +106,8 @@ def main_test():
 
     sequence = Sequence(cap, comm_pi, pixel_to_xy_converter,
                         robot_cam_pixel_to_xy_converter)
-    sequence.go_to_start_zone()
+    # sequence.go_to_start_zone()
+    sequence.go_to_zone_dep()
 
 
 try:

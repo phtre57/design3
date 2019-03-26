@@ -29,6 +29,8 @@ BLUE_HSV_LOW = np.array([100, 100, 120])
 BLUE_HSV_HIGH = hsv_high = np.array([140, 255, 255])
 BLUR_TUPLE = (3, 3)
 
+DEBUG = False
+
 
 class ImageToGridConverter(object):
     def __init__(self,
@@ -45,11 +47,17 @@ class ImageToGridConverter(object):
         self.image = cv2.resize(self.image, (LENGTH, HEIGHT))
         self.image = cv2.GaussianBlur(self.image, BLUR_TUPLE, 0)
         self.grid = np.zeros((HEIGHT, LENGTH))
-        self.mark_starting_point(x_start, y_start)
         self.mark_ending_point(x_end, y_end)
         self.__mark_obstacle_border()
         self.__mark_table_wall()
         self.mark_obstacle_in_grid_from_image()
+        self.show()
+        self.mark_starting_point(x_start, y_start)
+
+    def show(self):
+        if DEBUG:
+            cv2.imshow('DEBUG', self.image)
+            cv2.waitKey()
 
     def mark_obstacle_in_grid_from_image(self):
         hsv = cv2.cvtColor(self.image, cv2.COLOR_BGR2HSV)
@@ -71,9 +79,8 @@ class ImageToGridConverter(object):
 
         for point in obstacles_center_array:
             x_obs, y_obs = point
-
             if (abs(x_start - x_obs) < self.left_obstacle_border
-                    or abs(y_start - y_obs) < self.obstacle_border):
+                    and abs(y_start - y_obs) < self.obstacle_border):
                 raise NoBeginingPointException()
 
         self.grid[y_start][x_start] = STARTING_MARKER
