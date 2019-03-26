@@ -55,6 +55,8 @@ class Sequence:
         self.depot_number = None
         self.piece_shape = None
         self.retry = 0
+        self.zone_dep_cardinal = None
+        self.zone_pickup_cardinal = None
 
     def __create_smooth_path(self, unsecure=False):
         center_and_image = None
@@ -367,7 +369,7 @@ class Sequence:
         string_coord = str(real_x) + "," + str(real_y) + ",0\n"
         self.comm_pi.sendCoordinates(string_coord)
 
-    def __rotate_robot_on_zone_plane(self):
+    def __rotate_robot_on_zone_plane(self, cardinal_point):
         img = self.take_image()
         robot_detector = RobotDetector(img)
         angle = robot_detector.find_angle_of_robot()
