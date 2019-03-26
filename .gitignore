@@ -94,3 +94,4 @@ node_modules
 trading-api/.factorypath
 
 .vscode
+sequence_count.txt
