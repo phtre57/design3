@@ -21,7 +21,10 @@ RADIUS_LIMITER_CHECK = False
 RADIUS_LIMITER = 30
 RAIDUS_POSITIVE = False
 
-OFFSET_PATHFINDING = 40
+OFFSET_PATHFINDING_NORTH = 40
+OFFSET_PATHFINDING_WEST = 40
+OFFSET_PATHFINDING_SOUTH = 40
+OFFSET_PATHFINDING_EAST = 40
 
 DEBUG = DETECT_ZONE_DEP_WORLD_DEBUG
 
@@ -121,10 +124,10 @@ def detect_zone_dep_world(og_frame,
 
 def adjust_start_zone_offset_upside_down(point, width, w_h_rect):
     if (point[0] > width / 2):
-        return (point[0] - OFFSET_PATHFINDING,
+        return (point[0] - OFFSET_PATHFINDING_EAST,
                 point[1] - round(w_h_rect[1] / 2), EAST())
     else:
-        return (point[0] + OFFSET_PATHFINDING,
+        return (point[0] + OFFSET_PATHFINDING_WEST,
                 point[1] + round(w_h_rect[1] / 2), WEST())
 
 
@@ -132,7 +135,7 @@ def adjust_start_zone_offset(point, height, w_h_rect):
     # Faire les deux bords de la table avec un beau if
     if (point[1] > height / 2):
         return (point[0] + round(w_h_rect[0] / 2),
-                point[1] - OFFSET_PATHFINDING, SOUTH())
+                point[1] - OFFSET_PATHFINDING_NORTH, SOUTH())
     else:
         return (point[0] - round(w_h_rect[0] / 2),
-                point[1] + OFFSET_PATHFINDING, NORTH())
+                point[1] + OFFSET_PATHFINDING_SOUTH, NORTH())

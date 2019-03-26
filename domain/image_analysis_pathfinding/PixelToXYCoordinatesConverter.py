@@ -171,16 +171,16 @@ class PixelToXYCoordinatesConverter:
 
     def convert_real_xy_given_angle(self, point, angle):
         if angle > -10 and angle < 10:
-            return (point[0], point[1] * -1)
+            return (point[0], point[1])
 
         if angle > 80 and angle < 100:
-            return (point[1] * -1, point[0] * -1)
+            return (point[1], point[0] * -1)
 
         if (angle < -170 and angle > -190) or (angle < 190 and angle > 170):
-            return (point[0] * -1, point[1])
+            return (point[0] * -1, point[1] * -1)
 
         if angle < -80 and angle > -100:
-            return (point[1], point[0])
+            return (point[1] * -1, point[0])
 
     def correction_brillante(self, final_pixel_point, final_point):
         x = final_pixel_point[0] - (LENGTH / 2)

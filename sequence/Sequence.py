@@ -408,32 +408,38 @@ class Sequence:
         time.sleep(1)
 
     def move_robot_around_pickup_zone(self):
-        x_mm_movement_point = (40, 0)
-        y_mm_movement_point = (0, 40)
+        x_mm_movement_point = (30, 0)
+        x_mm_movement_point_negative = (-30, 0)
+        y_mm_movement_point = (0, 30)
+        y_mm_movement_point_negative = (0, -30)
         number_of_increment = 8
 
         if self.zone_pickup_cardinal == SOUTH():
             logger.log_info("Move around south pick up...")
             for i in range(number_of_increment):
-                x, y = self.robot_cam_pixel_to_xy_converter.convert_real_xy_given_angle(x_mm_movement_point, -90)
+                x, y = self.robot_cam_pixel_to_xy_converter.convert_real_xy_given_angle(
+                    x_mm_movement_point_negative, -90)
                 self.comm_pi.sendCoordinates(str(x) + "," + str(y) + ",0\n")
 
         if self.zone_pickup_cardinal == NORTH():
             logger.log_info("Move around north pick up...")
             for i in range(number_of_increment):
-                x, y = self.robot_cam_pixel_to_xy_converter.convert_real_xy_given_angle(x_mm_movement_point, 90)
+                x, y = self.robot_cam_pixel_to_xy_converter.convert_real_xy_given_angle(
+                    x_mm_movement_point, 90)
                 self.comm_pi.sendCoordinates(str(x) + "," + str(y) + ",0\n")
 
         if self.zone_pickup_cardinal == EAST():
-            logger.log_info("Move around north pick up...")
+            logger.log_info("Move around east pick up...")
             for i in range(number_of_increment):
-                x, y = self.robot_cam_pixel_to_xy_converter.convert_real_xy_given_angle(y_mm_movement_point, 0)
+                x, y = self.robot_cam_pixel_to_xy_converter.convert_real_xy_given_angle(
+                    y_mm_movement_point_negative, 0)
                 self.comm_pi.sendCoordinates(str(x) + "," + str(y) + ",0\n")
 
         if self.zone_pickup_cardinal == WEST():
             logger.log_info("Move around west pick up...")
             for i in range(number_of_increment):
-                x, y = self.robot_cam_pixel_to_xy_converter.convert_real_xy_given_angle(y_mm_movement_point, 180)
+                x, y = self.robot_cam_pixel_to_xy_converter.convert_real_xy_given_angle(
+                    y_mm_movement_point, 180)
                 self.comm_pi.sendCoordinates(str(x) + "," + str(y) + ",0\n")
 
     def grab_piece(self):

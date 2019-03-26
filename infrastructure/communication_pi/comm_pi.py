@@ -82,8 +82,10 @@ class Communication_pi():
         logger.log_info("Angle envoyees: " + angle)
         coord_angle = "0,0," + angle + "\n"
         self.sendCoordinates(coord_angle)
-        if (abs(int(angle)) > 90):
-            time.sleep(3)
+        if (abs(int(angle)) > 35):
+            time.sleep(1.5)
+        if (abs(int(angle)) > 70):
+            time.sleep(1.5)
         if (abs(int(angle)) > 120):
             time.sleep(2)
         if (abs(int(angle)) > 160):
