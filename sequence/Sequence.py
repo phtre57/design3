@@ -64,7 +64,7 @@ class Sequence:
                 logger.log_error(ex)
                 logger.log_critical(traceback.format_exc())
 
-    def __get_smooth_path(self, unsecure_fallback = False):
+    def __get_smooth_path(self,  old_grid_converter=None):
         center_and_image = None
         while True:
             try:
@@ -74,10 +74,13 @@ class Sequence:
                 logger.log_error(ex)
                 logger.log_critical(traceback.format_exc())
 
-        if unsecure_fallback:
+        if old_grid_converter is not None:
             grid_converter = ImageToGridConverter(
                 center_and_image['image'], center_and_image['center'][0],
-                center_and_image['center'][1], self.X_END, self.Y_END)
+                center_and_image['center'][1], self.X_END, self.Y_END,
+                old_grid_converter.get_obstacle_border() - 5, old_grid_converter.get_left_obstacle_border() - 5)
+            logger.log_critical("Unsecure pathfinding with new grid converter with new value for obstacle border: "
+                                + str(grid_converter.get_obstacle_border()))
         else:
             grid_converter = ImageToGridConverter(
                 center_and_image['image'], center_and_image['center'][0],
@@ -93,7 +96,7 @@ class Sequence:
             smooth_path = path_smoother.smooth_path()
             self.__draw_path(smooth_path, grid_converter)
         except NoBeginingPointException as ex:
-            self.__get_smooth_path(True)
+            self.__get_smooth_path(grid_converter)
         except Exception as ex:
             if (DEBUG):
                 frame = self.take_image()

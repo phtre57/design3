@@ -28,7 +28,10 @@ BLUR_TUPLE = (3, 3)
 
 
 class ImageToGridConverter(object):
-    def __init__(self, image, x_start, y_start, x_end, y_end):
+    def __init__(self, image, x_start, y_start, x_end, y_end,
+                 obstacle_border=OBSTACLE_BORDER, left_border_obstacle=LEFT_OBSTACLE_BORDER):
+        self.left_obstacle_border = obstacle_border
+        self.obstacle_border = left_border_obstacle
         self.image = image.copy()
         self.image = cv2.resize(self.image, (LENGTH, HEIGHT))
         self.image = cv2.GaussianBlur(self.image, BLUR_TUPLE, 0)
@@ -81,38 +84,52 @@ class ImageToGridConverter(object):
             x, y = point
 
             # loop for upper border
-            for i in range(LEFT_OBSTACLE_BORDER * 2 -
-                           (LEFT_OBSTACLE_BORDER - OBSTACLE_BORDER)):
-                start_y = y - OBSTACLE_BORDER
-                start_x = x - LEFT_OBSTACLE_BORDER
+            for i in range(self.get_left_obstacle_border() * 2 -
+                           (self.get_left_obstacle_border() -
+                            self.get_obstacle_border())):
+                start_y = y - self.get_obstacle_border()
+                start_x = x - self.get_left_obstacle_border()
 
                 cv2.circle(self.image, (start_x + i, start_y), 1,
                            [255, 51, 51])
 
-            #loop for left border
-            for i in range(OBSTACLE_BORDER * 2):
-                start_y = y - OBSTACLE_BORDER
-                start_x = x - LEFT_OBSTACLE_BORDER
+            # loop for left border
+            for i in range(self.get_obstacle_border() * 2):
+                start_y = y - self.get_obstacle_border()
+                start_x = x - self.get_left_obstacle_border()
 
                 cv2.circle(self.image, (start_x, start_y + i), 1,
                            [255, 51, 51])
 
             # loop for bottom border
-            for i in range(LEFT_OBSTACLE_BORDER * 2 -
-                           (LEFT_OBSTACLE_BORDER - OBSTACLE_BORDER)):
-                start_y = y + OBSTACLE_BORDER
-                start_x = x - LEFT_OBSTACLE_BORDER
+            for i in range(self.get_left_obstacle_border() * 2 -
+                           (self.get_left_obstacle_border() -
+                            self.get_obstacle_border())):
+                start_y = y + self.get_obstacle_border()
+                start_x = x - self.get_left_obstacle_border()
 
                 cv2.circle(self.image, (start_x + i, start_y), 1,
                            [255, 51, 51])
 
             # loop for right border
-            for i in range(OBSTACLE_BORDER * 2):
-                start_y = y - OBSTACLE_BORDER
-                start_x = x + OBSTACLE_BORDER
+            for i in range(self.get_obstacle_border() * 2):
+                start_y = y - self.get_obstacle_border()
+                start_x = x + self.get_obstacle_border()
 
                 cv2.circle(self.image, (start_x, start_y + i), 1,
                            [255, 51, 51])
+
+    def get_obstacle_border(self):
+        return self.obstacle_border
+
+    def set_obstacle_border(self, val):
+        self.obstacle_border = val
+
+    def get_left_obstacle_border(self):
+        return self.left_obstacle_border
+
+    def set_left_obstacle_border(self, val):
+        self.left_obstacle_border = val
 
     def __mark_table_wall(self):
         for i in range(X_WALL_RIGHT_CORNER - X_WALL_LEFT_CORNER):
