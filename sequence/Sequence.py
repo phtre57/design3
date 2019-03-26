@@ -219,15 +219,15 @@ class Sequence:
                 'START ZONE NOT DETECTED, FALL BACK TO HARDCODED')
             logger.log_debug(traceback.format_exc())
             (x, y) = (X_END_START_ZONE, Y_END_START_ZONE)
-        self.X_END = round(x / 2)
-        self.Y_END = round(y / 2)
+        self.X_END = round((x, y) / 2)
+        self.Y_END = round((x, y) / 2)
         self.start()
 
     def go_to_zone_dep(self):
         img = self.take_image()
-        shape = detect_zone_dep_world(img)
-        logger.log_info(shape)
-        x, y = shape.center
+        res = detect_zone_dep_world(img)
+        logger.log_info(res['point'])
+        x, y = res['point']
 
         cv2.circle(img, (x, y), 1, [0, 0, 255])
 
@@ -241,9 +241,9 @@ class Sequence:
     def go_to_zone_pickup(self):
         self.comm_pi.changeServoHori('2000')
         img = self.take_image()
-        shape = detect_pickup_zone(img)
-        logger.log_info(shape)
-        x, y = shape.center
+        res = detect_pickup_zone(img)
+        logger.log_info(res['point'])
+        x, y = res['point']
 
         cv2.circle(img, (x, y), 1, [0, 0, 255])
 

@@ -7,6 +7,7 @@ from domain.image_analysis.ShapeUtils import *
 from context.config import DETECT_ZONE_DEP_WORLD_DEBUG
 from domain.image_analysis.opencv_callable.ref_shape import ref
 from util.Logger import Logger
+from domain.image_analysis.Cardinal import *
 
 PERI_LIMITER_CHECK = False
 PERI_LIMITER_UPPER = 100000
@@ -26,10 +27,15 @@ DEBUG = DETECT_ZONE_DEP_WORLD_DEBUG
 
 logger = Logger(__name__)
 
-def detect_zone_dep_world(og_frame, canny_down=110, canny_up=150, flipped=False):
+
+def detect_zone_dep_world(og_frame,
+                          canny_down=110,
+                          canny_up=150,
+                          flipped=False):
 
     frame = og_frame.copy()
     frame = frame.copy()
+    IMG_HEIGHT, IMG_WIDTH, _ = frame.shape
 
     edges = canny(frame, erode_mask_zone_dep_world, canny_down, canny_up)
 
@@ -50,9 +56,19 @@ def detect_zone_dep_world(og_frame, canny_down=110, canny_up=150, flipped=False)
     shapeDetector = ShapeDetector(PERI_LIMITER_CHECK, RECT_LIMITER_CHECK,
                                   RADIUS_LIMITER_CHECK)
     if (flipped):
-        shapeDetector.set_rect_limiter(RECT_H_LIMITER, RECT_W_LIMITER, angle_limiter=None, h_rect_limit_up=RECT_W_LIMITER_UP, w_rect_limit_up=RECT_H_LIMITER_UP)
+        shapeDetector.set_rect_limiter(
+            RECT_H_LIMITER,
+            RECT_W_LIMITER,
+            angle_limiter=None,
+            h_rect_limit_up=RECT_W_LIMITER_UP,
+            w_rect_limit_up=RECT_H_LIMITER_UP)
     else:
-        shapeDetector.set_rect_limiter(RECT_W_LIMITER, RECT_H_LIMITER, angle_limiter=None, w_rect_limit_up=RECT_W_LIMITER_UP, h_rect_limit_up=RECT_H_LIMITER_UP)
+        shapeDetector.set_rect_limiter(
+            RECT_W_LIMITER,
+            RECT_H_LIMITER,
+            angle_limiter=None,
+            w_rect_limit_up=RECT_W_LIMITER_UP,
+            h_rect_limit_up=RECT_H_LIMITER_UP)
     shape = shapeDetector.detect(edges, og_frame.copy())
 
     if DEBUG:
@@ -69,38 +85,48 @@ def detect_zone_dep_world(og_frame, canny_down=110, canny_up=150, flipped=False)
     shape.set_frame(output)
 
     if (len(shape.approx) != 1):
-        if(flipped):
-            logger.log_critical('ZONE DEPOT WORLD - Couldn\'nt find the zone depot world')
+        if (flipped):
+            logger.log_critical(
+                'ZONE DEPOT WORLD - Couldn\'nt find the zone depot world')
             raise Exception("Can't find zone depot world")
-        if(canny_down == 70):
-            logger.log_debug('ZONE DEPOT WORLD - Fallback to lowest (10) bracket canny strategy')
+        if (canny_down == 70):
+            logger.log_debug(
+                'ZONE DEPOT WORLD - Fallback to lowest (10) bracket canny strategy'
+            )
             return detect_zone_dep_world(og_frame, 10, 150)
-        if(canny_down == 10):
-            logger.log_debug('ZONE DEPOT WORLD - Fallback to upper zone strategy')
+        if (canny_down == 10):
+            logger.log_debug(
+                'ZONE DEPOT WORLD - Fallback to upper zone strategy')
             return detect_zone_dep_world(og_frame, 10, 150, True)
-        logger.log_debug('ZONE DEPOT WORLD - Fallback to lower (70) bracket canny strategy')
+        logger.log_debug(
+            'ZONE DEPOT WORLD - Fallback to lower (70) bracket canny strategy')
         return detect_zone_dep_world(og_frame, 70, 150)
 
     shape.center = find_center(shape.approx[0][2], 10, shape)
 
     if (flipped):
-        center = adjust_start_zone_offset_upside_down(shape.center)
-        logger.log_debug('ZONE DEPOT WORLD - Found center ' + str(center[0]) + ' ' + str(center[1]))
-        return center
+        center = adjust_start_zone_offset_upside_down(shape.center, IMG_WIDTH)
+        logger.log_debug('ZONE DEPOT WORLD - Found center ' + str(center[0]) +
+                         ' ' + str(center[1]) + ' ' + center[2])
+        return {'point': (center[0], center[1]), 'cardinal': center[2]}
     else:
-        center = adjust_start_zone_offset(shape.center)
-        logger.log_debug('ZONE DEPOT WORLD - Found center ' + str(center[0]) + ' ' + str(center[1]))
-        return center
+        center = adjust_start_zone_offset(shape.center, IMG_HEIGHT)
+        logger.log_debug('ZONE DEPOT WORLD - Found center ' + str(center[0]) +
+                         ' ' + str(center[1]) + ' ' + center[2])
 
-def adjust_start_zone_offset_upside_down(point):
-    if (point[0] > 320/2):
-        return (point[0] - OFFSET_PATHFINDING, point[1])
+        return {'point': (center[0], center[1]), 'cardinal': center[2]}
+
+
+def adjust_start_zone_offset_upside_down(point, width):
+    if (point[0] > width / 2):
+        return (point[0] - OFFSET_PATHFINDING, point[1], EAST())
     else:
-        return (point[0] + OFFSET_PATHFINDING, point[1])
+        return (point[0] + OFFSET_PATHFINDING, point[1], WEST())
 
-def adjust_start_zone_offset(point):
+
+def adjust_start_zone_offset(point, height):
     # Faire les deux bords de la table avec un beau if
-    if (point[1] > 120):
-        return (point[0], point[1] - OFFSET_PATHFINDING)
+    if (point[1] > height / 2):
+        return (point[0], point[1] - OFFSET_PATHFINDING, SOUTH())
     else:
-        return (point[0], point[1] + OFFSET_PATHFINDING)
+        return (point[0], point[1] + OFFSET_PATHFINDING, NORTH())

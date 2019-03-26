@@ -9,7 +9,7 @@ import inspect
 LIVE = False
 
 
-class DetectZoneDepWorldTest(unittest.TestCase):
+class DetectPickupZoneTest(unittest.TestCase):
     def setUp(self):
         print("In method ", self._testMethodName)
 
@@ -25,12 +25,16 @@ class DetectZoneDepWorldTest(unittest.TestCase):
         if (LIVE):
             cap = cv2.VideoCapture(1)
             ret, frame = cap.read()
-            shape = detect_pickup_zone(frame)
+            res = detect_pickup_zone(frame)
 
-            cv2.imshow('SHAPE FRAME', shape.frame)
+            cv2.circle(frame, res['point'], 1, [255, 51, 51])
+
+            cv2.imshow('SHAPE FRAME', frame)
             cv2.waitKey()
 
-            self.assertEqual(len(shape.shapes), 1)
+            self.assertNotEqual(res['point'], (0, 0))
+
+            self.assertEqual(1, 1)
         else:
             path01 = os.path.join(path, "./samples/sample1.jpg")
             self.call_path(path01)
@@ -105,14 +109,14 @@ class DetectZoneDepWorldTest(unittest.TestCase):
         cv2.imshow('FRESH FRAME', frame)
         cv2.waitKey()
 
-        (x, y) = detect_pickup_zone(frame)
+        res = detect_pickup_zone(frame)
 
-        cv2.circle(frame, (x, y), 1, [255, 51, 51])
+        cv2.circle(frame, res['point'], 1, [255, 51, 51])
 
         cv2.imshow('SHAPE FRAME', frame)
         cv2.waitKey()
 
-        self.assertNotEqual((x, y), (0, 0))
+        self.assertNotEqual(res['point'], (0, 0))
 
         print('Done with ', path)
 

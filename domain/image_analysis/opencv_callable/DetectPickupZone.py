@@ -7,6 +7,7 @@ from domain.image_analysis.opencv_callable.Canny import *
 from domain.image_analysis.ShapeUtils import *
 from util.Logger import Logger
 from context.config import DETECT_PICKUP_ZONE_DEBUG
+from domain.image_analysis.Cardinal import *
 
 PERI_LIMITER_CHECK = False
 PERI_LIMITER_UPPER = 100000
@@ -27,9 +28,11 @@ DEBUG = DETECT_PICKUP_ZONE_DEBUG
 
 logger = Logger(__name__)
 
+
 def detect_pickup_zone(og_frame):
     frame = og_frame.copy()
     frame = frame.copy()
+    IMG_HEIGHT, IMG_WIDTH, _ = frame.shape
 
     frame = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
     # frame = cv2.convertScaleAbs(frame, alpha=2.5, beta=100)
@@ -49,7 +52,7 @@ def detect_pickup_zone(og_frame):
         edges,
         kernel=cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (3, 3)),
         iterations=2)
-        
+
     if DEBUG:
         cv2.imshow('CANNY', edges)
         cv2.waitKey()
@@ -76,8 +79,7 @@ def detect_pickup_zone(og_frame):
         cv2.imshow('CANNY AFTER MASK', edges)
         cv2.waitKey()
 
-    cnts = cv2.findContours(edges, cv2.RETR_EXTERNAL,
-                                cv2.CHAIN_APPROX_SIMPLE)
+    cnts = cv2.findContours(edges, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
     cnts = imutils.grab_contours(cnts)
     c = max(cnts, key=cv2.contourArea)
     for c in cnts:
@@ -91,7 +93,7 @@ def detect_pickup_zone(og_frame):
             new_k = np.concatenate((c, cc))
 
             xRect, yRect, wRect, hRect = cv2.boundingRect(new_k)
-            
+
             if DEBUG:
                 frame1 = og_frame.copy()
                 frame1 = cv2.convertScaleAbs(frame1, alpha=0, beta=0)
@@ -101,8 +103,7 @@ def detect_pickup_zone(og_frame):
                 cv2.imshow('DEBUG CONTOUR', frame1)
                 cv2.waitKey()
 
-            if (abs(wRect) < RECT_W_LIMITER
-                or abs(hRect) < RECT_H_LIMITER):
+            if (abs(wRect) < RECT_W_LIMITER or abs(hRect) < RECT_H_LIMITER):
                 continue
             if (abs(wRect) > RECT_W_LIMITER_UP
                     or abs(hRect) > RECT_H_LIMITER_UP):
@@ -113,17 +114,22 @@ def detect_pickup_zone(og_frame):
                 cv2.drawContours(frame1, new_c, -1, (0, 255, 0), 3)
                 cv2.imshow('FOUND', frame1)
                 cv2.waitKey()
-            
-            center = adjust_start_zone_offset((round(xRect), round(yRect)), wRect, hRect)
-            logger.log_debug('PICKUP ZONE - Found center ' + str(center[0]) + ' ' + str(center[1]))
-            return center
-    
+
+            center = adjust_start_zone_offset((round(xRect), round(yRect)),
+                                              wRect, hRect, IMG_HEIGHT)
+            logger.log_debug('PICKUP ZONE - Found center ' + str(center[0]) +
+                             ' ' + str(center[1]) + ' ' + center[2])
+
+            return {'point': (center[0], center[1]), 'cardinal': center[2]}
+
     logger.log_debug('PICKUP ZONE - Fallback to upside down strategy')
     return detect_pickup_zone_the_other_side(og_frame)
+
 
 def detect_pickup_zone_the_other_side(og_frame):
     frame = og_frame.copy()
     frame = frame.copy()
+    IMG_HEIGHT, IMG_WIDTH, _ = frame.shape
 
     frame = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
     # frame = cv2.convertScaleAbs(frame, alpha=2.5, beta=100)
@@ -170,8 +176,7 @@ def detect_pickup_zone_the_other_side(og_frame):
         cv2.imshow('CANNY AFTER MASK', edges)
         cv2.waitKey()
 
-    cnts = cv2.findContours(edges, cv2.RETR_EXTERNAL,
-                                cv2.CHAIN_APPROX_SIMPLE)
+    cnts = cv2.findContours(edges, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
     cnts = imutils.grab_contours(cnts)
     c = max(cnts, key=cv2.contourArea)
     for c in cnts:
@@ -185,7 +190,7 @@ def detect_pickup_zone_the_other_side(og_frame):
             new_k = np.concatenate((c, cc))
 
             xRect, yRect, wRect, hRect = cv2.boundingRect(new_k)
-            
+
             if DEBUG:
                 # frame1 = og_frame.copy()
                 # frame1 = cv2.convertScaleAbs(frame1, alpha=0, beta=0)
@@ -196,8 +201,7 @@ def detect_pickup_zone_the_other_side(og_frame):
                 print('')
 
             # Flipped verification, it's normal
-            if (abs(wRect) < RECT_H_LIMITER
-                or abs(hRect) < RECT_W_LIMITER):
+            if (abs(wRect) < RECT_H_LIMITER or abs(hRect) < RECT_W_LIMITER):
                 continue
             if (abs(wRect) > RECT_H_LIMITER_UP
                     or abs(hRect) > RECT_W_LIMITER_UP):
@@ -208,23 +212,31 @@ def detect_pickup_zone_the_other_side(og_frame):
                 cv2.drawContours(frame1, new_c, -1, (0, 255, 0), 3)
                 cv2.imshow('FOUND', frame1)
                 cv2.waitKey()
-            
-            center = adjust_start_zone_offset_upside_down((round(xRect), round(yRect)), wRect, hRect)
-            logger.log_debug('PICKUP ZONE - Found center ' + str(center[0]) + ' ' + str(center[1]))
-            return center
+
+            center = adjust_start_zone_offset_upside_down(
+                (round(xRect), round(yRect)), wRect, hRect, IMG_WIDTH)
+            logger.log_debug('PICKUP ZONE - Found center ' + str(center[0]) +
+                             ' ' + str(center[1]) + ' ' + center[2])
+            return {'point': (center[0], center[1]), 'cardinal': center[2]}
 
     logger.log_critical('PICKUP ZONE - Can\'t find pickup zone')
     raise Exception('Can\'t find pickup zone')
 
-def adjust_start_zone_offset_upside_down(point, wRect, hRect):
-    if (point[0] > 320/2):
-        return (point[0] - OFFSET_PATHFINDING + round(wRect / 2), point[1] + round(hRect / 2))
-    else:
-        return (point[0] + OFFSET_PATHFINDING + round(wRect / 2), point[1] + round(hRect / 2))
 
-def adjust_start_zone_offset(point, wRect, hRect):
-    # Faire les deux bords de la table avec un beau if
-    if (point[1] > 120):
-        return (point[0] + round(wRect / 2), point[1] - OFFSET_PATHFINDING + round(hRect / 2))
+def adjust_start_zone_offset_upside_down(point, wRect, hRect, width):
+    if (point[0] > width / 2):
+        return (point[0] - OFFSET_PATHFINDING + round(wRect / 2),
+                point[1] + round(hRect / 2), EAST())
     else:
-        return (point[0] + round(wRect / 2), point[1] + OFFSET_PATHFINDING + round(hRect / 2))
+        return (point[0] + OFFSET_PATHFINDING + round(wRect / 2),
+                point[1] + round(hRect / 2), WEST())
+
+
+def adjust_start_zone_offset(point, wRect, hRect, height):
+    # Faire les deux bords de la table avec un beau if
+    if (point[1] > height / 2):
+        return (point[0] + round(wRect / 2),
+                point[1] - OFFSET_PATHFINDING + round(hRect / 2), SOUTH())
+    else:
+        return (point[0] + round(wRect / 2),
+                point[1] + OFFSET_PATHFINDING + round(hRect / 2), NORTH())
