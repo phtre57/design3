@@ -158,8 +158,8 @@ class PixelToXYCoordinatesConverter:
                     point[1] * self.y_pixel_to_mm_factor)
 
         if angle > 80 and angle < 100:
-            return (point[1] * -1 * self.y_pixel_to_mm_factor,
-                    point[0] * self.x_pixel_to_mm_factor)
+            return (point[0] * -1 * self.y_pixel_to_mm_factor,
+                    point[1] * self.x_pixel_to_mm_factor)
 
         if (angle < -170 and angle > -190) or (angle < 190 and angle > 170):
             return (point[0] * self.x_pixel_to_mm_factor * -1,

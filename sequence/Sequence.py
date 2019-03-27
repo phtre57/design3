@@ -465,7 +465,13 @@ class Sequence:
         logger.log_info("Trying to grab piece...")
         robot_img = self.comm_pi.getImage()
         height, width, channels = robot_img.shape
-        x, y = detect_piece(robot_img, self.piece_shape, self.piece_color)
+
+        try:
+            x, y = detect_piece(robot_img, self.piece_shape, self.piece_color)
+        except Exception as ex:
+            logger.log_critical(traceback.print_exc())
+            return False
+
         x_from_center_of_image = x - width / 2
         y_from_center_of_image = y - height / 2
 
@@ -476,8 +482,10 @@ class Sequence:
         string_coord = str(real_x) + "," + str(real_y) + ",0\n"
         self.comm_pi.sendCoordinates(string_coord)
 
+        #activate arm here
         #here return true of false to know if piece was really grabbed
-        return False
+
+        return True
 
     def __cardinal_to_angle(self, cardinal_str):
 
