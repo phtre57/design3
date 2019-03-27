@@ -38,12 +38,12 @@ def find_where_the_shape_is(shape, color, radius_limit, scan_hsv=False):
             break
 
     if (cX == 0 and cY == 0):
-        print("Can't find center")
+        raise Exception('Can\'t find center of the shape')
 
     res_contour = get_contour_related_to_center(shape.approx, cX, cY)
 
     if (res_contour == 0):
-        print("Ça pas marché")
+        raise Exception('Can\'t find contour of the shape')
 
     res_contour['mask'] = mask
     return res_contour
