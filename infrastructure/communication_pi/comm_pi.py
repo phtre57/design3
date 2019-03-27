@@ -129,6 +129,13 @@ class Communication_pi():
         logger.log_info("Servo Vertical envoyees: " + str)
         time.sleep(1)
 
+    def moveArm(self, str):
+        signal = 'bras'
+        self.socket.sendall(signal.encode('utf-8'))
+        self.socket.sendall(str.encode('utf-8'))
+        logger.log_info("Bouge le bras envoyees: " + str)
+        time.sleep(1)
+
     def getTension(self):
         signal = 'gettension'
         self.socket.sendall(signal.encode('utf-8'))
