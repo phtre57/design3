@@ -61,14 +61,17 @@ class Communication_pi():
 
         return cv2.imread('./test.jpg')
 
-    def sendCoordinates(self, str):
-        if (str == '0,0,0\n'):
+    def sendCoordinates(self, x, y):
+        if x == 0 and y == 0:
             return
+
+        string_to_send = str(x) + "," + str(y) + ",0\n"
 
         signal = 'sendPosition'
         self.socket.sendall(signal.encode('utf-8'))
-        self.socket.sendall(str.encode('utf-8'))
-        logger.log_info("Coordonnees envoyees: " + str)
+        self.socket.sendall(string_to_send.encode('utf-8'))
+        logger.log_info("Coordonnees envoyees: " + string_to_send)
+
         self.robotReady()
         time.sleep(1)
 
@@ -78,10 +81,15 @@ class Communication_pi():
                 angle = 360 + angle
             else:
                 angle = 360 - angle
+
         angle = str(angle)
         logger.log_info("Angle envoyees: " + angle)
         coord_angle = "0,0," + angle + "\n"
-        self.sendCoordinates(coord_angle)
+        signal = 'sendPosition'
+        self.socket.sendall(signal.encode('utf-8'))
+        self.socket.sendall(coord_angle.encode('utf-8'))
+        logger.log_info("Coordonnees envoyees: " + coord_angle)
+
         if (abs(int(angle)) > 35):
             time.sleep(1.5)
         if (abs(int(angle)) > 70):

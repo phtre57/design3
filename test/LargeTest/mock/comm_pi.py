@@ -25,9 +25,9 @@ class Communication_pi_mock():
         print("Communication mock: getImage")
         return img
 
-    def sendCoordinates(self, str):
+    def sendCoordinates(self, x, y):
         input('sendCoordinates')
-        print("Communication mock: sendCoordinates ## " + str)
+        print("Communication mock: sendCoordinates ## " + str(x) + ", " + str(y))
 
     def disconnectFromPi(self):
         print("Communication mock: disconnect")

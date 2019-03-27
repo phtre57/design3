@@ -36,8 +36,8 @@ Y_ARRAY_FOR_QR_STRATEGY = [120, 145, 170, 90]
 
 X_RANGE_FOR_QR_STRATEGY = [200, 230, 260, 285]
 
-OFFSET_Y_CAM_EMBARKED = 80
-OFFSET_X_CAM_EMBARKED = -23
+OFFSET_Y_CAM_EMBARKED = 65
+OFFSET_X_CAM_EMBARKED = -35
 
 logger = Logger(__name__)
 
@@ -217,8 +217,7 @@ class Sequence:
             self.__send_rotation_angle(self.smooth_path)
             x_coord = int(round(point[0] - self.starting_point[0], 0))
             y_coord = int(round(point[1] - self.starting_point[1], 0))
-            self.comm_pi.sendCoordinates(
-                str(x_coord) + "," + str(y_coord) + ",0" + "\n")
+            self.comm_pi.sendCoordinates(x_coord, y_coord)
 
             while True:
                 try:
@@ -379,7 +378,7 @@ class Sequence:
     def go_to_c_charge_station(self):
         self.__send_rotation_angle()
         time.sleep(0.5)
-        self.comm_pi.sendCoordinates("-340,-381,0\n")
+        self.comm_pi.sendCoordinates(-340-381)
         # WAIT TO CHARGE
         time.sleep(1)
         # GET RESPONSE
@@ -387,9 +386,8 @@ class Sequence:
     def charge_robot_at_station(self):
         increment = 0
         while True:
-            coord = "0,-7,0\n"
             self.comm_pi.sendCoordinates(
-                coord
+                0, -7
             )  # move two milimeters in -y to get closer to charge station
             time.sleep(
                 3.5
@@ -407,7 +405,7 @@ class Sequence:
 
     def go_back_from_charge_station(self):
         time.sleep(0.5)
-        self.comm_pi.sendCoordinates("340,381,0\n")
+        self.comm_pi.sendCoordinates(340, 381)
         time.sleep(1)
 
     def move_robot_around_pickup_zone(self):
@@ -422,7 +420,7 @@ class Sequence:
             for i in range(number_of_increment):
                 x, y = self.robot_cam_pixel_to_xy_converter.convert_real_xy_given_angle(
                     x_mm_movement_point_negative, -90)
-                self.comm_pi.sendCoordinates(str(x) + "," + str(y) + ",0\n")
+                self.comm_pi.sendCoordinates(x, y)
                 piece_grabbed = self.grab_piece()
 
                 if piece_grabbed:
@@ -433,7 +431,7 @@ class Sequence:
             for i in range(number_of_increment):
                 x, y = self.robot_cam_pixel_to_xy_converter.convert_real_xy_given_angle(
                     x_mm_movement_point, 90)
-                self.comm_pi.sendCoordinates(str(x) + "," + str(y) + ",0\n")
+                self.comm_pi.sendCoordinates(x, y)
 
                 piece_grabbed = self.grab_piece()
 
@@ -445,7 +443,7 @@ class Sequence:
             for i in range(number_of_increment):
                 x, y = self.robot_cam_pixel_to_xy_converter.convert_real_xy_given_angle(
                     y_mm_movement_point_negative, 0)
-                self.comm_pi.sendCoordinates(str(x) + "," + str(y) + ",0\n")
+                self.comm_pi.sendCoordinates(x, y)
 
                 piece_grabbed = self.grab_piece()
 
@@ -457,7 +455,7 @@ class Sequence:
             for i in range(number_of_increment):
                 x, y = self.robot_cam_pixel_to_xy_converter.convert_real_xy_given_angle(
                     y_mm_movement_point, 180)
-                self.comm_pi.sendCoordinates(str(x) + "," + str(y) + ",0\n")
+                self.comm_pi.sendCoordinates(x, y)
 
                 piece_grabbed = self.grab_piece()
 
@@ -497,8 +495,7 @@ class Sequence:
             logger.log_info("Real moving point: " + str(real_x) + "," +
                             str(real_y))
 
-        string_coord = str(real_x) + "," + str(real_y) + ",0\n"
-        self.comm_pi.sendCoordinates(string_coord)
+        self.comm_pi.sendCoordinates(real_x, real_y)
 
         # activate arm here
         # here return true of false to know if piece was really grabbed
