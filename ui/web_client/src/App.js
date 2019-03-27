@@ -13,7 +13,6 @@ import openSocket from 'socket.io-client';
 
 import Timer from './Timer';
 import LogPanel from './LogPanel';
-import { callbackify } from 'util';
 
 class App extends Component {
   state = { 
