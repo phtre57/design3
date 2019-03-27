@@ -31,7 +31,7 @@ def detect_contour_pieces(og_frame, str_shape):
     shape.set_frame(shape.frameWithText)
 
     if (len(shape.approx) != 1):
-        raise Exception('Detect con tour pieces have found multiple shape')
+        raise Exception('Detect contour pieces have found multiple shape')
 
     (x, y) = find_center(shape.approx[0][1], 4, shape)
 

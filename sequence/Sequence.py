@@ -471,30 +471,36 @@ class Sequence:
             x, y = detect_piece(robot_img, self.piece_shape, self.piece_color)
             logger.log_info("Found piece!")
         except Exception as ex:
-            logger.log_critical("Could not find piece, continuing to move to detect it...")
+            logger.log_critical(
+                "Could not find piece, continuing to move to detect it...")
             logger.log_critical(traceback.print_exc())
             return False
 
-        x_from_center_of_image = round(x - ((width / 2) + OFFSET_X_CAM_EMBARKED))
-        y_from_center_of_image = round(y - ((height / 2) + OFFSET_Y_CAM_EMBARKED))
+        x_from_center_of_image = round(x - (
+            (width / 2) + OFFSET_X_CAM_EMBARKED))
+        y_from_center_of_image = round(y - (
+            (height / 2) + OFFSET_Y_CAM_EMBARKED))
 
         real_x, real_y = self.robot_cam_pixel_to_xy_converter\
             .convert_pixel_to_xy_point_given_angle((x_from_center_of_image, y_from_center_of_image),
                                                    self.__cardinal_to_angle(self.zone_pickup_cardinal))
 
         if DEBUG:
-            cv2.circle(robot_img, (x, y), 5, [255,255,255])
-            cv2.circle(robot_img, (x_from_center_of_image, y_from_center_of_image), 5, [255, 255, 255])
+            robot_img = self.take_image()
+            cv2.circle(robot_img, (x, y), 5, [255, 255, 255])
+            cv2.circle(robot_img,
+                       (x_from_center_of_image, y_from_center_of_image), 5,
+                       [255, 255, 255])
             cv2.imshow("grab piece frame", robot_img)
-            logger.log_info("Real moving point: " + str(real_x) + "," + str(real_y))
+            logger.log_info("Real moving point: " + str(real_x) + "," +
+                            str(real_y))
 
         self.comm_pi.sendCoordinates(real_x, real_y)
 
-        #activate arm here
-        #here return true of false to know if piece was really grabbed
+        # activate arm here
+        # here return true of false to know if piece was really grabbed
 
         return True
-
 
     def __cardinal_to_angle(self, cardinal_str):
 
