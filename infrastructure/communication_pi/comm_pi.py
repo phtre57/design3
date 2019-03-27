@@ -10,19 +10,21 @@ from util.Logger import *
 
 # Host = Adresse ip du serveur (ici Raspberry pi)
 # Port = valeur predefinie (doit etre la meme pour le serveur)
-host = '192.168.0.38'
-port = 15555
+HOST = '192.168.0.38'
+PORT = 15555
 
 logger = Logger(__name__)
 
 
 class Communication_pi():
-    def __init__(self):
+    def __init__(self, host=HOST, port=PORT):
         self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        self.host = host
+        self.port = port
 
     def connectToPi(self):
-        print(host)
-        self.socket.connect((host, port))
+        print(HOST)
+        self.socket.connect((self.host, self.port))
         logger.log_info("Connecte au serveur")
         time.sleep(5)
 
