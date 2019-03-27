@@ -1,4 +1,5 @@
 import time
+import cv2
 
 
 class Communication_pi_mock():
@@ -10,7 +11,19 @@ class Communication_pi_mock():
 
     def getImage(self):
         input('getImage')
+        cap = cv2.VideoCapture(2)
+
+        while True:
+            if cap.isOpened():
+                break
+
+        ret, img = cap.read()
+        img = cv2.resize(img, (320, 240))
+        cv2.imshow('ok', img)
+        cv2.waitKey()
+        cap.release()
         print("Communication mock: getImage")
+        return img
 
     def sendCoordinates(self, str):
         input('sendCoordinates')
@@ -30,9 +43,9 @@ class Communication_pi_mock():
         print("Communication mock: sendAngle ## " + str(angle))
 
     def changeServoHori(self, str):
-        input('changeServoHori')
+        # input('changeServoHori')
         print("Communication mock: changeServoHori ## " + str)
 
     def changeServoVert(self, str):
-        input('changeServoVert')
+        # input('changeServoVert')
         print("Communication mock: changeServoVert ## " + str)
