@@ -90,7 +90,7 @@ def colormask(filename):
 path = os.path.normpath(os.path.join(os.path.dirname(__file__), os.pardir))
 path = os.path.normpath(os.path.join(path, os.pardir))
 path = os.path.normpath(os.path.join(path, os.pardir))
-path = os.path.join(path, "./Desktop/design3/samples/piece4.jpg")
+path = os.path.join(path, "./Desktop/design3/samples/piece9.jpg")
 print(path)
 img = cv2.imread(path)
 cv2.imshow("test", img)
