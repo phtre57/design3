@@ -8,6 +8,7 @@ from domain.image_analysis.opencv_callable.DetectPiece import *
 
 DEBUG = True
 
+
 class MoveRobotWithEmbarkedCamTest(unittest.TestCase):
 
     def setUp(self):
@@ -24,11 +25,11 @@ class MoveRobotWithEmbarkedCamTest(unittest.TestCase):
         x, y = detect_piece(img, None, "vert")
 
         if DEBUG:
-            cv2.circle(img, (round(width / 2), round(height / 2)), 5, [255, 255, 255])
+            cv2.circle(img, (round(width / 2 - 23), round(height / 2) + 54), 5, [255, 255, 255])
             cv2.circle(img, (x, y), 5, [255, 255, 255])
 
-        x = x - width/2
-        y = y - height/2
+        x = x - (width / 2 - 23)
+        y = y - (height / 2 + 54)
 
         if DEBUG:
             print("In pixel :", x, y)
@@ -52,11 +53,11 @@ class MoveRobotWithEmbarkedCamTest(unittest.TestCase):
         x, y = detect_piece(img, None, "vert")
 
         if DEBUG:
-            cv2.circle(img, (round(width / 2), round(height / 2)), 5, [255, 255, 255])
+            cv2.circle(img, (round(width / 2 - 23), round(height / 2) + 54), 5, [255, 255, 255])
             cv2.circle(img, (x, y), 5, [255, 255, 255])
 
-        x = x - width/2
-        y = y - height/2
+        x = x - (width/2 - 23)
+        y = y - (height/2 + 54)
 
         if DEBUG:
             print("In pixel :", x, y)
@@ -80,11 +81,11 @@ class MoveRobotWithEmbarkedCamTest(unittest.TestCase):
         x, y = detect_piece(img, None, "vert")
 
         if DEBUG:
-            cv2.circle(img, (round(width / 2), round(height / 2)), 5, [255, 255, 255])
+            cv2.circle(img, (round(width / 2 - 23), round(height / 2) + 54), 5, [255, 255, 255])
             cv2.circle(img, (x, y), 5, [255, 255, 255])
 
-        x = x - width/2
-        y = y - height/2
+        x = x - (width / 2 - 23)
+        y = y - (height / 2 + 54)
 
         if DEBUG:
             print("In pixel :", x, y)
@@ -108,11 +109,11 @@ class MoveRobotWithEmbarkedCamTest(unittest.TestCase):
         x, y = detect_piece(img, None, "vert")
 
         if DEBUG:
-            cv2.circle(img, (round(width / 2), round(height / 2)), 5, [255, 255, 255])
+            cv2.circle(img, (round(width / 2 - 23), round(height / 2) + 54), 5, [255, 255, 255])
             cv2.circle(img, (x, y), 5, [255, 255, 255])
 
-        x = x - width / 2
-        y = y - height / 2
+        x = x - (width / 2 - 23)
+        y = y - (height / 2 + 54)
 
         if DEBUG:
             print("In pixel :", x, y)
@@ -136,11 +137,11 @@ class MoveRobotWithEmbarkedCamTest(unittest.TestCase):
         x, y = detect_piece(img, None, "orange")
 
         if DEBUG:
-            cv2.circle(img, (round(width / 2), round(height / 2)), 5, [255, 255, 255])
+            cv2.circle(img, (round(width / 2 - 23), round(height / 2) + 54), 5, [255, 255, 255])
             cv2.circle(img, (x, y), 5, [255, 255, 255])
 
-        x = x - width / 2
-        y = y - height / 2
+        x = x - (width / 2 - 23)
+        y = y - (height / 2 + 54)
 
         if DEBUG:
             print("In pixel :", x, y)
@@ -164,11 +165,11 @@ class MoveRobotWithEmbarkedCamTest(unittest.TestCase):
         x, y = detect_piece(img, None, "orange")
 
         if DEBUG:
-            cv2.circle(img, (round(width / 2), round(height / 2)), 5, [255, 255, 255])
+            cv2.circle(img, (round(width / 2 - 23), round(height / 2) + 54), 5, [255, 255, 255])
             cv2.circle(img, (x, y), 5, [255, 255, 255])
 
-        x = x - width / 2
-        y = y - height / 2
+        x = x - (width / 2 - 23)
+        y = y - (height / 2 + 54)
 
         if DEBUG:
             print("In pixel :", x, y)
@@ -192,11 +193,11 @@ class MoveRobotWithEmbarkedCamTest(unittest.TestCase):
         x, y = detect_piece(img, None, "orange")
 
         if DEBUG:
-            cv2.circle(img, (round(width / 2), round(height / 2)), 5, [255, 255, 255])
+            cv2.circle(img, (round(width / 2 - 23), round(height / 2) + 54), 5, [255, 255, 255])
             cv2.circle(img, (x, y), 5, [255, 255, 255])
 
-        x = x - width / 2
-        y = y - height / 2
+        x = x - (width / 2 - 23)
+        y = y - (height / 2 + 54)
 
         if DEBUG:
             print("In pixel :", x, y)
