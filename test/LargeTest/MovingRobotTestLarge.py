@@ -97,7 +97,7 @@ def main():
 
 def main_test():
     # cap = Cap_mock()
-    cap = cv2.VideoCapture(1)
+    cap = cv2.VideoCapture(2)
     comm_pi = Communication_pi_mock()
     connect(comm_pi)
     pixel_to_xy_converter = calibrate()
@@ -114,7 +114,7 @@ def main_test():
     # sequence.go_to_zone_pickup()
     # sequence.rotate_robot_on_zone_pickup()
     color = Color()
-    color.YELLOW()
+    color.RED()
     sequence.piece_color = color
     sequence.piece_shape = None
     sequence.move_robot_around_pickup_zone()
@@ -125,5 +125,5 @@ try:
     main_test()
 except KeyboardInterrupt:
     comm_pi.disconnectFromPi()
-    print("bye")
     traceback.print_exc(file=sys.stdout)
+    cv2.destroyAllWindows()

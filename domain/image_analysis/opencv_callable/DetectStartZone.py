@@ -67,7 +67,7 @@ def detect_start_zone(og_frame, alpha=1.5):
         logger.log_warning(
             'Found multiples possible start zone, took the first one')
 
-    shape.center = find_center_for_zone_dep(shape, 100)
+    shape.center = find_center_for_zone_dep(frame, shape.approx[0][2], 100)
 
     logger.log_debug('START ZONE - Found center ' + str(shape.center[0]) +
                      ' ' + str(shape.center[1]))
