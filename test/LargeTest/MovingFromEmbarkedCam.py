@@ -8,6 +8,9 @@ from domain.image_analysis.opencv_callable.DetectPiece import *
 
 DEBUG = True
 
+X_OFFSET = -35
+Y_OFFSET = 65
+
 
 class MoveRobotWithEmbarkedCamTest(unittest.TestCase):
 
@@ -25,11 +28,11 @@ class MoveRobotWithEmbarkedCamTest(unittest.TestCase):
         x, y = detect_piece(img, None, "vert")
 
         if DEBUG:
-            cv2.circle(img, (round(width / 2 - 23), round(height / 2) + 54), 5, [255, 255, 255])
+            cv2.circle(img, (round(width / 2 + X_OFFSET), round(height / 2) + Y_OFFSET), 5, [255, 255, 255])
             cv2.circle(img, (x, y), 5, [255, 255, 255])
 
-        x = x - (width / 2 - 23)
-        y = y - (height / 2 + 54)
+        x = x - (width / 2 + X_OFFSET)
+        y = y - (height / 2 + Y_OFFSET)
 
         if DEBUG:
             print("In pixel :", x, y)
@@ -53,11 +56,11 @@ class MoveRobotWithEmbarkedCamTest(unittest.TestCase):
         x, y = detect_piece(img, None, "vert")
 
         if DEBUG:
-            cv2.circle(img, (round(width / 2 - 23), round(height / 2) + 54), 5, [255, 255, 255])
+            cv2.circle(img, (round(width / 2 + X_OFFSET), round(height / 2) + Y_OFFSET), 5, [255, 255, 255])
             cv2.circle(img, (x, y), 5, [255, 255, 255])
 
-        x = x - (width/2 - 23)
-        y = y - (height/2 + 54)
+        x = x - (width / 2 + X_OFFSET)
+        y = y - (height / 2 + Y_OFFSET)
 
         if DEBUG:
             print("In pixel :", x, y)
@@ -81,11 +84,11 @@ class MoveRobotWithEmbarkedCamTest(unittest.TestCase):
         x, y = detect_piece(img, None, "vert")
 
         if DEBUG:
-            cv2.circle(img, (round(width / 2 - 23), round(height / 2) + 54), 5, [255, 255, 255])
+            cv2.circle(img, (round(width / 2 + X_OFFSET), round(height / 2) + Y_OFFSET), 5, [255, 255, 255])
             cv2.circle(img, (x, y), 5, [255, 255, 255])
 
-        x = x - (width / 2 - 23)
-        y = y - (height / 2 + 54)
+        x = x - (width / 2 + X_OFFSET)
+        y = y - (height / 2 + Y_OFFSET)
 
         if DEBUG:
             print("In pixel :", x, y)
@@ -109,11 +112,11 @@ class MoveRobotWithEmbarkedCamTest(unittest.TestCase):
         x, y = detect_piece(img, None, "vert")
 
         if DEBUG:
-            cv2.circle(img, (round(width / 2 - 23), round(height / 2) + 54), 5, [255, 255, 255])
+            cv2.circle(img, (round(width / 2 + X_OFFSET), round(height / 2) + Y_OFFSET), 5, [255, 255, 255])
             cv2.circle(img, (x, y), 5, [255, 255, 255])
 
-        x = x - (width / 2 - 23)
-        y = y - (height / 2 + 54)
+        x = x - (width / 2 + X_OFFSET)
+        y = y - (height / 2 + Y_OFFSET)
 
         if DEBUG:
             print("In pixel :", x, y)
@@ -137,11 +140,11 @@ class MoveRobotWithEmbarkedCamTest(unittest.TestCase):
         x, y = detect_piece(img, None, "orange")
 
         if DEBUG:
-            cv2.circle(img, (round(width / 2 - 23), round(height / 2) + 54), 5, [255, 255, 255])
+            cv2.circle(img, (round(width / 2 + X_OFFSET), round(height / 2) + Y_OFFSET), 5, [255, 255, 255])
             cv2.circle(img, (x, y), 5, [255, 255, 255])
 
-        x = x - (width / 2 - 23)
-        y = y - (height / 2 + 54)
+        x = x - (width / 2 + X_OFFSET)
+        y = y - (height / 2 + Y_OFFSET)
 
         if DEBUG:
             print("In pixel :", x, y)
@@ -165,11 +168,11 @@ class MoveRobotWithEmbarkedCamTest(unittest.TestCase):
         x, y = detect_piece(img, None, "orange")
 
         if DEBUG:
-            cv2.circle(img, (round(width / 2 - 23), round(height / 2) + 54), 5, [255, 255, 255])
+            cv2.circle(img, (round(width / 2 + X_OFFSET), round(height / 2) + Y_OFFSET), 5, [255, 255, 255])
             cv2.circle(img, (x, y), 5, [255, 255, 255])
 
-        x = x - (width / 2 - 23)
-        y = y - (height / 2 + 54)
+        x = x - (width / 2 + X_OFFSET)
+        y = y - (height / 2 + Y_OFFSET)
 
         if DEBUG:
             print("In pixel :", x, y)
@@ -193,11 +196,11 @@ class MoveRobotWithEmbarkedCamTest(unittest.TestCase):
         x, y = detect_piece(img, None, "orange")
 
         if DEBUG:
-            cv2.circle(img, (round(width / 2 - 23), round(height / 2) + 54), 5, [255, 255, 255])
+            cv2.circle(img, (round(width / 2 + X_OFFSET), round(height / 2) + Y_OFFSET), 5, [255, 255, 255])
             cv2.circle(img, (x, y), 5, [255, 255, 255])
 
-        x = x - (width / 2 - 23)
-        y = y - (height / 2 + 54)
+        x = x - (width / 2 + X_OFFSET)
+        y = y - (height / 2 + Y_OFFSET)
 
         if DEBUG:
             print("In pixel :", x, y)
