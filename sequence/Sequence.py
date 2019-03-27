@@ -420,6 +420,10 @@ class Sequence:
                 x, y = self.robot_cam_pixel_to_xy_converter.convert_real_xy_given_angle(
                     x_mm_movement_point_negative, -90)
                 self.comm_pi.sendCoordinates(str(x) + "," + str(y) + ",0\n")
+                piece_grabbed = self.grab_piece()
+
+                if piece_grabbed:
+                    break
 
         if self.zone_pickup_cardinal == NORTH():
             logger.log_info("Move around north pick up...")
@@ -428,6 +432,11 @@ class Sequence:
                     x_mm_movement_point, 90)
                 self.comm_pi.sendCoordinates(str(x) + "," + str(y) + ",0\n")
 
+                piece_grabbed = self.grab_piece()
+
+                if piece_grabbed:
+                    break
+
         if self.zone_pickup_cardinal == EAST():
             logger.log_info("Move around east pick up...")
             for i in range(number_of_increment):
@@ -435,12 +444,22 @@ class Sequence:
                     y_mm_movement_point_negative, 0)
                 self.comm_pi.sendCoordinates(str(x) + "," + str(y) + ",0\n")
 
+                piece_grabbed = self.grab_piece()
+
+                if piece_grabbed:
+                    break
+
         if self.zone_pickup_cardinal == WEST():
             logger.log_info("Move around west pick up...")
             for i in range(number_of_increment):
                 x, y = self.robot_cam_pixel_to_xy_converter.convert_real_xy_given_angle(
                     y_mm_movement_point, 180)
                 self.comm_pi.sendCoordinates(str(x) + "," + str(y) + ",0\n")
+
+                piece_grabbed = self.grab_piece()
+
+                if piece_grabbed:
+                    break
 
     def grab_piece(self):
         logger.log_info("Trying to grab piece...")
@@ -450,14 +469,28 @@ class Sequence:
         x_from_center_of_image = x - width / 2
         y_from_center_of_image = y - height / 2
 
-        world_img = self.cap.read()
-        robot_detector = RobotDetector(world_img)
-        angle = robot_detector.find_angle_of_robot()
         real_x, real_y = self.robot_cam_pixel_to_xy_converter\
-            .convert_pixel_to_xy_point_given_angle((x_from_center_of_image, y_from_center_of_image), angle)
+            .convert_pixel_to_xy_point_given_angle((x_from_center_of_image, y_from_center_of_image),
+                                                   self.__cardinal_to_angle(self.zone_pickup_cardinal))
 
         string_coord = str(real_x) + "," + str(real_y) + ",0\n"
         self.comm_pi.sendCoordinates(string_coord)
+
+        #here return true of false to know if piece was really grabbed
+        return False
+
+    def __cardinal_to_angle(self, cardinal_str):
+
+        if cardinal_str == EAST():
+            return 0
+        elif cardinal_str == NORTH():
+            return 90
+        elif cardinal_str == WEST():
+            return 180
+        elif cardinal_str == SOUTH():
+            return -90
+        else:
+            return None
 
     def rotate_robot_on_zone_dep(self):
         logger.log_info("Rotate on sone dep plane...")

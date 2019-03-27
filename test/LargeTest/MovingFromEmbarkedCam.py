@@ -8,7 +8,6 @@ from domain.image_analysis.opencv_callable.DetectPiece import *
 
 DEBUG = True
 
-
 class MoveRobotWithEmbarkedCamTest(unittest.TestCase):
 
     def setUp(self):
