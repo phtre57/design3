@@ -36,7 +36,7 @@ Y_ARRAY_FOR_QR_STRATEGY = [120, 145, 170, 90]
 
 X_RANGE_FOR_QR_STRATEGY = [200, 230, 260, 285]
 
-OFFSET_Y_CAM_EMBARKED = 54
+OFFSET_Y_CAM_EMBARKED = 80
 OFFSET_X_CAM_EMBARKED = -23
 
 logger = Logger(__name__)
@@ -488,6 +488,7 @@ class Sequence:
                                                    self.__cardinal_to_angle(self.zone_pickup_cardinal))
 
         if DEBUG:
+            robot_img = self.take_image()
             cv2.circle(robot_img, (x, y), 5, [255, 255, 255])
             cv2.circle(robot_img,
                        (x_from_center_of_image, y_from_center_of_image), 5,

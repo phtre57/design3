@@ -7,6 +7,7 @@ logger = Logger(__name__)
 
 
 def detect_piece(frame, str_shape, str_color):
+    frame = frame.copy()
     if (str_color is not None):
         color = Color()
         if (str_color == 'rouge'):
@@ -21,4 +22,5 @@ def detect_piece(frame, str_shape, str_color):
     elif (str_shape is not None):
         return detect_contour_pieces(frame, str_shape)
     else:
-        logger.log_critical('Detect Piece, les params sont vraiment pas bon ' + str(str_shape) + str(str_color))
+        logger.log_critical('Detect Piece, les params sont vraiment pas bon ' +
+                            str(str_shape) + str(str_color))
