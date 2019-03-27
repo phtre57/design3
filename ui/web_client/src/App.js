@@ -75,14 +75,12 @@ class App extends Component {
               </Toolbar>
           </AppBar>
 
-          <div className='main-container' id="main-container" style={container}>
-            <div style={mainPaper}>
-            <Paper elevation={15}>
-            <div style={{...container, ...morePadding}}>
+          <div className='main-container' id="main-container" style={mainContainer}>
+            <Paper elevation={15} style={mainPaper}>
+            <div style={container}>
                 <Paper elevation={4} style={paperStyle}>
                     <h4 style={textZone}>Informations QR</h4>
                     <p>{this.state.qrcode}</p>
-                    <div> {this.renderImage(this.state.actualimg)} </div>
                 </Paper>
                 <Paper elevation={4} style={paperStyle}>
                     <Timer startSignal={this.startSignal} resetSignal={this.resetSignal}/>
@@ -90,11 +88,11 @@ class App extends Component {
             </div>
             <div style={container}>
                 <Paper elevation={4} style={paperStyle}>
-                    <span style={textZone}>Courant et</span>
-                    <span style={textZone}>tension condensateur</span>
+                    <h4 style={textZone}>Tension Condensateur</h4>
                 </Paper>
                 <Paper elevation={4} style={paperStyle}>
-                    <span style={textZone}>États présent du robot</span>
+                    <h4 style={textZone}>Statut Robot</h4>
+                     {/* Waiting for start signnal... */}
                     <span style={textZone}>{this.state.phase}</span>
                 </Paper>
             </div>
@@ -103,9 +101,12 @@ class App extends Component {
                     <h4>Trajectoire planifiée & réelle</h4>
                     <div> {this.renderImage(this.state.optpath)} </div>
                 </Paper>
+                <Paper elevation={4} style={paperStyle}>
+                    <h4>Caméra embarquée</h4>
+                    <div> {this.renderImage(this.state.actualimg)} </div>
+                </Paper>
             </div>
             </Paper>
-            </div>  
             <LogPanel socket={this.state.socket}/>
           </div>
       </div>
@@ -122,6 +123,8 @@ const app = {
 const paperStyle = {
   display: 'flex',
   flexDirection: 'column',
+  alignItems: 'center',
+  width: '100%',
   margin: '10px',
   padding: '10px'
 };
@@ -130,20 +133,26 @@ const container = {
   display: 'flex',
   flexDirection: 'row',
   justifyContent: 'center',
-  height: 'calc(100% - 64px)',
+  flexGrow: '1',
   margin: '0px',
-  width: '100%'
+};
+
+const mainContainer = {
+  height: 'calc(100% - 64px)',
+  display: 'flex',
+  flexDirection: 'row',
+  justifyContent: 'center',
+  margin: '0px',
 };
 
 const mainPaper = {
   marginLeft: '100px',
+  height: 'calc(100% - 34px)',
+  width: '50%',
+  alignItems: 'center',
   marginRight: '100px',
   marginTop: '10px',
-  marginBottom: '0px'
-};
-
-const morePadding = {
-  padding: '10px',
+  paddingBottom: '10px'
 };
 
 const textZone = {
@@ -158,6 +167,6 @@ const imageStyle = {
 const toolbar = {
   alignItems: 'center',
   justifyContent: 'space-between',
-}
+};
 
 export default App;
