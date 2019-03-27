@@ -26,3 +26,5 @@ class Communication_ui():
     def SendText(self, val, dest):
         self.sio.emit('eventFromRobot', {'data': val, 'type': 'text', 'dest': dest})
 
+    def SendLog(self, val, dest):
+        self.sio.emit('sendLog', {'data': val, 'type': 'text', 'dest': dest})

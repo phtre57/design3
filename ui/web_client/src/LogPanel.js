@@ -1,10 +1,25 @@
 import React, { Component } from 'react';
 
 class LogPanel extends Component {
+  state = {
+    logs: []
+  }
+
+  componentDidMount() {
+    this.props.socket.on('event', resp => {
+      let newLogs = this.state.logs;
+      newLogs.push(resp.data);
+      console.log(resp.data);
+      this.setState({logs: newLogs});
+    });
+  }
+
   render() {
     return (
       <div id="log-panel" style={logPanel}>
-          <p>drop some logs over here</p>
+          { this.state.logs.map((log) => {
+            return <p>{log}</p>
+          })}
       </div>
     );
   }
@@ -12,13 +27,10 @@ class LogPanel extends Component {
 
 const logPanel = {
   backgroundColor: 'white',
-  position: 'absolute',
-  right: '0',
-  height: '100%',
-  width: '20%',
+  width: '40%',
   display: 'none',
-  overflow: 'hidden',
-  webkitBoxShadow: '-6px 2px 8px #999999'
+  overflow: 'scroll',
+  WebkitBoxShadow: '-6px 2px 8px #999999',
 };
 
 export default LogPanel;

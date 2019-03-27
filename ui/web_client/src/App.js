@@ -13,6 +13,7 @@ import openSocket from 'socket.io-client';
 
 import Timer from './Timer';
 import LogPanel from './LogPanel';
+import { callbackify } from 'util';
 
 class App extends Component {
   state = { 
@@ -24,7 +25,6 @@ class App extends Component {
 
   componentDidMount() {
     this.state.socket.on('event', resp => {
-      console.log(resp);
       this.setState({ [resp.dest]: resp.data });
     });
   }
@@ -49,10 +49,12 @@ class App extends Component {
 
   openLogPanel = () => {
     document.getElementById('log-panel').style.display = "block";
+    document.getElementsByClassName('main-container')[0].style.justifyContent = "space-between";
   }
 
   closeLogPanel = () => {
     document.getElementById('log-panel').style.display = "none";
+    document.getElementsByClassName('main-container')[0].style.justifyContent = "center";
   }
 
   toggleLogPanel = () => {
@@ -73,7 +75,8 @@ class App extends Component {
                   </IconButton>
               </Toolbar>
           </AppBar>
-          <div style={container}>
+
+          <div className='main-container' id="main-container" style={container}>
             <div style={mainPaper}>
             <Paper elevation={15}>
             <div style={{...container, ...morePadding}}>
@@ -98,17 +101,13 @@ class App extends Component {
             </div>
             <div style={container}>
                 <Paper elevation={4} style={paperStyle}>
-                    <h4>Trajectoire planifiée</h4>
+                    <h4>Trajectoire planifiée & réelle</h4>
                     <div> {this.renderImage(this.state.optpath)} </div>
-                </Paper>
-                <Paper elevation={4} style={paperStyle}>
-                    <h4>Trajectoire réelle</h4>
-                    <div> {this.renderImage(this.state.actualpath)} </div>
                 </Paper>
             </div>
             </Paper>
-            </div>
-            <LogPanel />
+            </div>  
+            <LogPanel socket={this.state.socket}/>
           </div>
       </div>
     );
@@ -132,7 +131,7 @@ const container = {
   display: 'flex',
   flexDirection: 'row',
   justifyContent: 'center',
-  height: '100%',
+  height: 'calc(100% - 64px)',
   margin: '0px',
   width: '100%'
 };
@@ -141,12 +140,11 @@ const mainPaper = {
   marginLeft: '100px',
   marginRight: '100px',
   marginTop: '10px',
-  height: '100%',
   marginBottom: '0px'
 };
 
 const morePadding = {
-  padding: '10px'
+  padding: '10px',
 };
 
 const textZone = {

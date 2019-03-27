@@ -10,13 +10,13 @@ io.on("connection", client => {
 
   client.on("event", data => { 
     UIClient.emit("event", { data: "chocolat" })
-  })
+  });
 
   //event from UI for the start signal
   client.on("start", resp => { 
     console.log("start");
-    robotMainClient.emit("start", "started")
-  })
+    robotMainClient.emit("start", "started");
+  });
 
   client.on("eventFromRobot", data => {
     console.log("eventFromRobot");
@@ -25,25 +25,33 @@ io.on("connection", client => {
       data.data = String.fromCharCode.apply(null, new Uint16Array(data.data));
     }
     
-    UIClient.emit("event", data)
-    client.emit("validation", "v")
-    client.disconnect()
-  })
+    UIClient.emit("event", data);
+    client.emit("validation", "v");
+    client.disconnect();
+  });
+
+  client.on("sendLog", data => {
+    console.log("sendLog");
+    console.log(data)
+    UIClient.emit("event", data);
+    client.emit("validation", "v");
+    client.disconnect();
+  });
 
   client.on("disconnect", () => { 
-    console.log("bye")
-  })
+    console.log("bye");
+  });
 })
 
-server.listen(4000)
-console.log("Started")
+server.listen(4000);
+console.log("Started");
 
 function onConnect(client) {
   if (client.handshake.query.token === "UI") {
-    UIClient = client
+    UIClient = client;
     console.log("Hi UI");
   } else if(client.handshake.query.token === "MainRobot") {
-    robotMainClient = client
+    robotMainClient = client;
     console.log("Hi Main Robot");
   } else {
     // console.log("Hi Robot");

@@ -1,7 +1,13 @@
 import os
 import logging
 import datetime
+from io import StringIO
 
+from infrastructure.communication_ui.comm_ui import Communication_ui
+
+# mode no log, mode offline
+# Envoyer les logs au UI 
+# utiliser comm_ui
 
 class Logger(object):
     def __init__(self, module_name):
@@ -23,15 +29,24 @@ class Logger(object):
         file_number = open(self.sequence_count_path).read()
         file_name = self.log_path.replace("X", file_number)
 
-        # File Check
         f = open(file_name, 'a+')
         f.close()
 
-        logger_handler = logging.FileHandler(file_name)
-        logger_handler.setLevel(logging.DEBUG)
-        logger_handler.setFormatter(logger_formatter)
+        file_handler = logging.FileHandler(file_name)
+        file_handler.setLevel(logging.DEBUG)
+        file_handler.setFormatter(logger_formatter)
 
-        self.logger.addHandler(logger_handler)
+        # Stream handler for UI
+        self.log_stream = StringIO() 
+        self.stream_handler = logging.StreamHandler(self.log_stream)
+        self.stream_handler.setLevel(logging.DEBUG)
+        self.stream_handler.setFormatter(logger_formatter)
+
+        # Add handlers to logger 
+        self.logger.addHandler(file_handler)
+        self.logger.addHandler(self.stream_handler)
+
+        # Communication avec le UI
 
     def increment_sequence_number(self):
         file_number = open(self.sequence_count_path).read()
@@ -52,18 +67,43 @@ class Logger(object):
         print(message)
         self.logger.warning(message)
 
+        self.comm_ui = Communication_ui()
+        self.comm_ui.SendLog(self.log_stream.getvalue(), "log")
+        self.stream_handler.flush()
+        self.log_stream.seek(0)
+
     def log_info(self, message):
         print(message)
         self.logger.info(message)
 
+        self.comm_ui = Communication_ui()
+        self.comm_ui.SendLog(self.log_stream.getvalue(), "log")
+        self.stream_handler.flush()
+        self.log_stream.seek(0)
+
     def log_debug(self, message):
         print(message)
         self.logger.debug(message)
+        
+        self.comm_ui = Communication_ui()
+        self.comm_ui.SendLog(self.log_stream.getvalue(), "log")
+        self.stream_handler.flush()
+        self.log_stream.seek(0)
 
     def log_error(self, message):
         print(message)
         self.logger.error(message)
 
+        self.comm_ui = Communication_ui()
+        self.comm_ui.SendLog(self.log_stream.getvalue(), "log")
+        self.stream_handler.flush()
+        self.log_stream.seek(0)
+
     def log_critical(self, message):
-        print(message)
+        print(self.log_stream.getvalue())
         self.logger.critical(message)
+
+        self.comm_ui = Communication_ui()
+        self.comm_ui.SendLog(self.log_stream.getvalue(), "log")
+        self.stream_handler.flush()
+        self.log_stream.seek(0)
