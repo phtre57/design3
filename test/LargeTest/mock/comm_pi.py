@@ -11,7 +11,8 @@ class Communication_pi_mock():
 
     def getImage(self):
         input('getImage')
-        cap = cv2.VideoCapture(2)
+        cap = cv2.VideoCapture(1)
+        cap.set(cv2.CV_CAP_PROP_BRIGHTNESS, 0.5)
 
         while True:
             if cap.isOpened():
@@ -27,7 +28,8 @@ class Communication_pi_mock():
 
     def sendCoordinates(self, x, y):
         input('sendCoordinates')
-        print("Communication mock: sendCoordinates ## " + str(x) + ", " + str(y))
+        print("Communication mock: sendCoordinates ## " + str(x) + ", " +
+              str(y))
 
     def disconnectFromPi(self):
         print("Communication mock: disconnect")

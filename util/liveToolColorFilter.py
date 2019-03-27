@@ -19,6 +19,12 @@ hu, su, vu = 100, 100, 100
 fileNo = 0
 default_values = 0
 
+# b, c, s = 100, 32, 28
+# h, g, e = -1, 156, -4
+
+b, c, s = 61, 24, 100
+h, g, e = 0, 69, -4
+
 cv2.createTrackbar('h', 'result', 0, 255, nothing)
 cv2.createTrackbar('s', 'result', 0, 255, nothing)
 cv2.createTrackbar('v', 'result', 0, 255, nothing)
@@ -31,15 +37,21 @@ cv2.createTrackbar('fileNo', 'result', 0, 36, nothing)
 
 cv2.createTrackbar('default', 'result', 0, 4, nothing)
 
-# frame = cv2.imread(path)
-# cv2.imshow('result',frame)
-# cv2.waitKey()
+cap = cv2.VideoCapture(1)
+cap.set(10, b)
+cap.set(11, c)
+cap.set(12, s)
+cap.set(13, h)
+cap.set(14, g)
+cap.set(15, e)
+
+while True:
+    if cap.isOpened():
+        break
 
 while (1):
+    _, og_frame = cap.read()
 
-    fileNo = cv2.getTrackbarPos('fileNo', 'result')
-    __path = path + str(fileNo) + '.jpg'
-    og_frame = cv2.imread(__path)
     frame = og_frame.copy()
     frame = destroy_the_image(frame)
 
@@ -109,9 +121,26 @@ while (1):
         cv2.putText(text, hsv_str, (10, 30), cv2.FONT_HERSHEY_SIMPLEX, 0.5,
                     (70, 0, 255), 2)
 
+    B = cap.get(10)
+    C = cap.get(11)
+    S = cap.get(12)
+    H = cap.get(13)
+    G = cap.get(14)
+    E = cap.get(15)
+
+    cv2.putText(text,
+                str(B) + " " + str(C) + " " + str(S), (10, 70),
+                cv2.FONT_HERSHEY_SIMPLEX, 0.5, (70, 0, 255), 2)
+    cv2.putText(text,
+                str(H) + " " + str(G) + " " + str(E), (10, 90),
+                cv2.FONT_HERSHEY_SIMPLEX, 0.5, (70, 0, 255), 2)
+
     mask = cv2.inRange(hsv, lower_hsv, upper_hsv)
 
     result = cv2.bitwise_and(frame, frame, mask=mask)
+
+    # result = cv2.cvtColor(result, cv2.COLOR_HSV2BGR)
+    # text = cv2.cvtColor(text, cv2.COLOR_HSV2BGR)
 
     numpy_horizontal = np.hstack((result, text))
     numpy_horizontal_concat = np.concatenate((result, text), axis=1)

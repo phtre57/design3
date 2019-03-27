@@ -26,16 +26,29 @@ DEBUG = COLOR_DETECTOR_DEBUG
 def color_detector(frame, color):
     frame = frame.copy()
 
-    shape = create_mask_for_color_detector(frame)
+    # shape = create_mask_for_color_detector(frame)
+    # frame = shape.frame
+
+    frame = destroy_the_image(frame)
 
     if (DEBUG):
-        cv2.imshow("SHAPE", shape.frame)
+        cv2.imshow("SHAPE", frame)
         cv2.waitKey()
 
-    shape.res_contour = find_where_the_shape_is(shape, color, RADIUS_LIMIT,
-                                                True)
+    shape = None
+    # shape.res_contour = find_where_the_shape_is(frame, shape, color,
+    # RADIUS_LIMIT, True)
 
-    return (shape.res_contour['point'][0], shape.res_contour['point'][1])
+    return find_where_the_shape_is(frame, shape, color, RADIUS_LIMIT, True)
+
+
+def destroy_the_image(mask):
+    kernelerode = np.ones((9, 9), np.uint8)
+    mask = cv2.morphologyEx(
+        mask, cv2.MORPH_OPEN,
+        cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (10, 10)))
+    mask = cv2.erode(mask, kernelerode, iterations=1)
+    return mask
 
 
 def create_mask_for_color_detector(og_frame):

@@ -67,6 +67,11 @@ class Sequence:
         self.__init_zones()
 
     def __init_zones(self):
+        img = self.take_image()
+
+        cv2.imshow('TEST', img)
+        cv2.waitKey(0)
+
         self.__detect_start_zone()
         self.__detect_zone_dep()
         self.__detect_pickup_zone()
@@ -90,7 +95,6 @@ class Sequence:
             try:
                 img = self.take_image()
                 i = i + 1
-                (x, y) = detect_start_zone(img)
                 if (i > 20):
                     logger.log_critical(
                         'START ZONE NOT DETECTED, FALL BACK TO HARDCODED')
@@ -99,6 +103,7 @@ class Sequence:
                                              Y_END_START_ZONE)
                     break
 
+                (x, y) = detect_start_zone(img)
                 self.zone_start_point = (round(x / 2), round(y / 2))
                 break
             except Exception:
@@ -378,7 +383,7 @@ class Sequence:
     def go_to_c_charge_station(self):
         self.__send_rotation_angle()
         time.sleep(0.5)
-        self.comm_pi.sendCoordinates(-340-381)
+        self.comm_pi.sendCoordinates(-340 - 381)
         # WAIT TO CHARGE
         time.sleep(1)
         # GET RESPONSE

@@ -107,7 +107,11 @@ def main_sequence_old():
 
 
 def start_cam():
-    return cv2.VideoCapture(1)
+    cap = cv2.VideoCapture(1)
+    while True:
+        if cap.isOpened():
+            break
+    return cap
 
 
 def calibrate():
@@ -145,7 +149,6 @@ def main_sequence(ui=True):
         cap.set(3, 640)
         cap.set(4, 480)
 
-    time.sleep(5)
     _, frame = cap.read()
 
     connect(comm_pi)
@@ -154,18 +157,17 @@ def main_sequence(ui=True):
 
     sequence = Sequence(cap, comm_pi, pixel_to_xy_converter,
                         robot_cam_pixel_to_xy_converter)
-    logger.log_info('Go to start zone...')
-    # sequence.set_end_point(X_END_START, Y_END_START)
-    # sequence.start()
-    # sequence.go_to_start_zone()
-    # sequence.go_to_c_charge_station()
-    # sequence.charge_robot_at_station()
-    # sequence.go_back_from_charge_station()
-    # sequence.go_to_zone_dep()
-    # sequence.rotate_robot_on_zone_dep()
+    logger.log_info('Sequence start...')
+    sequence.go_to_start_zone()
+    sequence.go_to_c_charge_station()
+    sequence.charge_robot_at_station()
+    sequence.go_back_from_charge_station()
+    sequence.go_to_decode_qr()
     sequence.go_to_zone_pickup()
     sequence.rotate_robot_on_zone_pickup()
     sequence.move_robot_around_pickup_zone()
+    sequence.go_to_zone_dep()
+    sequence.rotate_robot_on_zone_dep()
 
     sequence.end()
     logger.log_info('Sequence is done...')
@@ -218,3 +220,4 @@ except KeyboardInterrupt:
     comm_pi.disconnectFromPi()
     logger.log_info("bye")
     logger.log_critical(traceback.format_exc())
+    cv2.destroyAllWindows()
