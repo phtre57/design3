@@ -12,9 +12,9 @@ class Communication_pi_mock():
         input('getImage')
         print("Communication mock: getImage")
 
-    def sendCoordinates(self, str):
+    def sendCoordinates(self, x, y):
         input('sendCoordinates')
-        print("Communication mock: sendCoordinates ## " + str)
+        print("Communication mock: sendCoordinates ## " + str(x) + ", " + str(y))
 
     def disconnectFromPi(self):
         print("Communication mock: disconnect")
