@@ -469,6 +469,7 @@ class Sequence:
         try:
             x, y = detect_piece(robot_img, self.piece_shape, self.piece_color)
         except Exception as ex:
+            logger.log_critical("Could not find piece, continuing to move to detect it...")
             logger.log_critical(traceback.print_exc())
             return False
 

@@ -13,7 +13,7 @@ GREEN_HSV_LOW = np.array([40, 40, 60])
 GREEN_HSV_HIGH = np.array([80, 130, 255])
 
 
-class Color():
+class Color:
     def __init__(self):
         self.color = 0
 
