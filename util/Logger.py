@@ -5,10 +5,6 @@ from io import StringIO
 
 from infrastructure.communication_ui.comm_ui import Communication_ui
 
-# mode no log, mode offline
-# Envoyer les logs au UI 
-# utiliser comm_ui
-
 class Logger(object):
     def __init__(self, module_name):
         # File paths from root

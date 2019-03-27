@@ -14,12 +14,16 @@ class LogPanel extends Component {
     });
   }
 
+  displayLogs = () => {
+    return this.state.logs.map((log) => {
+      return <p> {log} </p>
+    });
+  }
+
   render() {
     return (
       <div id="log-panel" style={logPanel}>
-          { this.state.logs.map((log) => {
-            return <p>{log}</p>
-          })}
+          { this.displayLogs() }
       </div>
     );
   }
