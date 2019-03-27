@@ -415,13 +415,15 @@ class Sequence:
         y_mm_movement_point_negative = (0, -30)
         number_of_increment = 8
 
+        real_x_inverse, real_y_inverse = None, None
+
         if self.zone_pickup_cardinal == SOUTH():
             logger.log_info("Move around south pick up...")
             for i in range(number_of_increment):
                 x, y = self.robot_cam_pixel_to_xy_converter.convert_real_xy_given_angle(
                     x_mm_movement_point_negative, -90)
                 self.comm_pi.sendCoordinates(x, y)
-                piece_grabbed = self.grab_piece()
+                piece_grabbed, real_x_inverse, real_y_inverse = self.grab_piece()
 
                 if piece_grabbed:
                     break
@@ -433,7 +435,7 @@ class Sequence:
                     x_mm_movement_point, 90)
                 self.comm_pi.sendCoordinates(x, y)
 
-                piece_grabbed = self.grab_piece()
+                piece_grabbed, real_x_inverse, real_y_inverse = self.grab_piece()
 
                 if piece_grabbed:
                     break
@@ -445,7 +447,7 @@ class Sequence:
                     y_mm_movement_point_negative, 0)
                 self.comm_pi.sendCoordinates(x, y)
 
-                piece_grabbed = self.grab_piece()
+                piece_grabbed, real_x_inverse, real_y_inverse = self.grab_piece()
 
                 if piece_grabbed:
                     break
@@ -457,10 +459,28 @@ class Sequence:
                     y_mm_movement_point, 180)
                 self.comm_pi.sendCoordinates(x, y)
 
-                piece_grabbed = self.grab_piece()
+                piece_grabbed, real_x_inverse, real_y_inverse = self.grab_piece()
 
                 if piece_grabbed:
                     break
+
+        validate_piece_was_grabbed = self.validate_piece_taken(real_x_inverse, real_y_inverse)
+
+        if validate_piece_was_grabbed is False:
+            self.move_robot_around_pickup_zone()
+
+    def validate_piece_taken(self, x, y):
+        self.comm_pi.sendCoordinates(x * -1, y * -1)
+        robot_img = self.comm_pi.getImage()
+
+        try:
+            x, y = detect_piece(robot_img, self.piece_shape, self.piece_color)
+            return False
+        except Exception as ex:
+            logger.log_critical(
+                "Could not find piece, continuing to move to detect it...")
+            logger.log_critical(traceback.print_exc())
+            return True
 
     def grab_piece(self):
         logger.log_info("Trying to grab piece...")
@@ -474,7 +494,7 @@ class Sequence:
             logger.log_critical(
                 "Could not find piece, continuing to move to detect it...")
             logger.log_critical(traceback.print_exc())
-            return False
+            return False, 0, 0
 
         x_from_center_of_image = round(x - (
             (width / 2) + OFFSET_X_CAM_EMBARKED))
@@ -500,7 +520,7 @@ class Sequence:
         # activate arm here
         # here return true of false to know if piece was really grabbed
 
-        return True
+        return True, real_x, real_y
 
     def __cardinal_to_angle(self, cardinal_str):
 
