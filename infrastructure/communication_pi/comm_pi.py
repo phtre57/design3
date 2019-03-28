@@ -44,7 +44,7 @@ class Communication_pi:
             time.sleep(0.2)
 
     def sendAngle(self, angle):
-        commande = "0,0" + str(angle) + "\n"
+        commande = "0,0," + str(angle) + "\n"
         self.sio.emit('sendAngle', commande)
         logger.log_info("Angle envoyees: " + angle)
         self.ready = False
