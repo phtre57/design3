@@ -353,6 +353,9 @@ class Sequence:
         self.piece_shape = dict_of_values[PIECE]
         self.depot_number = dict_of_values[ZONE]
         logger.log_info("Values of qr code: " + str(dict_of_values))
+        logger.log_info(("Value of self.piece_color: " + str(self.piece_color)))
+        logger.log_info(("Value of self.piece_shape: " + str(self.piece_shape)))
+        logger.log_info(("Value of self.depot_number: " + str(self.depot_number)))
 
         if dict_of_values is None:
             return False
@@ -498,10 +501,13 @@ class Sequence:
             logger.log_critical(traceback.print_exc())
             return False, 0, 0
 
-        x_from_center_of_image = round(x - (
-            (width / 2) + OFFSET_X_CAM_EMBARKED))
-        y_from_center_of_image = round(y - (
-            (height / 2) + OFFSET_Y_CAM_EMBARKED))
+        # x_from_center_of_image = round(x - (
+        #     (width / 2) + OFFSET_X_CAM_EMBARKED))
+        # y_from_center_of_image = round(y - (
+        #     (height / 2) + OFFSET_Y_CAM_EMBARKED))
+
+        x_from_center_of_image = round((width / 2 + OFFSET_X_CAM_EMBARKED) - x)
+        y_from_center_of_image = round((height / 2 + OFFSET_Y_CAM_EMBARKED) - y)
 
         real_x, real_y = self.robot_cam_pixel_to_xy_converter\
             .convert_pixel_to_xy_point_given_angle((x_from_center_of_image, y_from_center_of_image),
@@ -530,6 +536,81 @@ class Sequence:
 
         return True, real_x, real_y
 
+    def drop_piece(self):
+        self.rotate_robot_on_zone_dep()
+
+        if self.zone_dep_cardinal == EAST():
+            self.__drop_piece_east()
+
+        elif self.zone_dep_cardinal == WEST():
+            self.__drop_piece_west()
+
+        elif self.zone_dep_cardinal == NORTH():
+            self.__drop_piece_north()
+
+        elif self.zone_dep_cardinal == SOUTH():
+            self.__drop_piece_south()
+
+        else:
+            logger.log_critical("No cardinality given to drop zone...")
+
+    def __drop_piece_south(self):
+        logger.log_info("Dropping piece in south drop zone")
+        first_zone_move = (10, -30)
+        second_zone_move = (10, -80)
+        third_zone_move = (10, -110)
+        fourth_zone_move = (20, -130)
+
+        array_of_moves = [first_zone_move, second_zone_move, third_zone_move, fourth_zone_move]
+        self.__make_move_to_drop_zone(self.depot_number, array_of_moves)
+
+    def __drop_piece_north(self):
+        logger.log_info("Dropping piece in north drop zone")
+        first_zone_move = (10, -30)
+        second_zone_move = (10, -80)
+        third_zone_move = (10, -110)
+        fourth_zone_move = (20, -130)
+
+        array_of_moves = [first_zone_move, second_zone_move, third_zone_move, fourth_zone_move]
+        self.__make_move_to_drop_zone(self.depot_number, array_of_moves)
+
+    def __drop_piece_east(self):
+        logger.log_info("Dropping piece in east drop zone")
+        first_zone_move = (10, -30)
+        second_zone_move = (10, -80)
+        third_zone_move = (10, -110)
+        fourth_zone_move = (20, -130)
+
+        array_of_moves = [first_zone_move, second_zone_move, third_zone_move, fourth_zone_move]
+        self.__make_move_to_drop_zone(self.depot_number, array_of_moves)
+
+    def __drop_piece_west(self):
+        logger.log_info("Dropping piece in west drop zone")
+        first_zone_move = (10, -30)
+        second_zone_move = (10, -80)
+        third_zone_move = (10, -110)
+        fourth_zone_move = (20, -130)
+
+        array_of_moves = [first_zone_move, second_zone_move, third_zone_move, fourth_zone_move]
+        self.__make_move_to_drop_zone(self.depot_number, array_of_moves)
+
+    def __make_move_to_drop_zone(self, zone_number, array_of_coordinates_in_order):
+        logger.log_info("Dropping piece in " + str(zone_number))
+        if zone_number == ZONE_0:
+            self.comm_pi.sendCoordinates(array_of_coordinates_in_order[0][0], array_of_coordinates_in_order[0][1])
+
+        elif zone_number == ZONE_1:
+            self.comm_pi.sendCoordinates(array_of_coordinates_in_order[1][0], array_of_coordinates_in_order[1][1])
+
+        elif zone_number == ZONE_2:
+            self.comm_pi.sendCoordinates(array_of_coordinates_in_order[2][0], array_of_coordinates_in_order[2][1])
+
+        elif zone_number == ZONE_3:
+            self.comm_pi.sendCoordinates(array_of_coordinates_in_order[3][0], array_of_coordinates_in_order[3][1])
+
+        else:
+            logger.log_critical("No move for unknown zone number...")
+
     def __cardinal_to_angle(self, cardinal_str):
 
         if cardinal_str == EAST():
@@ -544,7 +625,7 @@ class Sequence:
             return None
 
     def rotate_robot_on_zone_dep(self):
-        logger.log_info("Rotate on sone dep plane...")
+        logger.log_info("Rotate on zone dep plane...")
         self.__rotate_robot_on_zone_plane(self.zone_dep_cardinal)
 
     def rotate_robot_on_zone_pickup(self):
@@ -568,7 +649,7 @@ class Sequence:
     def __decision(self, cardinal, rotate_function, robot_angle, first_it,
                    cardinal_point):
         if cardinal_point == cardinal:
-            logger.log_info("Rotate to " + NORTH() + "...")
+            logger.log_info("Rotate to " + cardinal + "...")
             rotate_function(robot_angle)
             if first_it < 3:
                 first_it = first_it + 1

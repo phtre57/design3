@@ -9,7 +9,7 @@ from domain.image_analysis.opencv_callable.DetectPiece import *
 DEBUG = True
 
 X_OFFSET = -35
-Y_OFFSET = 65
+Y_OFFSET = 90
 
 
 class MoveRobotWithEmbarkedCamTest(unittest.TestCase):
