@@ -21,7 +21,7 @@ from domain.QRCodeDictionnary import *
 from util.Logger import Logger
 from domain.image_analysis.Cardinal import *
 
-DEBUG = True
+DEBUG = False
 ROBOT_DANCE_X_POSITIVE = "50,0,0\n"
 ROBOT_DANCE_X_NEGATIVE = "-50,0,0\n"
 
@@ -67,11 +67,6 @@ class Sequence:
         self.__init_zones()
 
     def __init_zones(self):
-        img = self.take_image()
-
-        cv2.imshow('TEST', img)
-        cv2.waitKey(0)
-
         self.__detect_start_zone()
         self.__detect_zone_dep()
         self.__detect_pickup_zone()
@@ -271,10 +266,6 @@ class Sequence:
             for point in smooth_path:
                 cv2.circle(img, (point[0] * 2, point[1] * 2), 1, [0, 0, 255])
 
-        if (DEBUG):
-            cv2.imshow("imageCourante", img)
-            cv2.waitKey()
-
         cv2.destroyAllWindows()
 
         return img
@@ -383,7 +374,7 @@ class Sequence:
     def go_to_c_charge_station(self):
         self.__send_rotation_angle()
         time.sleep(0.5)
-        self.comm_pi.sendCoordinates(-340 - 381)
+        self.comm_pi.sendCoordinates(-340, -381)
         # WAIT TO CHARGE
         time.sleep(1)
         # GET RESPONSE
@@ -428,7 +419,8 @@ class Sequence:
                 x, y = self.robot_cam_pixel_to_xy_converter.convert_real_xy_given_angle(
                     x_mm_movement_point_negative, -90)
                 self.comm_pi.sendCoordinates(x, y)
-                piece_grabbed, real_x_inverse, real_y_inverse = self.grab_piece()
+                piece_grabbed, real_x_inverse, real_y_inverse = self.grab_piece(
+                )
 
                 if piece_grabbed:
                     break
@@ -440,7 +432,8 @@ class Sequence:
                     x_mm_movement_point, 90)
                 self.comm_pi.sendCoordinates(x, y)
 
-                piece_grabbed, real_x_inverse, real_y_inverse = self.grab_piece()
+                piece_grabbed, real_x_inverse, real_y_inverse = self.grab_piece(
+                )
 
                 if piece_grabbed:
                     break
@@ -452,7 +445,8 @@ class Sequence:
                     y_mm_movement_point_negative, 0)
                 self.comm_pi.sendCoordinates(x, y)
 
-                piece_grabbed, real_x_inverse, real_y_inverse = self.grab_piece()
+                piece_grabbed, real_x_inverse, real_y_inverse = self.grab_piece(
+                )
 
                 if piece_grabbed:
                     break
@@ -464,12 +458,14 @@ class Sequence:
                     y_mm_movement_point, 180)
                 self.comm_pi.sendCoordinates(x, y)
 
-                piece_grabbed, real_x_inverse, real_y_inverse = self.grab_piece()
+                piece_grabbed, real_x_inverse, real_y_inverse = self.grab_piece(
+                )
 
                 if piece_grabbed:
                     break
 
-        validate_piece_was_grabbed = self.validate_piece_taken(real_x_inverse, real_y_inverse)
+        validate_piece_was_grabbed = self.validate_piece_taken(
+            real_x_inverse, real_y_inverse)
 
         if validate_piece_was_grabbed is False:
             self.move_robot_around_pickup_zone()

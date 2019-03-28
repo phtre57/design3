@@ -49,21 +49,29 @@ class Communication_pi():
         self.socket.sendall(msg)
 
     def getImage(self):
+        print('Capture d\'image du robot...')
         output = "getImage"
         self.socket.send(output.encode('utf-8'))
 
-        data = self.__recv_msg()
+        print('Waiting for ready signal')
+        self.robotReady()
+        print('Waiting for data')
+        # data = self.__recv_msg()
+        data = self.socket.recv(4096)
+        print('Got data')
         data = str(data, 'utf-8')
+        print(data)
         frame_data = base64.b64decode(data)
 
         with open('test.jpg', 'wb') as f_output:
             f_output.write(frame_data)
 
         time.sleep(1)
-
+        print('Got image')
         return cv2.imread('./test.jpg')
 
     def sendCoordinates(self, x, y):
+        input('sendCoordinates?')
         if x == 0 and y == 0:
             return
 
@@ -75,9 +83,11 @@ class Communication_pi():
         logger.log_info("Coordonnees envoyees: " + string_to_send)
 
         self.robotReady()
-        time.sleep(1)
+        time.sleep(4)
+        input('sendCoordinates?')
 
     def sendAngle(self, angle):
+        input('sendAngle?')
         if abs(int(angle)) > 180:
             if angle < 0:
                 angle = 360 + angle
@@ -93,13 +103,14 @@ class Communication_pi():
         logger.log_info("Coordonnees envoyees: " + coord_angle)
 
         if (abs(int(angle)) > 35):
-            time.sleep(1.5)
+            time.sleep(1.5 * 2)
         if (abs(int(angle)) > 70):
-            time.sleep(1.5)
+            time.sleep(1.5 * 2)
         if (abs(int(angle)) > 120):
-            time.sleep(2)
+            time.sleep(2 * 2)
         if (abs(int(angle)) > 160):
-            time.sleep(3)
+            time.sleep(3 * 2)
+        input('sendAngle?')
 
     def disconnectFromPi(self):
         signal = 'deconnect'
@@ -114,20 +125,21 @@ class Communication_pi():
         signal = 'condensateurChange'
         self.socket.sendall(signal.encode('utf-8'))
         logger.log_info("Signal envoye pour condensateur!")
+        self.robotReady()
 
     def changeServoHori(self, str):
         signal = 'servoHori'
         self.socket.sendall(signal.encode('utf-8'))
         self.socket.sendall(str.encode('utf-8'))
         logger.log_info("Servo Horizontal envoyees: " + str)
-        time.sleep(1)
+        self.robotReady()
 
     def changeServoVert(self, str):
         signal = 'servoVert'
         self.socket.sendall(signal.encode('utf-8'))
         self.socket.sendall(str.encode('utf-8'))
         logger.log_info("Servo Vertical envoyees: " + str)
-        time.sleep(1)
+        self.robotReady()
 
     def getTension(self):
         signal = 'gettension'
@@ -139,7 +151,14 @@ class Communication_pi():
         data = data.replace("\r", "")
         data = data.replace("\n", "")
 
-        return float(data)
+        resp = None
+        try:
+            resp = float(data)
+        except Exception:
+            resp = 0.00
+            pass
+
+        return resp
 
 
 def main():

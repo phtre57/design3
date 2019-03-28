@@ -12,7 +12,6 @@ class Communication_pi_mock():
     def getImage(self):
         input('getImage')
         cap = cv2.VideoCapture(1)
-        cap.set(cv2.CV_CAP_PROP_BRIGHTNESS, 0.5)
 
         while True:
             if cap.isOpened():
