@@ -14,6 +14,7 @@ class Communication_pi:
     def __init__(self, url=URL):
         logger.log_info("Création de la communication...")
         self.ready = True
+        self.image = None
         self.sio = socketio.Client()
         self.sio.connect(url)
         self.image = None
