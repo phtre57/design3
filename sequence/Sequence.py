@@ -390,6 +390,8 @@ class Sequence:
         # GET RESPONSE
 
     def charge_robot_at_station(self):
+        base_tension = self.comm_pi.getTension()
+
         increment = 0
         while True:
             self.comm_pi.sendCoordinates(
@@ -398,9 +400,19 @@ class Sequence:
             time.sleep(
                 3.5
             )  # sleep because it takes 3 seconds for charge station to deliver current
-            tension = self.comm_pi.getTension()
 
-            if tension > 0 or increment == 5:
+            derivative_tension = 0
+            tension = 0
+            for i in range(10):
+                tension = self.comm_pi.getTension()
+
+                if tension > base_tension:
+                    derivative_tension += 1
+
+                if derivative_tension > 5:
+                    break
+
+            if tension > base_tension:
                 break
 
             increment += 1
