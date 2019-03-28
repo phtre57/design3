@@ -20,6 +20,7 @@ from domain.image_analysis.opencv_callable.DetectPiece import *
 from domain.QRCodeDictionnary import *
 from util.Logger import Logger
 from domain.image_analysis.Cardinal import *
+from domain.image_analysis.opencv_callable.DetectPointZoneDep import detect_point_zone_dep
 
 DEBUG = False
 ROBOT_DANCE_X_POSITIVE = "50,0,0\n"
@@ -547,7 +548,7 @@ class Sequence:
 
         robot_img = self.comm_pi.getImage()
         height, width, channels = robot_img.shape
-        x, y = detect_piece(robot_img, self.piece_shape, self.piece_color)
+        x, y = detect_point_zone_dep(robot_img)
 
         x_from_center_of_image = round(x - (
             (width / 2) + OFFSET_X_CAM_EMBARKED))

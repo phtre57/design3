@@ -171,10 +171,9 @@ def main_sequence(ui=True):
     # sequence.piece_color = 'vert'
     # sequence.piece_shape = None
     # sequence.go_to_zone_pickup()
-    # sequence.rotate_robot_on_zone_pickup()
     # sequence.move_robot_around_pickup_zone()
     sequence.go_to_zone_dep()
-    sequence.__rotate_robot_on_zone_dep()
+    sequence.new_drop_piece()
     sequence.comm_pi.getImage()
 
     sequence.end()
