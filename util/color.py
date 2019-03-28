@@ -3,7 +3,10 @@ import numpy as np
 # YELLOW_HSV_LOW = np.array([20, 100, 160])
 # YELLOW_HSV_HIGH = np.array([30, 255, 255])
 
-YELLOW_HSV_LOW = np.array([5, 100, 160])
+# YELLOW_HSV_LOW = np.array([5, 100, 160])
+# YELLOW_HSV_HIGH = np.array([80, 255, 255])
+
+YELLOW_HSV_LOW = np.array([10, 205, 215])
 YELLOW_HSV_HIGH = np.array([80, 255, 255])
 
 # RED_HSV_LOW = np.array([0, 60, 100])

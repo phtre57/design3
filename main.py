@@ -13,11 +13,12 @@ from test.domain.image_analysis.PathFindingImageTest import test_astar_on_image
 from domain.image_analysis.opencv_callable.DetectQR import decode
 from domain.image_analysis.opencv_callable.DetectContourPieces import detect_contour_pieces
 from domain.image_analysis.opencv_callable.DetectZoneDep import detect_zone_dep
-from infrastructure.communication_pi.__comm_pi import Communication_pi
+from infrastructure.communication_pi.comm_pi import Communication_pi
 from infrastructure.communication_ui.comm_ui import Communication_ui
 from sequence.Sequence import Sequence
 from test.LargeTest.TestConstants import *
 from util.Logger import Logger
+from util.color import Color
 
 parser = argparse.ArgumentParser(description='Process some integers.')
 parser.add_argument(
@@ -107,10 +108,13 @@ def main_sequence_old():
 
 
 def start_cam():
+    logger.log_info("Ouverture de la caméra: ")
     cap = cv2.VideoCapture(1)
+
     while True:
         if cap.isOpened():
             break
+    logger.log_info("Fin ouverture de la caméra: ")
     return cap
 
 
@@ -151,7 +155,8 @@ def main_sequence(ui=True):
 
     _, frame = cap.read()
 
-    connect(comm_pi)
+    # connect(comm_pi)
+
     pixel_to_xy_converter = calibrate()
     robot_cam_pixel_to_xy_converter = calibrateEmbark()
 
@@ -162,7 +167,11 @@ def main_sequence(ui=True):
     # sequence.go_to_c_charge_station()
     # sequence.charge_robot_at_station()
     # sequence.go_back_from_charge_station()
-    sequence.go_to_decode_qr()
+    # sequence.go_to_decode_qr()
+    color = Color()
+    color.BLUE()
+    sequence.piece_color = color
+    sequence.piece_shape = None
     sequence.go_to_zone_pickup()
     sequence.rotate_robot_on_zone_pickup()
     sequence.move_robot_around_pickup_zone()
