@@ -303,6 +303,7 @@ class Sequence:
     def go_to_zone_dep(self):
         self.set_end_point(self.zone_dep_point[0], self.zone_dep_point[1])
         self.start()
+        self.__rotate_robot_on_zone_dep()
 
     def go_to_zone_pickup(self):
         self.comm_pi.changeServoVert('6000')
@@ -310,6 +311,7 @@ class Sequence:
         self.set_end_point(self.zone_pickup_point[0],
                            self.zone_pickup_point[1])
         self.start()
+        self.__rotate_robot_on_zone_pickup()
 
     def end(self):
         self.comm_pi.disconnectFromPi()
@@ -540,8 +542,36 @@ class Sequence:
 
         return True, real_x, real_y
 
+    def new_drop_piece(self):
+        logger.log_info("Sequence to drop piece")
+
+        robot_img = self.comm_pi.getImage()
+        height, width, channels = robot_img.shape
+        x, y = detect_piece(robot_img, self.piece_shape, self.piece_color)
+
+        x_from_center_of_image = round(x - (
+            (width / 2) + OFFSET_X_CAM_EMBARKED))
+        y_from_center_of_image = round(y - (
+            (height / 2) + OFFSET_Y_CAM_EMBARKED))
+
+        # x_from_center_of_image = round((width / 2 + OFFSET_X_CAM_EMBARKED) - x)
+        # y_from_center_of_image = round((height / 2 + OFFSET_Y_CAM_EMBARKED) - y)
+
+        real_x, real_y = self.robot_cam_pixel_to_xy_converter \
+            .convert_pixel_to_xy_point_given_angle((x_from_center_of_image, y_from_center_of_image),
+                                                   self.__cardinal_to_angle(self.zone_dep_cardinal))
+
+        self.comm_pi.sendCoordinates(round(real_x), round(real_y))
+
+        logger.log_info('Drop the arm')
+        time.sleep(0.5)
+        self.comm_pi.moveArm('8000')
+        time.sleep(0.5)
+        logger.log_info('Lifting the arm')
+        self.comm_pi.moveArm('2000')
+
     def drop_piece(self):
-        self.rotate_robot_on_zone_dep()
+        self.__rotate_robot_on_zone_dep()
 
         if self.zone_dep_cardinal == EAST():
             self.__drop_piece_east()
@@ -586,10 +616,10 @@ class Sequence:
 
     def __drop_piece_east(self):
         logger.log_info("Dropping piece in east drop zone")
-        first_zone_move = (25, -36)
-        second_zone_move = (25, -101)
-        third_zone_move = (25, -166)
-        fourth_zone_move = (25, -240)
+        first_zone_move = (25, -56)
+        second_zone_move = (25, -121)
+        third_zone_move = (25, -186)
+        fourth_zone_move = (25, -260)
 
         array_of_moves = [
             first_zone_move, second_zone_move, third_zone_move,
@@ -645,11 +675,11 @@ class Sequence:
         else:
             return None
 
-    def rotate_robot_on_zone_dep(self):
+    def __rotate_robot_on_zone_dep(self):
         logger.log_info("Rotate on zone dep plane...")
         self.__rotate_robot_on_zone_plane(self.zone_dep_cardinal)
 
-    def rotate_robot_on_zone_pickup(self):
+    def __rotate_robot_on_zone_pickup(self):
         logger.log_info("Rotate on pickup zone plane...")
         self.__rotate_robot_on_zone_plane(self.zone_pickup_cardinal)
 

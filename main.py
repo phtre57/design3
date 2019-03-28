@@ -174,7 +174,7 @@ def main_sequence(ui=True):
     # sequence.rotate_robot_on_zone_pickup()
     # sequence.move_robot_around_pickup_zone()
     sequence.go_to_zone_dep()
-    sequence.rotate_robot_on_zone_dep()
+    sequence.__rotate_robot_on_zone_dep()
     sequence.comm_pi.getImage()
 
     sequence.end()
