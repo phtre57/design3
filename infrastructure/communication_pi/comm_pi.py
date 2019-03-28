@@ -61,6 +61,7 @@ class Communication_pi:
 
     def disconnectFromPi(self):
         logger.log_info("Deconnecte du pi...")
+        self.sio.emit('disconnect', 'bye Pi <3')
 
     def changeCondensateur(self):
         logger.log_info("Signal envoyee pour condensateur...")
@@ -89,13 +90,13 @@ class Communication_pi:
             time.sleep(0.2)
 
         if (abs(int(angle)) > 35):
-            time.sleep(3)
+            time.sleep(2)
         if (abs(int(angle)) > 70):
-            time.sleep(3)
+            time.sleep(2)
         if (abs(int(angle)) > 120):
-            time.sleep(3)
+            time.sleep(2)
         if (abs(int(angle)) > 160):
-            time.sleep(3)
+            time.sleep(2)
 
     def getImage(self):
         logger.log_info("Get image du robot...")
