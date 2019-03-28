@@ -303,6 +303,7 @@ class Sequence:
     def go_to_zone_dep(self):
         self.set_end_point(self.zone_dep_point[0], self.zone_dep_point[1])
         self.start()
+        self.__rotate_robot_on_zone_dep()
 
     def go_to_zone_pickup(self):
         self.comm_pi.changeServoVert('6000')
@@ -310,6 +311,7 @@ class Sequence:
         self.set_end_point(self.zone_pickup_point[0],
                            self.zone_pickup_point[1])
         self.start()
+        self.__rotate_robot_on_zone_pickup()
 
     def end(self):
         self.comm_pi.disconnectFromPi()
@@ -542,7 +544,6 @@ class Sequence:
 
     def new_drop_piece(self):
         logger.log_info("Sequence to drop piece")
-        self.rotate_robot_on_zone_dep()
 
         robot_img = self.comm_pi.getImage()
         height, width, channels = robot_img.shape
@@ -570,7 +571,7 @@ class Sequence:
         self.comm_pi.moveArm('2000')
 
     def drop_piece(self):
-        self.rotate_robot_on_zone_dep()
+        self.__rotate_robot_on_zone_dep()
 
         if self.zone_dep_cardinal == EAST():
             self.__drop_piece_east()
@@ -674,11 +675,11 @@ class Sequence:
         else:
             return None
 
-    def rotate_robot_on_zone_dep(self):
+    def __rotate_robot_on_zone_dep(self):
         logger.log_info("Rotate on zone dep plane...")
         self.__rotate_robot_on_zone_plane(self.zone_dep_cardinal)
 
-    def rotate_robot_on_zone_pickup(self):
+    def __rotate_robot_on_zone_pickup(self):
         logger.log_info("Rotate on pickup zone plane...")
         self.__rotate_robot_on_zone_plane(self.zone_pickup_cardinal)
 
