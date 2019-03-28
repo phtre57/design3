@@ -36,8 +36,8 @@ Y_ARRAY_FOR_QR_STRATEGY = [120, 145, 170, 90]
 
 X_RANGE_FOR_QR_STRATEGY = [200, 230, 260, 285]
 
-OFFSET_Y_CAM_EMBARKED = -55
-OFFSET_X_CAM_EMBARKED = -25
+OFFSET_Y_CAM_EMBARKED = 90
+OFFSET_X_CAM_EMBARKED = -35
 
 logger = Logger(__name__)
 
@@ -498,11 +498,11 @@ class Sequence:
             logger.log_critical(traceback.print_exc())
             return False, 0, 0
 
-        x_from_center_of_image = round((width / 2) - x)
-        y_from_center_of_image = round((height / 2) - y)
+        x_from_center_of_image = round((width / 2 + OFFSET_X_CAM_EMBARKED) - x)
+        y_from_center_of_image = round((height / 2 + OFFSET_Y_CAM_EMBARKED) - y)
 
         real_x, real_y = self.robot_cam_pixel_to_xy_converter\
-            .convert_pixel_to_xy_point_given_angle((x_from_center_of_image + OFFSET_X_CAM_EMBARKED, y_from_center_of_image + OFFSET_Y_CAM_EMBARKED),
+            .convert_pixel_to_xy_point_given_angle((x_from_center_of_image, y_from_center_of_image),
                                                    self.__cardinal_to_angle(self.zone_pickup_cardinal))
 
         if DEBUG:
