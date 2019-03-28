@@ -168,9 +168,7 @@ def main_sequence(ui=True):
     # sequence.charge_robot_at_station()
     # sequence.go_back_from_charge_station()
     # sequence.go_to_decode_qr()
-    color = Color()
-    color.BLUE()
-    sequence.piece_color = color
+    sequence.piece_color = 'bleu'
     sequence.piece_shape = None
     sequence.go_to_zone_pickup()
     sequence.rotate_robot_on_zone_pickup()

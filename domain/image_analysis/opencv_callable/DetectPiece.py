@@ -16,8 +16,12 @@ def detect_piece(frame, str_shape, str_color):
             color.BLUE()
         elif (str_color == 'vert'):
             color.GREEN()
-        else:
+        elif (str_color == 'jaune'):
             color.YELLOW()
+        elif (str_color == 'orange'):
+            color.YELLOW()
+        else:
+            raise Exception('This color is not recognized')
         return color_detector(frame, color)
     elif (str_shape is not None):
         return detect_contour_pieces(frame, str_shape)
