@@ -391,23 +391,39 @@ class Sequence:
         # GET RESPONSE
 
     def charge_robot_at_station(self):
+        self.comm_pi.changeCondensateurHigh()
+        base_tension = self.comm_pi.getTension()
+
         increment = 0
         while True:
-            self.comm_pi.sendCoordinates(
-                0, -7
-            )  # move two milimeters in -y to get closer to charge station
-            time.sleep(
-                3.5
-            )  # sleep because it takes 3 seconds for charge station to deliver current
-            tension = self.comm_pi.getTension()
+            self.comm_pi.sendCoordinates(0, -7)
+            time.sleep(1.5)
 
-            if tension > 0 or increment == 5:
+            derivative_tension = 0
+            tension = 0
+            for i in range(10):
+                time.sleep(0.5)
+                tension = self.comm_pi.getTension()
+
+                if tension > base_tension:
+                    derivative_tension += 1
+
+                if derivative_tension > 5:
+                    break
+
+            if tension > base_tension:
                 break
 
             increment += 1
 
         logger.log_info("Charging robot waiting for that electric feel now...")
-        time.sleep(10)  # code here to wait for robot to be charged
+
+        while True:
+            time.sleep(0.3)
+            tension = self.comm_pi.getTension()
+            if tension > 4.30:
+                break
+
         logger.log_info("Robot is charged now!")
 
     def go_back_from_charge_station(self):
