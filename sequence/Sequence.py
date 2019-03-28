@@ -390,7 +390,7 @@ class Sequence:
         # GET RESPONSE
 
     def charge_robot_at_station(self):
-        self.comm_pi.changeCondensateur()
+        self.comm_pi.changeCondensateurHigh()
         base_tension = self.comm_pi.getTension()
 
         increment = 0
