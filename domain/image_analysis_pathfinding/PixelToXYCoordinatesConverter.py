@@ -9,7 +9,9 @@ EMBARK_NUMBER_OF_COLUMNS = 3
 EMBARK_NUMBER_OF_LINES = 4
 CHESS_SQUARE_WIDTH = 64  # real constant used with chessboard
 EMBARKED_CHESS_SQUARE_WIDTH = 10  # real constant with small chessboard fo rembark camera
-EMBARKED_PIXEL_WIDTH = 21  # real constant with small chessboard fo rembark camera
+EMBARKED_PIXEL_WIDTH = 10  # real constant with small chessboard fo rembark camera
+EMBARKED_PIXEL_HEIGHT = 8  # real constant with small chessboard fo rembark camera
+
 IMAGE_SCALE_FACTOR = 2
 INVERSE_SIGN = -1
 CAMERA_HEIGHT = 2010
@@ -48,7 +50,7 @@ class PixelToXYCoordinatesConverter:
             self.x_pixel_to_mm_factor = (
                 EMBARKED_CHESS_SQUARE_WIDTH / EMBARKED_PIXEL_WIDTH)
             self.y_pixel_to_mm_factor = (
-                EMBARKED_CHESS_SQUARE_WIDTH / EMBARKED_PIXEL_WIDTH)
+                EMBARKED_CHESS_SQUARE_WIDTH / EMBARKED_PIXEL_HEIGHT)
         else:
             self.nb_lines = number_of_lines
             self.nb_columns = number_of_columns

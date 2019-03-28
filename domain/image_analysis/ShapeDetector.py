@@ -32,6 +32,7 @@ class ShapeDetector:
         self.w_rect_limit_up = None
         self.h_rect_limit_up = None
         self.comparator_cnts = None
+        self.coord_limiter = None
 
     def detect(self, frame, og_frame):
         frame = frame.copy()
@@ -122,10 +123,6 @@ class ShapeDetector:
                 cv2.waitKey()
 
             if (self.rect_limiter):
-                # if (hRect > wRect):
-                #     t = wRect
-                #     wRect = hRect
-                #     hRect = t
                 if (abs(wRect) < self.w_rect_limit
                         or abs(hRect) < self.h_rect_limit):
                     continue
@@ -246,3 +243,6 @@ class ShapeDetector:
 
     def set_comparator_shape(self, comparator_cnts):
         self.comparator_cnts = comparator_cnts
+
+    def set_coord_limiter(self, point):
+        self.coord_limiter = point

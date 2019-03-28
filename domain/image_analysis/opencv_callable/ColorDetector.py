@@ -26,6 +26,9 @@ DEBUG = COLOR_DETECTOR_DEBUG
 def color_detector(frame, color):
     frame = frame.copy()
 
+    cv2.rectangle(frame, (200, 0), (320, 240), (0, 0, 0), 110)
+    cv2.rectangle(frame, (245, 0), (320, 240), (0, 0, 0), 110)
+
     # shape = create_mask_for_color_detector(frame)
     # frame = shape.frame
 

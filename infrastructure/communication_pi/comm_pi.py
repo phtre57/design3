@@ -89,14 +89,15 @@ class Communication_pi:
         while not self.ready:
             time.sleep(0.2)
 
-        if (abs(int(angle)) > 35):
-            time.sleep(2)
-        if (abs(int(angle)) > 70):
-            time.sleep(2)
-        if (abs(int(angle)) > 120):
-            time.sleep(2)
-        if (abs(int(angle)) > 160):
-            time.sleep(2)
+        time.sleep(1)
+        # if (abs(int(angle)) > 35):
+        #     time.sleep(2)
+        # if (abs(int(angle)) > 70):
+        #     time.sleep(2)
+        # if (abs(int(angle)) > 120):
+        #     time.sleep(2)
+        # if (abs(int(angle)) > 160):
+        #     time.sleep(2)
 
     def getImage(self):
         logger.log_info("Get image du robot...")
@@ -106,6 +107,7 @@ class Communication_pi:
         while self.image is None:
             time.sleep(0.01)
 
+        logger.log_info("After wait image du robot...")
         return self.image
 
     def changeServoHori(self, commande):
