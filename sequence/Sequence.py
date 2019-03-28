@@ -396,7 +396,7 @@ class Sequence:
 
         increment = 0
         while True:
-            self.comm_pi.sendCoordinates(0, -7)
+            self.comm_pi.sendCoordinates(0, -13)
             time.sleep(1.5)
 
             derivative_tension = 0
@@ -421,6 +421,7 @@ class Sequence:
         while True:
             time.sleep(0.3)
             tension = self.comm_pi.getTension()
+            logger.log_info('Tension now while charging ' + str(tension))
             if tension > 4.30:
                 break
 
@@ -432,6 +433,7 @@ class Sequence:
         time.sleep(1)
 
     def move_robot_around_pickup_zone(self):
+        self.comm_pi.changeCondensateurLow()
         x_mm_movement_point = (30, 0)
         x_mm_movement_point_negative = (-30, 0)
         y_mm_movement_point = (0, 30)
@@ -551,7 +553,7 @@ class Sequence:
         logger.log_info('Activate the arm')
         time.sleep(0.5)
         self.comm_pi.moveArm('8000')
-        time.sleep(0.5)
+        time.sleep(1.5)
         logger.log_info('Lifting the arm')
         self.comm_pi.moveArm('2000')
 
@@ -583,6 +585,8 @@ class Sequence:
         logger.log_info('Drop the arm')
         time.sleep(0.5)
         self.comm_pi.moveArm('8000')
+        time.sleep(0.5)
+        self.comm_pi.changeCondensateurHigh()
         time.sleep(0.5)
         logger.log_info('Lifting the arm')
         self.comm_pi.moveArm('2000')

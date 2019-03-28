@@ -12,9 +12,9 @@ class commPiTest(unittest.TestCase):
         # self.comm_pi.changeServoHori('5500')
         # self.comm_pi.changeServoVert('5500')
         # self.comm_pi.moveArm('2000')
-        self.comm_pi.changeCondensateurLow()
+        # self.comm_pi.changeCondensateurLow()
 
-        # self.comm_pi.changeCondensateurHigh()
+        self.comm_pi.changeCondensateurHigh()
 
         tension = self.comm_pi.getTension()
         print(tension)
