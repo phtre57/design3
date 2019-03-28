@@ -531,7 +531,20 @@ class Sequence:
 
         return True, real_x, real_y
 
-    def south_drop_piece(self):
+    def drop_piece(self):
+
+        if self.zone_dep_cardinal == EAST():
+            self.__drop_piece_east()
+        elif self.zone_dep_cardinal == WEST():
+            self.__drop_piece_west()
+        elif self.zone_dep_cardinal == NORTH():
+            self.__drop_piece_north()
+        elif self.zone_dep_cardinal == SOUTH():
+            self.__drop_piece_south()
+        else:
+            logger.log_critical("No cardinality given to drop zone...")
+
+    def __drop_piece_south(self):
         logger.log_info("Dropping piece in south drop zone")
         first_zone_move = (10, -30)
         second_zone_move = (10, -80)
@@ -541,7 +554,7 @@ class Sequence:
         array_of_moves = [first_zone_move, second_zone_move, third_zone_move, fourth_zone_move]
         self.__make_move_to_drop_zone(self.depot_number, array_of_moves)
 
-    def north_drop_piece(self):
+    def __drop_piece_north(self):
         logger.log_info("Dropping piece in north drop zone")
         first_zone_move = (10, -30)
         second_zone_move = (10, -80)
@@ -551,7 +564,7 @@ class Sequence:
         array_of_moves = [first_zone_move, second_zone_move, third_zone_move, fourth_zone_move]
         self.__make_move_to_drop_zone(self.depot_number, array_of_moves)
 
-    def east_drop_piece(self):
+    def __drop_piece_east(self):
         logger.log_info("Dropping piece in east drop zone")
         first_zone_move = (10, -30)
         second_zone_move = (10, -80)
@@ -561,7 +574,7 @@ class Sequence:
         array_of_moves = [first_zone_move, second_zone_move, third_zone_move, fourth_zone_move]
         self.__make_move_to_drop_zone(self.depot_number, array_of_moves)
 
-    def west_drop_piece(self):
+    def __drop_piece_west(self):
         logger.log_info("Dropping piece in west drop zone")
         first_zone_move = (10, -30)
         second_zone_move = (10, -80)
@@ -586,7 +599,7 @@ class Sequence:
             self.comm_pi.sendCoordinates(array_of_coordinates_in_order[3][0], array_of_coordinates_in_order[3][1])
 
         else:
-            logger.log_info("No move for unknown zone...")
+            logger.log_critical("No move for unknown zone number...")
 
     def __cardinal_to_angle(self, cardinal_str):
 
