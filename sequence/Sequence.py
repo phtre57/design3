@@ -532,15 +532,20 @@ class Sequence:
         return True, real_x, real_y
 
     def drop_piece(self):
+        self.rotate_robot_on_zone_dep()
 
         if self.zone_dep_cardinal == EAST():
             self.__drop_piece_east()
+
         elif self.zone_dep_cardinal == WEST():
             self.__drop_piece_west()
+
         elif self.zone_dep_cardinal == NORTH():
             self.__drop_piece_north()
+
         elif self.zone_dep_cardinal == SOUTH():
             self.__drop_piece_south()
+
         else:
             logger.log_critical("No cardinality given to drop zone...")
 
@@ -615,7 +620,7 @@ class Sequence:
             return None
 
     def rotate_robot_on_zone_dep(self):
-        logger.log_info("Rotate on sone dep plane...")
+        logger.log_info("Rotate on zone dep plane...")
         self.__rotate_robot_on_zone_plane(self.zone_dep_cardinal)
 
     def rotate_robot_on_zone_pickup(self):
