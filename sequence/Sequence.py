@@ -576,10 +576,10 @@ class Sequence:
 
     def __drop_piece_east(self):
         logger.log_info("Dropping piece in east drop zone")
-        first_zone_move = (25, -36)
-        second_zone_move = (25, -101)
-        third_zone_move = (25, -166)
-        fourth_zone_move = (25, -240)
+        first_zone_move = (25, -56)
+        second_zone_move = (25, -121)
+        third_zone_move = (25, -186)
+        fourth_zone_move = (25, -260)
 
         array_of_moves = [first_zone_move, second_zone_move, third_zone_move, fourth_zone_move]
         self.__make_move_to_drop_zone(self.depot_number, array_of_moves)
