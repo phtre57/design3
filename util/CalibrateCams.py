@@ -2,7 +2,7 @@ import cv2
 import pickle
 
 from domain.image_analysis_pathfinding.PixelToXYCoordinatesConverter import *
-from infrastructure.communication_pi.comm_pi import Communication_pi
+from infrastructure.communication_pi.__comm_pi import Communication_pi
 
 SHOW_IMAGE_CALIBRATION = True
 

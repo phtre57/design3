@@ -1,6 +1,6 @@
 import time
 import cv2
-from infrastructure.communication_pi.comm_pi import *
+from infrastructure.communication_pi.__comm_pi import *
 
 
 def take_image(comm_pi):
