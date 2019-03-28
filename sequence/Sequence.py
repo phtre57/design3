@@ -394,12 +394,8 @@ class Sequence:
 
         increment = 0
         while True:
-            self.comm_pi.sendCoordinates(
-                0, -7
-            )  # move two milimeters in -y to get closer to charge station
-            time.sleep(
-                3.5
-            )  # sleep because it takes 3 seconds for charge station to deliver current
+            self.comm_pi.sendCoordinates(0, -7)
+            time.sleep(3.5)
 
             derivative_tension = 0
             tension = 0
@@ -418,7 +414,12 @@ class Sequence:
             increment += 1
 
         logger.log_info("Charging robot waiting for that electric feel now...")
-        time.sleep(10)  # code here to wait for robot to be charged
+
+        while True:
+            tension = self.comm_pi.getTension()
+            if tension > 4.30:
+                break
+
         logger.log_info("Robot is charged now!")
 
     def go_back_from_charge_station(self):
