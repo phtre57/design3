@@ -65,7 +65,23 @@ class Communication_pi:
 
     def changeCondensateur(self):
         logger.log_info("Signal envoyee pour condensateur...")
-        self.sio.emit('condensateurChange', commande)
+        self.sio.emit('condensateurChange', 1)
+        self.ready = False
+
+        while not self.ready:
+            time.sleep(0.2)
+
+    def changeCondensateurHigh(self):
+        logger.log_info("Signal envoyee pour condensateur...")
+        self.sio.emit('condensateurChangeHigh', 1)
+        self.ready = False
+
+        while not self.ready:
+            time.sleep(0.2)
+
+    def changeCondensateurLow(self):
+        logger.log_info("Signal envoyee pour condensateur...")
+        self.sio.emit('condensateurChangeLow', 1)
         self.ready = False
 
         while not self.ready:

@@ -44,17 +44,13 @@ def detect_point_zone_dep(og_frame):
         w_rect_limit_up=RECT_W_LIMITER_UP,
         h_rect_limit_up=RECT_H_LIMITER_UP)
     shapeDetector.set_radius_limiter(RADIUS_LIMITER, RAIDUS_POSITIVE)
-
+    shapeDetector.set_coord_limiter(0)
     shape = shapeDetector.detect(edges, og_frame.copy())
-
-    for approx in shape.approx:
-        print(approx)
-        pass
 
     shape.set_frame(shape.frameClean)
 
-    if (len(shape.approx) != 1):
-        raise Exception('Detect contour pieces have found multiple shape')
+    # if (len(shape.approx) != 1):
+    #     raise Exception('Detect contour pieces have found multiple shape')
 
     (x, y) = find_center(shape.approx[0][1], 4, shape)
 
