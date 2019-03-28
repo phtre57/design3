@@ -33,8 +33,8 @@ def find_where_the_shape_is(frame, shape, color, radius_limit, scan_hsv=False):
 
     (cX, cY) = (0, 0)
     for c in cnts:
-        (cX, cY) = find_center(c, radius_limit, frame)
-        if ((cX, cY) is not (0, 0)):
+        (cX, cY) = find_center(c, radius_limit, mask)
+        if (cX != 0 and cY != 0):
             break
 
     if (cX == 0 and cY == 0):

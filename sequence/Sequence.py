@@ -65,6 +65,7 @@ class Sequence:
         self.zone_pickup_point = None
         self.zone_start_point = None
         self.__init_zones()
+        self.comm_pi.moveArm('2000')
 
     def __init_zones(self):
         self.__detect_start_zone()
@@ -464,11 +465,11 @@ class Sequence:
                 if piece_grabbed:
                     break
 
-        validate_piece_was_grabbed = self.validate_piece_taken(
-            real_x_inverse, real_y_inverse)
+        # validate_piece_was_grabbed = self.validate_piece_taken(
+        #     real_x_inverse, real_y_inverse)
 
-        if validate_piece_was_grabbed is False:
-            self.move_robot_around_pickup_zone()
+        # if validate_piece_was_grabbed is False:
+        #     self.move_robot_around_pickup_zone()
 
     def validate_piece_taken(self, x, y):
         self.comm_pi.sendCoordinates(x * -1, y * -1)
@@ -516,9 +517,15 @@ class Sequence:
             logger.log_info("Real moving point: " + str(real_x) + "," +
                             str(real_y))
 
-        self.comm_pi.sendCoordinates(real_x, real_y)
+        self.comm_pi.sendCoordinates(round(real_x), round(real_y))
 
-        # activate arm here
+        logger.log_info('Activate the arm')
+        time.sleep(0.5)
+        self.comm_pi.moveArm('8000')
+        time.sleep(0.5)
+        logger.log_info('Lifting the arm')
+        self.comm_pi.moveArm('2000')
+
         # here return true of false to know if piece was really grabbed
 
         return True, real_x, real_y
@@ -544,34 +551,28 @@ class Sequence:
         logger.log_info("Rotate on pickup zone plane...")
         self.__rotate_robot_on_zone_plane(self.zone_pickup_cardinal)
 
-    def __rotate_robot_on_zone_plane(self, cardinal_point, first_it=True):
+    def __rotate_robot_on_zone_plane(self, cardinal_point, first_it=0):
         img = self.take_image()
         robot_detector = RobotDetector(img)
         robot_angle = robot_detector.find_angle_of_robot()
 
-        if cardinal_point == EAST():
-            logger.log_info("Rotate to east...")
-            self.__rotate_to_east(robot_angle)
-            if first_it:
-                self.__rotate_robot_on_zone_plane(EAST(), False)
+        self.__decision(EAST(), self.__rotate_to_east, robot_angle, first_it,
+                        cardinal_point)
+        self.__decision(SOUTH(), self.__rotate_to_south, robot_angle, first_it,
+                        cardinal_point)
+        self.__decision(WEST(), self.__rotate_to_west, robot_angle, first_it,
+                        cardinal_point)
+        self.__decision(NORTH(), self.__rotate_to_north, robot_angle, first_it,
+                        cardinal_point)
 
-        if cardinal_point == SOUTH():
-            logger.log_info("Rotate to south...")
-            self.__rotate_to_south(robot_angle)
-            if first_it:
-                self.__rotate_robot_on_zone_plane(SOUTH(), False)
-
-        if cardinal_point == WEST():
-            logger.log_info("Rotate to west...")
-            self.__rotate_to_west(robot_angle)
-            if first_it:
-                self.__rotate_robot_on_zone_plane(WEST(), False)
-
-        if cardinal_point == NORTH():
-            logger.log_info("Rotate to north...")
-            self.__rotate_to_north(robot_angle)
-            if first_it:
-                self.__rotate_robot_on_zone_plane(NORTH(), False)
+    def __decision(self, cardinal, rotate_function, robot_angle, first_it,
+                   cardinal_point):
+        if cardinal_point == cardinal:
+            logger.log_info("Rotate to " + NORTH() + "...")
+            rotate_function(robot_angle)
+            if first_it < 3:
+                first_it = first_it + 1
+                self.__rotate_robot_on_zone_plane(cardinal, first_it)
 
     def __rotate_to_north(self, current_robot_angle):
         rotate_angle = round(90 - current_robot_angle) * -1

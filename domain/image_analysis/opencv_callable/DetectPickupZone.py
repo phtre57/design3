@@ -22,7 +22,10 @@ RADIUS_LIMITER = 150
 RAIDUS_POSITIVE = True
 ANGLE_LIMITER = True
 
-OFFSET_PATHFINDING = 40
+OFFSET_PATHFINDING_NORTH = 40
+OFFSET_PATHFINDING_WEST = 40
+OFFSET_PATHFINDING_SOUTH = 40
+OFFSET_PATHFINDING_EAST = 40
 
 DEBUG = DETECT_PICKUP_ZONE_DEBUG
 
@@ -225,18 +228,20 @@ def detect_pickup_zone_the_other_side(og_frame):
 
 def adjust_start_zone_offset_upside_down(point, wRect, hRect, width):
     if (point[0] > width / 2):
-        return (point[0] - OFFSET_PATHFINDING + round(wRect / 2), point[1],
-                EAST())
+        return (point[0] - OFFSET_PATHFINDING_EAST + round(wRect / 2),
+                point[1] - 10, EAST())
     else:
-        return (point[0] + OFFSET_PATHFINDING + round(wRect / 2),
-                point[1] + round(hRect), WEST())
+        return (point[0] + OFFSET_PATHFINDING_WEST + round(wRect / 2),
+                point[1] + round(hRect) + 10, WEST())
 
 
 def adjust_start_zone_offset(point, wRect, hRect, height):
     # Faire les deux bords de la table avec un beau if
     if (point[1] > height / 2):
-        return (point[0] + round(wRect),
-                point[1] - OFFSET_PATHFINDING + round(hRect / 2), SOUTH())
+        return (point[0] + round(wRect) + 10,
+                point[1] - OFFSET_PATHFINDING_SOUTH + round(hRect / 2),
+                SOUTH())
     else:
-        return (point[0], point[1] + OFFSET_PATHFINDING + round(hRect / 2),
+        return (point[0] - 10,
+                point[1] + OFFSET_PATHFINDING_NORTH + round(hRect / 2),
                 NORTH())
