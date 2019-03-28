@@ -390,16 +390,18 @@ class Sequence:
         # GET RESPONSE
 
     def charge_robot_at_station(self):
+        self.comm_pi.changeCondensateur()
         base_tension = self.comm_pi.getTension()
 
         increment = 0
         while True:
             self.comm_pi.sendCoordinates(0, -7)
-            time.sleep(3.5)
+            time.sleep(1.5)
 
             derivative_tension = 0
             tension = 0
             for i in range(10):
+                time.sleep(0.5)
                 tension = self.comm_pi.getTension()
 
                 if tension > base_tension:
@@ -416,6 +418,7 @@ class Sequence:
         logger.log_info("Charging robot waiting for that electric feel now...")
 
         while True:
+            time.sleep(0.3)
             tension = self.comm_pi.getTension()
             if tension > 4.30:
                 break
