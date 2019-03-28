@@ -4,7 +4,7 @@ import cv2
 import traceback
 import sys
 
-from infrastructure.communication_pi.comm_pi import Communication_pi
+from infrastructure.communication_pi.__comm_pi import Communication_pi
 from test.LargeTest.mock.comm_pi import Communication_pi_mock
 from test.LargeTest.mock.cap import Cap_mock
 from sequence.Sequence import Sequence

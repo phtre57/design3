@@ -13,7 +13,7 @@ from test.domain.image_analysis.PathFindingImageTest import test_astar_on_image
 from domain.image_analysis.opencv_callable.DetectQR import decode
 from domain.image_analysis.opencv_callable.DetectContourPieces import detect_contour_pieces
 from domain.image_analysis.opencv_callable.DetectZoneDep import detect_zone_dep
-from infrastructure.communication_pi.comm_pi import Communication_pi
+from infrastructure.communication_pi.__comm_pi import Communication_pi
 from infrastructure.communication_ui.comm_ui import Communication_ui
 from sequence.Sequence import Sequence
 from test.LargeTest.TestConstants import *
