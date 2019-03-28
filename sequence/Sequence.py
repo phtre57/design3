@@ -540,6 +540,35 @@ class Sequence:
 
         return True, real_x, real_y
 
+    def new_drop_piece(self):
+        logger.log_info("Sequence to drop piece")
+        self.rotate_robot_on_zone_dep()
+
+        robot_img = self.comm_pi.getImage()
+        height, width, channels = robot_img.shape
+        x, y = detect_piece(robot_img, self.piece_shape, self.piece_color)
+
+        x_from_center_of_image = round(x - (
+            (width / 2) + OFFSET_X_CAM_EMBARKED))
+        y_from_center_of_image = round(y - (
+            (height / 2) + OFFSET_Y_CAM_EMBARKED))
+
+        # x_from_center_of_image = round((width / 2 + OFFSET_X_CAM_EMBARKED) - x)
+        # y_from_center_of_image = round((height / 2 + OFFSET_Y_CAM_EMBARKED) - y)
+
+        real_x, real_y = self.robot_cam_pixel_to_xy_converter \
+            .convert_pixel_to_xy_point_given_angle((x_from_center_of_image, y_from_center_of_image),
+                                                   self.__cardinal_to_angle(self.zone_dep_cardinal))
+
+        self.comm_pi.sendCoordinates(round(real_x), round(real_y))
+
+        logger.log_info('Drop the arm')
+        time.sleep(0.5)
+        self.comm_pi.moveArm('8000')
+        time.sleep(0.5)
+        logger.log_info('Lifting the arm')
+        self.comm_pi.moveArm('2000')
+
     def drop_piece(self):
         self.rotate_robot_on_zone_dep()
 
