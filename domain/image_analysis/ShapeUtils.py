@@ -7,11 +7,11 @@ from context.config import SHAPE_UTILS_DEBUG
 DEBUG = SHAPE_UTILS_DEBUG
 
 
-def find_where_the_shape_is(shape, color, radius_limit, scan_hsv=False):
+def find_where_the_shape_is(frame, shape, color, radius_limit, scan_hsv=False):
 
     mask = None
     if (scan_hsv):
-        hsv_frame = shape.frame.copy()
+        hsv_frame = frame.copy()
         hsv_frame = cv2.cvtColor(hsv_frame, cv2.COLOR_BGR2HSV)
         (lower, upper) = color.color_code_hsv
         mask = cv2.inRange(hsv_frame, lower, upper)
@@ -21,7 +21,7 @@ def find_where_the_shape_is(shape, color, radius_limit, scan_hsv=False):
         lower = np.array(lower, dtype="uint8")
         upper = np.array(upper, dtype="uint8")
 
-        mask = cv2.inRange(shape.frame, lower, upper)
+        mask = cv2.inRange(frame, lower, upper)
 
     if (DEBUG):
         cv2.imshow("COLOR FILTER", mask)
@@ -33,17 +33,19 @@ def find_where_the_shape_is(shape, color, radius_limit, scan_hsv=False):
 
     (cX, cY) = (0, 0)
     for c in cnts:
-        (cX, cY) = find_center(c, radius_limit, shape)
-        if ((cX, cY) is not (0, 0)):
+        (cX, cY) = find_center(c, radius_limit, mask)
+        if (cX != 0 and cY != 0):
             break
 
     if (cX == 0 and cY == 0):
-        print("Can't find center")
+        raise Exception('Can\'t find center of the shape')
+
+    return (cX, cY)
 
     res_contour = get_contour_related_to_center(shape.approx, cX, cY)
 
     if (res_contour == 0):
-        print("Ça pas marché")
+        raise Exception('Can\'t find contour of the shape')
 
     res_contour['mask'] = mask
     return res_contour
@@ -61,8 +63,8 @@ def get_contour_related_to_center(approx, cX, cY):
     return 0
 
 
-def find_center(c, radius_limit, shape):
-    if (validate_if_contour_is_too_small(c, radius_limit, shape)):
+def find_center(c, radius_limit, frame):
+    if (validate_if_contour_is_too_small(c, radius_limit, frame)):
         return (0, 0)
 
     M = cv2.moments(c)
@@ -73,12 +75,10 @@ def find_center(c, radius_limit, shape):
     return (cX, cY)
 
 
-def validate_if_contour_is_too_small(c, radius_limit, shape):
+def validate_if_contour_is_too_small(c, radius_limit, frame):
     ((x, y), radius) = cv2.minEnclosingCircle(c)
     if (DEBUG):
-        print(radius)
-        print(radius_limit)
-        frame1 = shape.frame.copy()
+        frame1 = frame.copy()
         cv2.circle(frame1, (round(x), round(y)), round(radius), [255, 51, 51])
         cv2.imshow('CNTS1', frame1)
         cv2.waitKey()
@@ -88,9 +88,8 @@ def validate_if_contour_is_too_small(c, radius_limit, shape):
         return False
 
 
-def find_center_for_zone_dep(shape, radius_limit):
-    c = shape.approx[0][2]
-    if (validate_if_contour_is_too_small(c, radius_limit, shape)):
+def find_center_for_zone_dep(frame, c, radius_limit):
+    if (validate_if_contour_is_too_small(c, radius_limit, frame)):
         return (0, 0)
 
     ((x, y), radius) = cv2.minEnclosingCircle(c)

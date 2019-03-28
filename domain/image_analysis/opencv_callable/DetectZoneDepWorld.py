@@ -105,7 +105,7 @@ def detect_zone_dep_world(og_frame,
             'ZONE DEPOT WORLD - Fallback to lower (70) bracket canny strategy')
         return detect_zone_dep_world(og_frame, 70, 150)
 
-    shape.center = find_center(shape.approx[0][2], 10, shape)
+    shape.center = find_center(shape.approx[0][2], 10, shape.frame)
 
     if (flipped):
         center = adjust_start_zone_offset_upside_down(shape.center, IMG_WIDTH,

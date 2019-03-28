@@ -4,11 +4,12 @@ import cv2
 import traceback
 import sys
 
-from infrastructure.communication_pi.comm_pi import Communication_pi
+from infrastructure.communication_pi.__comm_pi import Communication_pi
 from test.LargeTest.mock.comm_pi import Communication_pi_mock
 from test.LargeTest.mock.cap import Cap_mock
 from sequence.Sequence import Sequence
 from test.LargeTest.TestConstants import *
+from util.color import Color
 
 CANCER_MAC_USER = False
 
@@ -84,9 +85,9 @@ def main():
     # sequence.go_back_from_charge_station()
     print("Go to qr...")
     sequence.go_to_zone_dep()
-    sequence.rotate_robot_on_zone_dep()
+    sequence.__rotate_robot_on_zone_dep()
     sequence.go_to_zone_pickup()
-    sequence.rotate_robot_on_zone_pickup()
+    sequence.__rotate_robot_on_zone_pickup()
     # sequence.go_to_start_zone()
     sequence.end()
     print("Sad face we're done...")
@@ -96,7 +97,7 @@ def main():
 
 def main_test():
     # cap = Cap_mock()
-    cap = cv2.VideoCapture(1)
+    cap = cv2.VideoCapture(2)
     comm_pi = Communication_pi_mock()
     connect(comm_pi)
     pixel_to_xy_converter = calibrate()
@@ -108,10 +109,15 @@ def main_test():
     sequence = Sequence(cap, comm_pi, pixel_to_xy_converter,
                         robot_cam_pixel_to_xy_converter)
     # sequence.go_to_start_zone()
-    sequence.go_to_zone_dep()
-    sequence.rotate_robot_on_zone_dep()
-    sequence.go_to_zone_pickup()
-    sequence.rotate_robot_on_zone_pickup()
+    # sequence.go_to_zone_dep()
+    # sequence.rotate_robot_on_zone_dep()
+    # sequence.go_to_zone_pickup()
+    # sequence.rotate_robot_on_zone_pickup()
+    color = Color()
+    color.RED()
+    sequence.piece_color = color
+    sequence.piece_shape = None
+    sequence.move_robot_around_pickup_zone()
 
 
 try:
@@ -119,5 +125,5 @@ try:
     main_test()
 except KeyboardInterrupt:
     comm_pi.disconnectFromPi()
-    print("bye")
     traceback.print_exc(file=sys.stdout)
+    cv2.destroyAllWindows()

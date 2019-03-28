@@ -1,148 +1,161 @@
-import socket
-import sys
-import cv2
-import pickle
+import socketio
 import time
-import numpy as np
-import struct  # new
+import cv2
 import base64
-from util.Logger import *
 
-# Host = Adresse ip du serveur (ici Raspberry pi)
-# Port = valeur predefinie (doit etre la meme pour le serveur)
-host = '192.168.0.38'
-port = 15555
+from util.Logger import *
 
 logger = Logger(__name__)
 
+URL = 'http://192.168.0.38:4000'
 
-class Communication_pi():
-    def __init__(self):
-        self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+
+class Communication_pi:
+    def __init__(self, url=URL):
+        logger.log_info("Création de la communication...")
+        self.ready = True
+        self.image = None
+        self.sio = socketio.Client()
+        self.sio.connect(url)
+        self.image = None
+        self.tension = None
+
+        @self.sio.on('readySignal')
+        def sendCoord(message):
+            logger.log_info("Self ready switched to True...")
+            self.ready = True
+
+        @self.sio.on('recvImage')
+        def recvImage(message):
+            logger.log_info("Image received...")
+            frame_data = base64.b64decode(message)
+
+            with open('test.jpg', 'wb') as f_output:
+                f_output.write(frame_data)
+
+            time.sleep(0.5)
+
+            img = cv2.imread('./test.jpg')
+            logger.log_info("self.img changed...")
+            self.image = img
+
+        @self.sio.on('recvTension')
+        def recvTension(message):
+            logger.log_info("Tension received...")
+            try:
+                self.tension = float(message)
+            except Exception:
+                self.tension = 0.00
+                pass
+
+        @self.sio.on('disconnect')
+        def disconnect(message):
+            logger.log_info("Disconnected from Pi...")
+            self.sio = socketio.Client()
+            self.sio.connect(url)
+
+        logger.log_info("Fin création de la communication...")
 
     def connectToPi(self):
-        print(host)
-        self.socket.connect((host, port))
-        logger.log_info("Connecte au serveur")
-        time.sleep(5)
-
-    def __recv_msg(self):
-        raw_msglen = self.__recvall(4)
-        if not raw_msglen:
-            return None
-        msglen = struct.unpack('>I', raw_msglen)[0]
-        return self.__recvall(msglen)
-
-    def __recvall(self, n):
-        data = b''
-        while len(data) < n:
-            packet = self.socket.recv(n - len(data))
-            if not packet:
-                return None
-            data += packet
-        return data
-
-    def send_msg(self, msg):
-        msg = struct.pack('>I', len(msg)) + msg
-        self.socket.sendall(msg)
-
-    def getImage(self):
-        output = "getImage"
-        self.socket.send(output.encode('utf-8'))
-
-        data = self.__recv_msg()
-        data = str(data, 'utf-8')
-        frame_data = base64.b64decode(data)
-
-        with open('test.jpg', 'wb') as f_output:
-            f_output.write(frame_data)
-
-        time.sleep(1)
-
-        return cv2.imread('./test.jpg')
-
-    def sendCoordinates(self, str):
-        if (str == '0,0,0\n'):
-            return
-
-        signal = 'sendPosition'
-        self.socket.sendall(signal.encode('utf-8'))
-        self.socket.sendall(str.encode('utf-8'))
-        logger.log_info("Coordonnees envoyees: " + str)
-        self.robotReady()
-        time.sleep(1)
-
-    def sendAngle(self, angle):
-        if abs(int(angle)) > 180:
-            if angle < 0:
-                angle = 360 + angle
-            else:
-                angle = 360 - angle
-        angle = str(angle)
-        logger.log_info("Angle envoyees: " + angle)
-        coord_angle = "0,0," + angle + "\n"
-        self.sendCoordinates(coord_angle)
-        if (abs(int(angle)) > 35):
-            time.sleep(1.5)
-        if (abs(int(angle)) > 70):
-            time.sleep(1.5)
-        if (abs(int(angle)) > 120):
-            time.sleep(2)
-        if (abs(int(angle)) > 160):
-            time.sleep(3)
+        logger.log_info("Connecte au serveur...")
 
     def disconnectFromPi(self):
-        signal = 'deconnect'
-        self.socket.sendall(signal.encode('utf-8'))
-        self.socket.close()
-
-    def robotReady(self):
-        self.socket.recv(255)
-        logger.log_info("Ready signal received")
+        logger.log_info("Deconnecte du pi...")
+        self.sio.emit('disconnect', 'bye Pi <3')
 
     def changeCondensateur(self):
-        signal = 'condensateurChange'
-        self.socket.sendall(signal.encode('utf-8'))
-        logger.log_info("Signal envoye pour condensateur!")
+        logger.log_info("Signal envoyee pour condensateur...")
+        self.sio.emit('condensateurChange', 1)
+        self.ready = False
 
-    def changeServoHori(self, str):
-        signal = 'servoHori'
-        self.socket.sendall(signal.encode('utf-8'))
-        self.socket.sendall(str.encode('utf-8'))
-        logger.log_info("Servo Horizontal envoyees: " + str)
-        time.sleep(1)
+        while not self.ready:
+            time.sleep(0.2)
 
-    def changeServoVert(self, str):
-        signal = 'servoVert'
-        self.socket.sendall(signal.encode('utf-8'))
-        self.socket.sendall(str.encode('utf-8'))
-        logger.log_info("Servo Vertical envoyees: " + str)
+    def changeCondensateurHigh(self):
+        logger.log_info("Signal envoyee pour condensateur...")
+        self.sio.emit('condensateurChangeHigh', 1)
+        self.ready = False
+
+        while not self.ready:
+            time.sleep(0.2)
+
+    def changeCondensateurLow(self):
+        logger.log_info("Signal envoyee pour condensateur...")
+        self.sio.emit('condensateurChangeLow', 1)
+        self.ready = False
+
+        while not self.ready:
+            time.sleep(0.2)
+
+    def sendCoordinates(self, x, y):
+        commande = str(round(x)) + "," + str(round(y)) + ",0\n"
+        logger.log_info("Coordonnees envoyees: " + commande)
+        self.sio.emit('sendPosition', commande)
+        self.ready = False
+
+        while not self.ready:
+            time.sleep(0.2)
+
+    def sendAngle(self, angle):
+        logger.log_info("Angle envoyees: " + str(round(angle)))
+        commande = '0,0,' + str(angle) + '\n'
+        self.sio.emit('sendPosition', commande)
+        self.ready = False
+
+        while not self.ready:
+            time.sleep(0.2)
+
         time.sleep(1)
+        # if (abs(int(angle)) > 35):
+        #     time.sleep(2)
+        # if (abs(int(angle)) > 70):
+        #     time.sleep(2)
+        # if (abs(int(angle)) > 120):
+        #     time.sleep(2)
+        # if (abs(int(angle)) > 160):
+        #     time.sleep(2)
+
+    def getImage(self):
+        logger.log_info("Get image du robot...")
+        self.sio.emit('getImage', 'ok')
+
+        self.image = None
+        while self.image is None:
+            time.sleep(0.01)
+
+        logger.log_info("After wait image du robot...")
+        return self.image
+
+    def changeServoHori(self, commande):
+        logger.log_info("Servo horizontal envoyees: " + commande)
+        self.sio.emit('servoHori', str(commande))
+        self.ready = False
+
+        while not self.ready:
+            time.sleep(0.2)
+
+    def changeServoVert(self, commande):
+        logger.log_info("Servo vertical envoyees: " + commande)
+        self.sio.emit('servoVert', str(commande))
+        self.ready = False
+
+        while not self.ready:
+            time.sleep(0.2)
+
+    def moveArm(self, commande):
+        logger.log_info("Bouge le bras envoyees: " + commande)
+        self.sio.emit('bras', commande)
+        self.ready = False
+
+        while not self.ready:
+            time.sleep(0.2)
 
     def getTension(self):
-        signal = 'gettension'
-        self.socket.sendall(signal.encode('utf-8'))
-        data = self.socket.recv(255)
-        data = str(data, "utf-8")
-        logger.log_info("Received tension: " + str(data))
+        logger.log_info("Tension recu: ")
+        self.sio.emit('getTension', 'Courge spaghetti')
 
-        data = data.replace("\r", "")
-        data = data.replace("\n", "")
+        self.tension = None
+        while self.tension is None:
+            time.sleep(0.01)
 
-        return float(data)
-
-
-def main():
-    communication_pi = Communication_pi()
-    communication_pi.connectToPi()
-    time.sleep(2)
-    communication_pi.getImage()
-    time.sleep(2)
-    communication_pi.sendCoordinates("2")
-    time.sleep(2)
-    communication_pi.disconnectFromPi()
-
-
-if __name__ == "__main__":
-    # execute only if run as a script
-    main()
+        return self.tension

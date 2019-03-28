@@ -9,7 +9,9 @@ EMBARK_NUMBER_OF_COLUMNS = 3
 EMBARK_NUMBER_OF_LINES = 4
 CHESS_SQUARE_WIDTH = 64  # real constant used with chessboard
 EMBARKED_CHESS_SQUARE_WIDTH = 10  # real constant with small chessboard fo rembark camera
-EMBARKED_PIXEL_WIDTH = 21  # real constant with small chessboard fo rembark camera
+EMBARKED_PIXEL_WIDTH = 10  # real constant with small chessboard fo rembark camera
+EMBARKED_PIXEL_HEIGHT = 8  # real constant with small chessboard fo rembark camera
+
 IMAGE_SCALE_FACTOR = 2
 INVERSE_SIGN = -1
 CAMERA_HEIGHT = 2010
@@ -48,7 +50,7 @@ class PixelToXYCoordinatesConverter:
             self.x_pixel_to_mm_factor = (
                 EMBARKED_CHESS_SQUARE_WIDTH / EMBARKED_PIXEL_WIDTH)
             self.y_pixel_to_mm_factor = (
-                EMBARKED_CHESS_SQUARE_WIDTH / EMBARKED_PIXEL_WIDTH)
+                EMBARKED_CHESS_SQUARE_WIDTH / EMBARKED_PIXEL_HEIGHT)
         else:
             self.nb_lines = number_of_lines
             self.nb_columns = number_of_columns
@@ -152,22 +154,22 @@ class PixelToXYCoordinatesConverter:
         return (point[0] * self.x_pixel_to_mm_factor,
                 point[1] * self.y_pixel_to_mm_factor)
 
-    def convert_to_xy_point_given_angle(self, point, angle):
+    def convert_pixel_to_xy_point_given_angle(self, point, angle):
         if angle > -10 and angle < 10:
-            return (point[0] * self.x_pixel_to_mm_factor,
-                    point[1] * self.y_pixel_to_mm_factor * -1)
+            return (point[0] * self.x_pixel_to_mm_factor * -1,
+                    point[1] * self.y_pixel_to_mm_factor)
 
         if angle > 80 and angle < 100:
-            return (point[1] * -1 * self.y_pixel_to_mm_factor,
-                    point[0] * -1 * self.x_pixel_to_mm_factor)
+            return (point[0] * -1 * self.y_pixel_to_mm_factor,
+                    point[1] * self.x_pixel_to_mm_factor)
 
         if (angle < -170 and angle > -190) or (angle < 190 and angle > 170):
             return (point[0] * self.x_pixel_to_mm_factor * -1,
                     point[1] * self.y_pixel_to_mm_factor)
 
         if angle < -80 and angle > -100:
-            return (point[1] * self.y_pixel_to_mm_factor,
-                    point[0] * self.x_pixel_to_mm_factor)
+            return (point[0] * -1 * self.y_pixel_to_mm_factor,
+                    point[1] * self.x_pixel_to_mm_factor)
 
     def convert_real_xy_given_angle(self, point, angle):
         if angle > -10 and angle < 10:
