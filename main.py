@@ -168,13 +168,14 @@ def main_sequence(ui=True):
     # sequence.charge_robot_at_station()
     # sequence.go_back_from_charge_station()
     # sequence.go_to_decode_qr()
-    sequence.piece_color = 'bleu'
-    sequence.piece_shape = None
-    sequence.go_to_zone_pickup()
-    sequence.rotate_robot_on_zone_pickup()
-    sequence.move_robot_around_pickup_zone()
+    # sequence.piece_color = 'vert'
+    # sequence.piece_shape = None
+    # sequence.go_to_zone_pickup()
+    # sequence.rotate_robot_on_zone_pickup()
+    # sequence.move_robot_around_pickup_zone()
     sequence.go_to_zone_dep()
     sequence.rotate_robot_on_zone_dep()
+    sequence.comm_pi.getImage()
 
     sequence.end()
     logger.log_info('Sequence is done...')

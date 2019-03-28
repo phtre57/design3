@@ -36,8 +36,8 @@ Y_ARRAY_FOR_QR_STRATEGY = [120, 145, 170, 90]
 
 X_RANGE_FOR_QR_STRATEGY = [200, 230, 260, 285]
 
-OFFSET_Y_CAM_EMBARKED = 150
-OFFSET_X_CAM_EMBARKED = -50
+OFFSET_Y_CAM_EMBARKED = 160
+OFFSET_X_CAM_EMBARKED = -25
 
 logger = Logger(__name__)
 
@@ -305,6 +305,7 @@ class Sequence:
         self.start()
 
     def go_to_zone_pickup(self):
+        self.comm_pi.changeServoVert('6000')
         self.comm_pi.changeServoHori('2000')
         self.set_end_point(self.zone_pickup_point[0],
                            self.zone_pickup_point[1])
@@ -353,9 +354,12 @@ class Sequence:
         self.piece_shape = dict_of_values[PIECE]
         self.depot_number = dict_of_values[ZONE]
         logger.log_info("Values of qr code: " + str(dict_of_values))
-        logger.log_info(("Value of self.piece_color: " + str(self.piece_color)))
-        logger.log_info(("Value of self.piece_shape: " + str(self.piece_shape)))
-        logger.log_info(("Value of self.depot_number: " + str(self.depot_number)))
+        logger.log_info(
+            ("Value of self.piece_color: " + str(self.piece_color)))
+        logger.log_info(
+            ("Value of self.piece_shape: " + str(self.piece_shape)))
+        logger.log_info(
+            ("Value of self.depot_number: " + str(self.depot_number)))
 
         if dict_of_values is None:
             return False
@@ -501,13 +505,13 @@ class Sequence:
             logger.log_critical(traceback.print_exc())
             return False, 0, 0
 
-        # x_from_center_of_image = round(x - (
-        #     (width / 2) + OFFSET_X_CAM_EMBARKED))
-        # y_from_center_of_image = round(y - (
-        #     (height / 2) + OFFSET_Y_CAM_EMBARKED))
+        x_from_center_of_image = round(x - (
+            (width / 2) + OFFSET_X_CAM_EMBARKED))
+        y_from_center_of_image = round(y - (
+            (height / 2) + OFFSET_Y_CAM_EMBARKED))
 
-        x_from_center_of_image = round((width / 2 + OFFSET_X_CAM_EMBARKED) - x)
-        y_from_center_of_image = round((height / 2 + OFFSET_Y_CAM_EMBARKED) - y)
+        # x_from_center_of_image = round((width / 2 + OFFSET_X_CAM_EMBARKED) - x)
+        # y_from_center_of_image = round((height / 2 + OFFSET_Y_CAM_EMBARKED) - y)
 
         real_x, real_y = self.robot_cam_pixel_to_xy_converter\
             .convert_pixel_to_xy_point_given_angle((x_from_center_of_image, y_from_center_of_image),
@@ -561,7 +565,10 @@ class Sequence:
         third_zone_move = (10, -110)
         fourth_zone_move = (20, -130)
 
-        array_of_moves = [first_zone_move, second_zone_move, third_zone_move, fourth_zone_move]
+        array_of_moves = [
+            first_zone_move, second_zone_move, third_zone_move,
+            fourth_zone_move
+        ]
         self.__make_move_to_drop_zone(self.depot_number, array_of_moves)
 
     def __drop_piece_north(self):
@@ -571,7 +578,10 @@ class Sequence:
         third_zone_move = (10, -110)
         fourth_zone_move = (20, -130)
 
-        array_of_moves = [first_zone_move, second_zone_move, third_zone_move, fourth_zone_move]
+        array_of_moves = [
+            first_zone_move, second_zone_move, third_zone_move,
+            fourth_zone_move
+        ]
         self.__make_move_to_drop_zone(self.depot_number, array_of_moves)
 
     def __drop_piece_east(self):
@@ -581,7 +591,10 @@ class Sequence:
         third_zone_move = (10, -110)
         fourth_zone_move = (20, -130)
 
-        array_of_moves = [first_zone_move, second_zone_move, third_zone_move, fourth_zone_move]
+        array_of_moves = [
+            first_zone_move, second_zone_move, third_zone_move,
+            fourth_zone_move
+        ]
         self.__make_move_to_drop_zone(self.depot_number, array_of_moves)
 
     def __drop_piece_west(self):
@@ -591,22 +604,30 @@ class Sequence:
         third_zone_move = (10, -110)
         fourth_zone_move = (20, -130)
 
-        array_of_moves = [first_zone_move, second_zone_move, third_zone_move, fourth_zone_move]
+        array_of_moves = [
+            first_zone_move, second_zone_move, third_zone_move,
+            fourth_zone_move
+        ]
         self.__make_move_to_drop_zone(self.depot_number, array_of_moves)
 
-    def __make_move_to_drop_zone(self, zone_number, array_of_coordinates_in_order):
+    def __make_move_to_drop_zone(self, zone_number,
+                                 array_of_coordinates_in_order):
         logger.log_info("Dropping piece in " + str(zone_number))
         if zone_number == ZONE_0:
-            self.comm_pi.sendCoordinates(array_of_coordinates_in_order[0][0], array_of_coordinates_in_order[0][1])
+            self.comm_pi.sendCoordinates(array_of_coordinates_in_order[0][0],
+                                         array_of_coordinates_in_order[0][1])
 
         elif zone_number == ZONE_1:
-            self.comm_pi.sendCoordinates(array_of_coordinates_in_order[1][0], array_of_coordinates_in_order[1][1])
+            self.comm_pi.sendCoordinates(array_of_coordinates_in_order[1][0],
+                                         array_of_coordinates_in_order[1][1])
 
         elif zone_number == ZONE_2:
-            self.comm_pi.sendCoordinates(array_of_coordinates_in_order[2][0], array_of_coordinates_in_order[2][1])
+            self.comm_pi.sendCoordinates(array_of_coordinates_in_order[2][0],
+                                         array_of_coordinates_in_order[2][1])
 
         elif zone_number == ZONE_3:
-            self.comm_pi.sendCoordinates(array_of_coordinates_in_order[3][0], array_of_coordinates_in_order[3][1])
+            self.comm_pi.sendCoordinates(array_of_coordinates_in_order[3][0],
+                                         array_of_coordinates_in_order[3][1])
 
         else:
             logger.log_critical("No move for unknown zone number...")
@@ -651,7 +672,7 @@ class Sequence:
         if cardinal_point == cardinal:
             logger.log_info("Rotate to " + cardinal + "...")
             rotate_function(robot_angle)
-            if first_it < 3:
+            if first_it < 4:
                 first_it = first_it + 1
                 self.__rotate_robot_on_zone_plane(cardinal, first_it)
 

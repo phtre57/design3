@@ -19,13 +19,14 @@ class MoveRobotWithEmbarkedCamTest(unittest.TestCase):
             os.path.join(os.path.dirname(__file__), os.pardir))
         self.path = os.path.normpath(os.path.join(self.path, os.pardir))
         self.path = os.path.normpath(os.path.join(self.path, os.pardir))
-        self.path = os.path.join(self.path, "./design3/samples/")
+        # self.path = os.path.join(self.path, "./design3/samples/")
+        self.path = os.path.join(self.path, "./design3/")
 
     def test_given_north_when_finding_green_piece_then_piece_is_found(self):
         print("north")
-        img = cv2.imread(self.path + "failed3.jpg")
+        img = cv2.imread(self.path + "./test.jpg")
         height, width, channels = img.shape
-        x, y = detect_piece(img, None, "bleu")
+        x, y = detect_piece(img, None, "vert")
 
         if DEBUG:
             cv2.circle(
@@ -43,7 +44,7 @@ class MoveRobotWithEmbarkedCamTest(unittest.TestCase):
                   self.converter.y_pixel_to_mm_factor)
 
         real_x, real_y = self.converter.convert_pixel_to_xy_point_given_angle(
-            (x, y), 90)
+            (x, y), -90)
 
         if DEBUG:
             print("Real pt: ", real_x, real_y)
