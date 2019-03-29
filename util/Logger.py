@@ -84,7 +84,7 @@ class Logger(object):
         print(self.log_stream.getvalue())
         self.logger.critical(message)
         self.send_to_ui()
-t s
+
     def send_to_ui(self):
         # True par défaut, -O permet de mettre false, on va rouler ça en testing mode.
         # Moyen de context que j'ai trouvé
