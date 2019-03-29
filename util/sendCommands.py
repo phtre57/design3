@@ -21,6 +21,11 @@ while True:
         angle = int(angle)
         comm_pi.sendAngle(angle)
 
+    if com == "coord":
+        x = input("Enter wanted x: ")
+        y = input("Enter wanted y: ")
+        comm_pi.sendCoordinates(x, y)
+
     if com == "up_bras":
         comm_pi.moveArm('2000')
 
