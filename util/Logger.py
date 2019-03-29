@@ -62,44 +62,36 @@ class Logger(object):
     def log_warning(self, message):
         print(message)
         self.logger.warning(message)
+        self.send_to_ui()
 
-        self.comm_ui = Communication_ui()
-        self.comm_ui.SendLog(self.log_stream.getvalue(), "log")
-        self.stream_handler.flush()
-        self.log_stream.seek(0)
 
     def log_info(self, message):
         print(message)
         self.logger.info(message)
+        self.send_to_ui()
 
-        self.comm_ui = Communication_ui()
-        self.comm_ui.SendLog(self.log_stream.getvalue(), "log")
-        self.stream_handler.flush()
-        self.log_stream.seek(0)
 
     def log_debug(self, message):
         print(message)
         self.logger.debug(message)
-        
-        self.comm_ui = Communication_ui()
-        self.comm_ui.SendLog(self.log_stream.getvalue(), "log")
-        self.stream_handler.flush()
-        self.log_stream.seek(0)
+        self.send_to_ui()
+
 
     def log_error(self, message):
         print(message)
         self.logger.error(message)
-
-        self.comm_ui = Communication_ui()
-        self.comm_ui.SendLog(self.log_stream.getvalue(), "log")
-        self.stream_handler.flush()
-        self.log_stream.seek(0)
+        self.send_to_ui()
 
     def log_critical(self, message):
         print(self.log_stream.getvalue())
         self.logger.critical(message)
+        self.send_to_ui()
 
-        self.comm_ui = Communication_ui()
-        self.comm_ui.SendLog(self.log_stream.getvalue(), "log")
-        self.stream_handler.flush()
-        self.log_stream.seek(0)
+    def send_to_ui(self):
+        # True par défaut, -O permet de mettre false, on va rouler ça en testing mode.
+        # Moyen de context que j'ai trouvé
+        if (__debug__):
+            self.comm_ui = Communication_ui()
+            self.comm_ui.SendLog(self.log_stream.getvalue(), "log")
+            self.stream_handler.flush()
+            self.log_stream.seek(0)

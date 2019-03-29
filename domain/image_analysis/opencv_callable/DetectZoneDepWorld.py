@@ -35,7 +35,6 @@ def detect_zone_dep_world(og_frame,
                           canny_down=110,
                           canny_up=150,
                           flipped=False):
-
     frame = og_frame.copy()
     frame = frame.copy()
     IMG_HEIGHT, IMG_WIDTH, _ = frame.shape
