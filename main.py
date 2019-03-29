@@ -109,7 +109,7 @@ def main_sequence_old():
 
 def start_cam():
     logger.log_info("Ouverture de la caméra: ")
-    cap = cv2.VideoCapture(1)
+    cap = cv2.VideoCapture(0)
 
     while True:
         if cap.isOpened():
@@ -161,19 +161,19 @@ def main_sequence(ui=True):
     sequence = Sequence(cap, comm_pi, pixel_to_xy_converter,
                         robot_cam_pixel_to_xy_converter)
     logger.log_info('Sequence start...')
-    #sequence.go_to_start_zone()
-    #sequence.go_to_c_charge_station()
-    #sequence.charge_robot_at_station()
-    #sequence.go_back_from_charge_station()
+    sequence.go_to_start_zone()
+    sequence.go_to_c_charge_station()
+    sequence.charge_robot_at_station()
+    sequence.go_back_from_charge_station()
     #sequence.go_to_decode_qr()
-    sequence.piece_color = 'orange'
+    sequence.piece_color = 'vert'
     sequence.piece_shape = None
     sequence.depot_number = 'Zone 0'
     sequence.go_to_zone_pickup()
     sequence.move_robot_around_pickup_zone()
-    sequence.go_to_zone_dep()
-    sequence.new_drop_piece()
-    sequence.go_to_start_zone()
+    #sequence.go_to_zone_dep()
+    #sequence.new_drop_piece()
+    #sequence.go_to_start_zone()
 
     sequence.end()
     logger.log_info('Sequence is done...')
@@ -221,7 +221,7 @@ def main():
 
 
 try:
-    init_conn_without_ui()
+    main()
 except KeyboardInterrupt:
     comm_pi.disconnectFromPi()
     logger.log_info("bye")

@@ -21,6 +21,9 @@ while True:
         angle = int(angle)
         comm_pi.sendAngle(angle)
 
+    if com == "up_bras":
+        comm_pi.moveArm('2000')
+
     if com == "quit":
         break
 

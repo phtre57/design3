@@ -37,7 +37,7 @@ Y_ARRAY_FOR_QR_STRATEGY = [120, 145, 170, 90]
 
 X_RANGE_FOR_QR_STRATEGY = [200, 230, 260, 285]
 
-OFFSET_Y_CAM_EMBARKED = 160
+OFFSET_Y_CAM_EMBARKED = 150
 OFFSET_X_CAM_EMBARKED = -25
 
 logger = Logger(__name__)
@@ -273,10 +273,12 @@ class Sequence:
         return img
 
     def take_image(self):
-        logger.log_info("Capture d'image en cours...")
-        ret, self.img = self.cap.read()
+        logger.log_info("Capture d'image de la camera monde en cours...")
 
-
+        while True:
+            ret, self.img = self.cap.read()
+            if ret:
+                break
 
         # cv2.destroyAllWindows()
 
@@ -549,6 +551,10 @@ class Sequence:
             cv2.imshow("grab piece frame", robot_img)
             logger.log_info("Real moving point: " + str(real_x) + "," +
                             str(real_y))
+
+        logger.log_critical("Point to be sent to grab piece: " + str(real_x) + ", " + str(real_y))
+        if real_y < -105:
+            return False, 0, 0
 
         self.comm_pi.sendCoordinates(round(real_x), round(real_y))
 
