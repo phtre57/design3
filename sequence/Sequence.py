@@ -580,7 +580,10 @@ class Sequence:
             .convert_pixel_to_xy_point_given_angle((x_from_center_of_image, y_from_center_of_image),
                                                    self.__cardinal_to_angle(self.zone_dep_cardinal))
 
-        self.comm_pi.sendCoordinates(round(real_x), round(real_y))
+        new_y = self.__adjust_movement_for_zone_number(real_y)
+
+        #adjust only y here because of referential, check cheat sheet
+        self.comm_pi.sendCoordinates(round(real_x), round(new_y))
 
         logger.log_info('Drop the arm')
         time.sleep(0.5)
@@ -590,6 +593,25 @@ class Sequence:
         time.sleep(0.5)
         logger.log_info('Lifting the arm')
         self.comm_pi.moveArm('2000')
+
+    def __adjust_movement_for_zone_number(self, y):
+
+        if self.zone_dep_point == ZONE_0:
+            return y
+
+        elif self.zone_dep_point == ZONE_1:
+            return y - 65 * 2
+
+        elif self.zone_dep_point == ZONE_2:
+            return y - 65 * 3
+
+        elif self.zone_dep_point == ZONE_3:
+            return y - 65 * 4
+
+        else:
+            logger.log_critical("No zone dep point given to Sequence to adjust movement...")
+            raise Exception("No zone dep given to adjust movement to dro piece")
+
 
     def drop_piece(self):
         self.__rotate_robot_on_zone_dep()

@@ -63,43 +63,43 @@ class Logger(object):
         print(message)
         self.logger.warning(message)
 
-        self.comm_ui = Communication_ui()
-        self.comm_ui.SendLog(self.log_stream.getvalue(), "log")
-        self.stream_handler.flush()
-        self.log_stream.seek(0)
+        #self.comm_ui = Communication_ui()
+        #self.comm_ui.SendLog(self.log_stream.getvalue(), "log")
+        #self.stream_handler.flush()
+        #self.log_stream.seek(0)
 
     def log_info(self, message):
         print(message)
         self.logger.info(message)
 
-        self.comm_ui = Communication_ui()
-        self.comm_ui.SendLog(self.log_stream.getvalue(), "log")
-        self.stream_handler.flush()
-        self.log_stream.seek(0)
+        #self.comm_ui = Communication_ui()
+        #self.comm_ui.SendLog(self.log_stream.getvalue(), "log")
+        #self.stream_handler.flush()
+        #self.log_stream.seek(0)
 
     def log_debug(self, message):
         print(message)
         self.logger.debug(message)
         
-        self.comm_ui = Communication_ui()
-        self.comm_ui.SendLog(self.log_stream.getvalue(), "log")
-        self.stream_handler.flush()
-        self.log_stream.seek(0)
+        #self.comm_ui = Communication_ui()
+        #self.comm_ui.SendLog(self.log_stream.getvalue(), "log")
+        #self.stream_handler.flush()
+        #self.log_stream.seek(0)
 
     def log_error(self, message):
         print(message)
         self.logger.error(message)
 
-        self.comm_ui = Communication_ui()
-        self.comm_ui.SendLog(self.log_stream.getvalue(), "log")
-        self.stream_handler.flush()
-        self.log_stream.seek(0)
+        #self.comm_ui = Communication_ui()
+        #self.comm_ui.SendLog(self.log_stream.getvalue(), "log")
+        #self.stream_handler.flush()
+        #self.log_stream.seek(0)
 
     def log_critical(self, message):
         print(self.log_stream.getvalue())
         self.logger.critical(message)
 
-        self.comm_ui = Communication_ui()
-        self.comm_ui.SendLog(self.log_stream.getvalue(), "log")
-        self.stream_handler.flush()
-        self.log_stream.seek(0)
+        #self.comm_ui = Communication_ui()
+        #self.comm_ui.SendLog(self.log_stream.getvalue(), "log")
+        #self.stream_handler.flush()
+        #self.log_stream.seek(0)

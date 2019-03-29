@@ -151,11 +151,11 @@ class Communication_pi:
             time.sleep(0.2)
 
     def getTension(self):
-        logger.log_info("Tension recu: ")
         self.sio.emit('getTension', 'Courge spaghetti')
 
         self.tension = None
         while self.tension is None:
             time.sleep(0.01)
 
+        logger.log_info("Tension recu: " + str(self.tension))
         return self.tension
