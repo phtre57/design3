@@ -87,10 +87,10 @@ class Logger(object):
         self.logger.critical(message)
         self.send_to_ui()
 
-    def send_to_ui(self)
+    def send_to_ui(self):
         # True par défaut, -O permet de mettre false, on va rouler ça en testing mode.
         # Moyen de context que j'ai trouvé
-        if (not __debug__):
+        if (__debug__):
             self.comm_ui = Communication_ui()
             self.comm_ui.SendLog(self.log_stream.getvalue(), "log")
             self.stream_handler.flush()
