@@ -8,14 +8,17 @@ class Communication_ui():
         self.sio = self.__init_conn()
 
     def __init_conn(self):
-        sio = socketio.Client()
-        sio.connect('http://localhost:4000?token=robot')
+        try:
+            sio = socketio.Client()
+            sio.connect('http://localhost:4000?token=robot')
 
-        @sio.on('validation')
-        def on_validation(v):
-            print('validation')
-            sio.disconnect()
-
+            @sio.on('validation')
+            def on_validation(v):
+                print('validation')
+                sio.disconnect()
+        except Exception:
+            print('Can\'t connect to UI backend, ignore if in testing mode')
+                
         return sio
 
     def SendImage(self, frame, dest):
