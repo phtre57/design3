@@ -15,10 +15,15 @@ class Communication_pi:
         logger.log_info("Création de la communication...")
         self.ready = True
         self.image = None
-        self.sio = socketio.Client()
-        self.sio.connect(url)
+        self.sio = None
         self.image = None
         self.tension = None
+        self.url = url
+        self.__init()
+
+    def __init(self):
+        self.sio = socketio.Client()
+        self.sio.connect(self.url)
 
         @self.sio.on('readySignal')
         def sendCoord(message):
@@ -56,6 +61,17 @@ class Communication_pi:
 
         logger.log_info("Fin création de la communication...")
 
+    def waitForReadySignal(self):
+        t = time.time()
+
+        while not self.ready:
+            tt = time.time()
+            if (tt - t > 20):
+                self.__init()
+                break
+
+            time.sleep(0.2)
+
     def connectToPi(self):
         logger.log_info("Connecte au serveur...")
 
@@ -67,61 +83,66 @@ class Communication_pi:
         logger.log_info("Signal envoyee pour condensateur...")
         self.sio.emit('condensateurChange', 1)
         self.ready = False
-
-        while not self.ready:
-            time.sleep(0.2)
+        self.waitForReadySignal()
 
     def changeCondensateurHigh(self):
         logger.log_info("Signal envoyee pour condensateur...")
         self.sio.emit('condensateurChangeHigh', 1)
         self.ready = False
-
-        while not self.ready:
-            time.sleep(0.2)
+        self.waitForReadySignal()
 
     def changeCondensateurLow(self):
         logger.log_info("Signal envoyee pour condensateur...")
         self.sio.emit('condensateurChangeLow', 1)
         self.ready = False
-
-        while not self.ready:
-            time.sleep(0.2)
+        self.waitForReadySignal()
 
     def sendCoordinates(self, x, y):
         commande = str(round(x)) + "," + str(round(y)) + ",0\n"
         logger.log_info("Coordonnees envoyees: " + commande)
         self.sio.emit('sendPosition', commande)
         self.ready = False
-
-        while not self.ready:
-            time.sleep(0.2)
+        self.waitForReadySignal()
 
     def sendAngle(self, angle):
+        if abs(int(angle)) > 180:
+            if angle < 0:
+                angle = 360 + angle
+            else:
+                angle = 360 - angle
+
         angle = int(angle)
         logger.log_info("Angle envoyees: " + str(round(angle)))
         commande = '0,0,' + str(angle) + '\n'
         self.sio.emit('sendPosition', commande)
         self.ready = False
-
-        while not self.ready:
-            time.sleep(0.2)
-
+        self.waitForReadySignal()
         time.sleep(1)
-        # if (abs(int(angle)) > 35):
-        #     time.sleep(2)
-        # if (abs(int(angle)) > 70):
-        #     time.sleep(2)
-        # if (abs(int(angle)) > 120):
-        #     time.sleep(2)
-        # if (abs(int(angle)) > 160):
-        #     time.sleep(2)
 
     def getImage(self):
+        while True:
+            try:
+                img = self.getImagePi()
+                return img
+            except Exception:
+                logger.log_critical(
+                    '401 Image not found - Erreur communication avec le pi getImage'
+                )
+                pass
+
+    def getImagePi(self):
         logger.log_info("Get image du robot...")
         self.sio.emit('getImage', 'ok')
-
         self.image = None
+
+        t = time.time()
         while self.image is None:
+            tt = time.time()
+            if (tt - t > 20):
+                self.__init()
+                raise Exception('Image not found')
+                break
+
             time.sleep(0.01)
 
         logger.log_info("After wait image du robot...")
@@ -131,31 +152,43 @@ class Communication_pi:
         logger.log_info("Servo horizontal envoyees: " + commande)
         self.sio.emit('servoHori', str(commande))
         self.ready = False
-
-        while not self.ready:
-            time.sleep(0.2)
+        self.waitForReadySignal()
 
     def changeServoVert(self, commande):
         logger.log_info("Servo vertical envoyees: " + commande)
         self.sio.emit('servoVert', str(commande))
         self.ready = False
-
-        while not self.ready:
-            time.sleep(0.2)
+        self.waitForReadySignal()
 
     def moveArm(self, commande):
         logger.log_info("Bouge le bras envoyees: " + commande)
         self.sio.emit('bras', commande)
         self.ready = False
-
-        while not self.ready:
-            time.sleep(0.2)
+        self.waitForReadySignal()
 
     def getTension(self):
+        while True:
+            try:
+                tension = self.getTensionPi()
+                return tension
+            except Exception:
+                logger.log_critical(
+                    '401 Tension not found - Erreur communication avec le pi getTension'
+                )
+                pass
+
+    def getTensionPi(self):
         self.sio.emit('getTension', 'Courge spaghetti')
 
         self.tension = None
+        t = time.time()
         while self.tension is None:
+            tt = time.time()
+            if (tt - t > 20):
+                self.__init()
+                raise Exception('Tension not found')
+                break
+
             time.sleep(0.01)
 
         logger.log_info("Tension recu: " + str(self.tension))

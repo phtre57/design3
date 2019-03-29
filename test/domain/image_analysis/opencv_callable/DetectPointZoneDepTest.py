@@ -21,7 +21,7 @@ class DetectContourPiecesTest(unittest.TestCase):
         path = os.path.normpath(os.path.join(path, os.pardir))
         # path = os.path.join(path, "./image_samples/real_image/pieces.jpg")
 
-        path5 = os.path.join(path, "./samples/zonedep3.jpg")
+        path5 = os.path.join(path, "./samples/zonedep5.jpg")
         self.call_path(path5)
 
     def call_path(self, path):

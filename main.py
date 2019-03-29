@@ -41,75 +41,30 @@ def connect(comm_pi):
 
 
 def pathfinding(path, x, y):
-    frame = cv2.imread(path)
-
-    test_image = ImageToGridConverter(frame, x, y)
-    astar = Astar(test_image.grid, HEIGHT, LENGTH)
-    astar.find_path()
-
-    for point in astar.path:
-        cv2.circle(test_image.image, (point.j, point.i), 1, [0, 0, 0])
-
-    frame = test_image.image
-
     comm_ui = Communication_ui()
     comm_ui.SendImage(frame, "optpath")
 
     comm_ui = Communication_ui()
     comm_ui.SendImage(frame, "actualpath")
 
-    cv2.imshow("main", frame)
-    cv2.waitKey()
-
 
 def main_sequence_old():
-    pathfinding("./image_samples/real_image/globalmonde1.jpg", 240, 135)
-
-    path = "./image_samples/real_image/qr.png"
-    frame = cv2.imread(path)
-    obj = decode(frame)
-
     comm_ui = Communication_ui()
     comm_ui.SendImage(frame, "actualimg")
 
     comm_ui = Communication_ui()
     comm_ui.SendText(obj.data, "qrcode")
 
-    pathfinding("./image_samples/real_image/globalmonde1QR.jpg", 235, 60)
-
-    path = "./image_samples/real_image/pieces.jpg"
-    frame = cv2.imread(path)
-    shape = detect_contour_pieces(frame)
-
     comm_ui = Communication_ui()
     comm_ui.SendImage(shape.frame, "actualimg")
 
-    cv2.imshow('EDGES', shape.frame)
-    cv2.waitKey()
-
-    pathfinding("./image_samples/real_image/globalmonde1ZoneDep.jpg", 25, 122)
-
-    path = "./image_samples/real_image/zonedep.jpg"
-    frame = cv2.imread(path)
-    shape = detect_zone_dep(frame)
-
     comm_ui = Communication_ui()
     comm_ui.SendImage(shape.frame, "actualimg")
-
-    cv2.imshow('EDGES', shape.frame)
-    cv2.waitKey()
-
-    pathfinding("./image_samples/real_image/globalmonde1ZoneBlanche.jpg", 75,
-                100)
-
-    logger.log_info("Sequence done")
-
-    init_conn_with_ui()
 
 
 def start_cam():
     logger.log_info("Ouverture de la caméra: ")
-    cap = cv2.VideoCapture(0)
+    cap = cv2.VideoCapture(1)
 
     while True:
         if cap.isOpened():
@@ -161,19 +116,19 @@ def main_sequence(ui=True):
     sequence = Sequence(cap, comm_pi, pixel_to_xy_converter,
                         robot_cam_pixel_to_xy_converter)
     logger.log_info('Sequence start...')
-    sequence.go_to_start_zone()
-    sequence.go_to_c_charge_station()
-    sequence.charge_robot_at_station()
-    sequence.go_back_from_charge_station()
-    #sequence.go_to_decode_qr()
+    # sequence.go_to_start_zone()
+    # sequence.go_to_c_charge_station()
+    # sequence.charge_robot_at_station()
+    # sequence.go_back_from_charge_station()
+    # sequence.go_to_decode_qr()
     sequence.piece_color = 'vert'
     sequence.piece_shape = None
-    sequence.depot_number = 'Zone 0'
-    sequence.go_to_zone_pickup()
-    sequence.move_robot_around_pickup_zone()
-    #sequence.go_to_zone_dep()
-    #sequence.new_drop_piece()
-    #sequence.go_to_start_zone()
+    sequence.depot_number = 'Zone 3'
+    # sequence.go_to_zone_pickup()
+    # sequence.move_robot_around_pickup_zone()
+    sequence.go_to_zone_dep()
+    sequence.new_drop_piece()
+    # sequence.go_to_start_zone()
 
     sequence.end()
     logger.log_info('Sequence is done...')

@@ -576,6 +576,8 @@ class Sequence:
         height, width, channels = robot_img.shape
         x, y = detect_point_zone_dep(robot_img)
 
+        logger.log_info('Drop piece, detected center of first point ' + str(x) + ', ' + str(y))
+
         x_from_center_of_image = round(x - (
             (width / 2) + OFFSET_X_CAM_EMBARKED))
         y_from_center_of_image = round(y - (
@@ -588,10 +590,7 @@ class Sequence:
             .convert_pixel_to_xy_point_given_angle((x_from_center_of_image, y_from_center_of_image),
                                                    self.__cardinal_to_angle(self.zone_dep_cardinal))
 
-        new_y = self.__adjust_movement_for_zone_number(real_y)
-
-        #adjust only y here because of referential, check cheat sheet
-        self.comm_pi.sendCoordinates(round(real_x), round(new_y))
+        self.__move_to_point_zone_dep(real_x, real_y)
 
         logger.log_info('Drop the arm')
         time.sleep(0.5)
@@ -602,24 +601,31 @@ class Sequence:
         logger.log_info('Lifting the arm')
         self.comm_pi.moveArm('2000')
 
-    def __adjust_movement_for_zone_number(self, y):
+    def __move_to_point_zone_dep(self, x, y):
 
-        if self.zone_dep_point == ZONE_0:
-            return y
+        if self.depot_number == ZONE_0:
+            self.comm_pi.sendCoordinates(round(x), round(y))
 
-        elif self.zone_dep_point == ZONE_1:
-            return y - 65 * 2
+        elif self.depot_number == ZONE_1:
+            self.comm_pi.sendCoordinates(round(x), round(y))
+            self.__send_move_to_zone_dep(1)
 
-        elif self.zone_dep_point == ZONE_2:
-            return y - 65 * 3
+        elif self.depot_number == ZONE_2:
+            self.comm_pi.sendCoordinates(round(x), round(y))
+            self.__send_move_to_zone_dep(2)
 
-        elif self.zone_dep_point == ZONE_3:
-            return y - 65 * 4
+        elif self.depot_number == ZONE_3:
+            self.comm_pi.sendCoordinates(round(x), round(y))
+            self.__send_move_to_zone_dep(3)
 
         else:
             logger.log_critical("No zone dep point given to Sequence to adjust movement...")
-            raise Exception("No zone dep given to adjust movement to dro piece")
+            raise Exception("No zone dep given to adjust movement to drop piece")
 
+    def __send_move_to_zone_dep(self, it):
+        for i in range(it):
+            self.__rotate_robot_on_zone_plane(self.zone_dep_cardinal, 3)
+            self.comm_pi.sendCoordinates(4, -65)
 
     def drop_piece(self):
         self.__rotate_robot_on_zone_dep()
@@ -754,6 +760,7 @@ class Sequence:
             logger.log_info("Rotate to " + cardinal + "...")
             rotate_function(robot_angle)
             if first_it < 4:
+                logger.log_info('Correction angle ' + str(first_it))
                 first_it = first_it + 1
                 self.__rotate_robot_on_zone_plane(cardinal, first_it)
 
