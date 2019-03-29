@@ -18,6 +18,7 @@ from infrastructure.communication_ui.comm_ui import Communication_ui
 from sequence.Sequence import Sequence
 from test.LargeTest.TestConstants import *
 from util.Logger import Logger
+from util.color import Color
 
 parser = argparse.ArgumentParser(description='Process some integers.')
 parser.add_argument(
@@ -107,7 +108,14 @@ def main_sequence_old():
 
 
 def start_cam():
-    return cv2.VideoCapture(1)
+    logger.log_info("Ouverture de la caméra: ")
+    cap = cv2.VideoCapture(1)
+
+    while True:
+        if cap.isOpened():
+            break
+    logger.log_info("Fin ouverture de la caméra: ")
+    return cap
 
 
 def calibrate():
@@ -145,27 +153,29 @@ def main_sequence(ui=True):
         cap.set(3, 640)
         cap.set(4, 480)
 
-    time.sleep(5)
     _, frame = cap.read()
 
-    connect(comm_pi)
+    # connect(comm_pi)
+
     pixel_to_xy_converter = calibrate()
     robot_cam_pixel_to_xy_converter = calibrateEmbark()
 
     sequence = Sequence(cap, comm_pi, pixel_to_xy_converter,
                         robot_cam_pixel_to_xy_converter)
-    logger.log_info('Go to start zone...')
-    # sequence.set_end_point(X_END_START, Y_END_START)
-    # sequence.start()
-    # sequence.go_to_start_zone()
-    # sequence.go_to_c_charge_station()
-    # sequence.charge_robot_at_station()
-    # sequence.go_back_from_charge_station()
-    # sequence.go_to_zone_dep()
-    # sequence.rotate_robot_on_zone_dep()
+    logger.log_info('Sequence start...')
+    sequence.go_to_start_zone()
+    sequence.go_to_c_charge_station()
+    sequence.charge_robot_at_station()
+    sequence.go_back_from_charge_station()
+    sequence.go_to_decode_qr()
+    sequence.piece_color = 'orange'
+    sequence.piece_shape = None
+    sequence.depot_number = 'Zone 0'
     sequence.go_to_zone_pickup()
-    sequence.rotate_robot_on_zone_pickup()
     sequence.move_robot_around_pickup_zone()
+    sequence.go_to_zone_dep()
+    sequence.new_drop_piece()
+    sequence.go_to_start_zone()
 
     sequence.end()
     logger.log_info('Sequence is done...')
@@ -218,3 +228,4 @@ except KeyboardInterrupt:
     comm_pi.disconnectFromPi()
     logger.log_info("bye")
     logger.log_critical(traceback.format_exc())
+    cv2.destroyAllWindows()

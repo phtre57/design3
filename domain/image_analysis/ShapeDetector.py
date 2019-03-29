@@ -32,6 +32,8 @@ class ShapeDetector:
         self.w_rect_limit_up = None
         self.h_rect_limit_up = None
         self.comparator_cnts = None
+        self.coord_limiter = None
+        self.x_coord_limiter = 0
 
     def detect(self, frame, og_frame):
         frame = frame.copy()
@@ -122,10 +124,6 @@ class ShapeDetector:
                 cv2.waitKey()
 
             if (self.rect_limiter):
-                # if (hRect > wRect):
-                #     t = wRect
-                #     wRect = hRect
-                #     hRect = t
                 if (abs(wRect) < self.w_rect_limit
                         or abs(hRect) < self.h_rect_limit):
                     continue
@@ -153,6 +151,17 @@ class ShapeDetector:
 
             ((x, y), radius) = cv2.minEnclosingCircle(c)
             # center = (round(int(x)), round(int(y)))
+
+            # if DEBUG:
+            #     print(self.x_coord_limiter)
+            #     print(x)
+
+            # if (self.coord_limiter is not None):
+            #     if (self.x_coord_limiter < x):
+            #         continue
+
+            #     if DEBUG:
+            #         print('Coord limiter passed')
 
             if DEBUG:
                 print(radius)
@@ -246,3 +255,7 @@ class ShapeDetector:
 
     def set_comparator_shape(self, comparator_cnts):
         self.comparator_cnts = comparator_cnts
+
+    def set_coord_limiter(self, x):
+        self.coord_limiter = True
+        self.x_coord_limiter = x

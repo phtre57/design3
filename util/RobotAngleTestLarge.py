@@ -2,7 +2,7 @@ import time
 import cv2
 import traceback
 from domain.image_analysis_pathfinding.RobotDetector import RobotDetector
-from infrastructure.communication_pi import comm_pi
+from infrastructure.communication_pi import __comm_pi
 
 
 def take_image():
@@ -20,10 +20,10 @@ def take_image():
 
 
 def test():
-    comm_pi.connectToPi()
+    __comm_pi.connectToPi()
     time.sleep(5)
 
-    comm_pi.sendCoordinates("0,0,-10\n")
+    __comm_pi.sendCoordinates("0,0,-10\n")
     time.sleep(5)
 
     print("Rotating robot phase: ")
@@ -48,7 +48,7 @@ def test():
     final = time.time() - start
     print("Total Time: " + str(final))
 
-    comm_pi.sendCoordinates("0,0,0\n")
+    __comm_pi.sendCoordinates("0,0,0\n")
 
 
 test()

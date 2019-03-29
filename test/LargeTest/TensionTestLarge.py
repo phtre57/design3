@@ -1,4 +1,4 @@
-from infrastructure.communication_pi.comm_pi import *
+from infrastructure.communication_pi.__comm_pi import *
 
 
 def test():
