@@ -625,7 +625,7 @@ class Sequence:
     def __send_move_to_zone_dep(self, it):
         for i in range(it):
             self.__rotate_robot_on_zone_plane(self.zone_dep_cardinal, 3)
-            self.comm_pi.sendCoordinates(4, -65)
+            self.comm_pi.sendCoordinates(0, -80)
 
     def drop_piece(self):
         self.__rotate_robot_on_zone_dep()

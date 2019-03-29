@@ -1,11 +1,12 @@
 from infrastructure.communication_pi.comm_pi import *
 
-
 comm_pi = Communication_pi()
-
 
 while True:
     com = input("Enter command: ")
+
+    if com == 'image':
+        comm_pi.getImage()
 
     if com == "high":
         comm_pi.changeCondensateurHigh()
@@ -24,12 +25,10 @@ while True:
     if com == "coord":
         x = input("Enter wanted x: ")
         y = input("Enter wanted y: ")
-        comm_pi.sendCoordinates(x, y)
+        comm_pi.sendCoordinates(int(x), int(y))
 
     if com == "up_bras":
         comm_pi.moveArm('2000')
 
     if com == "quit":
         break
-
-
