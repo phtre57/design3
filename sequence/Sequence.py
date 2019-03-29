@@ -620,7 +620,6 @@ class Sequence:
             logger.log_critical("No zone dep point given to Sequence to adjust movement...")
             raise Exception("No zone dep given to adjust movement to dro piece")
 
-
     def drop_piece(self):
         self.__rotate_robot_on_zone_dep()
 
