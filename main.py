@@ -148,8 +148,6 @@ def main_sequence(ui=True):
 
     cap = start_cam()
     if CANCER_MAC_USER:
-        cap.set(3, 1600)
-        cap.set(4, 1200)
         cap.set(3, 640)
         cap.set(4, 480)
 
@@ -163,11 +161,11 @@ def main_sequence(ui=True):
     sequence = Sequence(cap, comm_pi, pixel_to_xy_converter,
                         robot_cam_pixel_to_xy_converter)
     logger.log_info('Sequence start...')
-    sequence.go_to_start_zone()
-    sequence.go_to_c_charge_station()
-    sequence.charge_robot_at_station()
-    sequence.go_back_from_charge_station()
-    sequence.go_to_decode_qr()
+    #sequence.go_to_start_zone()
+    #sequence.go_to_c_charge_station()
+    #sequence.charge_robot_at_station()
+    #sequence.go_back_from_charge_station()
+    #sequence.go_to_decode_qr()
     sequence.piece_color = 'orange'
     sequence.piece_shape = None
     sequence.depot_number = 'Zone 0'
@@ -223,7 +221,7 @@ def main():
 
 
 try:
-    main()
+    init_conn_without_ui()
 except KeyboardInterrupt:
     comm_pi.disconnectFromPi()
     logger.log_info("bye")

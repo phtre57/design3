@@ -276,6 +276,8 @@ class Sequence:
         logger.log_info("Capture d'image en cours...")
         ret, self.img = self.cap.read()
 
+
+
         # cv2.destroyAllWindows()
 
         return self.img
