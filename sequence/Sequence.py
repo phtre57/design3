@@ -21,6 +21,7 @@ from domain.QRCodeDictionnary import *
 from util.Logger import Logger
 from domain.image_analysis.Cardinal import *
 from domain.image_analysis.opencv_callable.DetectPointZoneDep import detect_point_zone_dep
+from domain.RobotMover import *
 
 DEBUG = False
 ROBOT_DANCE_X_POSITIVE = "50,0,0\n"
@@ -52,6 +53,7 @@ class Sequence:
         self.comm_pi = comm_pi
         self.world_cam_pixel_to_xy_converter = world_cam_pixel_to_xy_converter
         self.robot_cam_pixel_to_xy_converter = robot_cam_pixel_to_xy_converter
+        self.robot_mover = RobotMover(world_cam_pixel_to_xy_converter, robot_cam_pixel_to_xy_converter)
         self.real_path = None
         self.starting_point = None
         self.smooth_path = None
@@ -451,8 +453,7 @@ class Sequence:
                 x, y = self.robot_cam_pixel_to_xy_converter.convert_real_xy_given_angle(
                     x_mm_movement_point_negative, -90)
                 self.comm_pi.sendCoordinates(x, y)
-                piece_grabbed, real_x_inverse, real_y_inverse = self.grab_piece(
-                )
+                piece_grabbed, real_x_inverse, real_y_inverse = self.grab_piece()
 
                 if piece_grabbed:
                     break
@@ -529,24 +530,11 @@ class Sequence:
             logger.log_critical(traceback.print_exc())
             return False, 0, 0
 
-        x_from_center_of_image = round(x - (
-            (width / 2) + OFFSET_X_CAM_EMBARKED))
-        y_from_center_of_image = round(y - (
-            (height / 2) + OFFSET_Y_CAM_EMBARKED))
-
-        # x_from_center_of_image = round((width / 2 + OFFSET_X_CAM_EMBARKED) - x)
-        # y_from_center_of_image = round((height / 2 + OFFSET_Y_CAM_EMBARKED) - y)
-
-        real_x, real_y = self.robot_cam_pixel_to_xy_converter\
-            .convert_pixel_to_xy_point_given_angle((x_from_center_of_image, y_from_center_of_image),
-                                                   self.__cardinal_to_angle(self.zone_pickup_cardinal))
-
+        real_x, real_y = self.robot_mover.move_robot_from_embarked_referential(x, y, self.zone_pickup_cardinal, width,
+                                                                               height)
         if DEBUG:
             robot_img = self.take_image()
             cv2.circle(robot_img, (x, y), 5, [255, 255, 255])
-            cv2.circle(robot_img,
-                       (x_from_center_of_image, y_from_center_of_image), 5,
-                       [255, 255, 255])
             cv2.imshow("grab piece frame", robot_img)
             logger.log_info("Real moving point: " + str(real_x) + "," +
                             str(real_y))
@@ -593,14 +581,7 @@ class Sequence:
         logger.log_info('Drop piece, detected center of first point ' +
                         str(x) + ', ' + str(y))
 
-        x_from_center_of_image = round(x - (
-            (width / 2) + OFFSET_X_CAM_EMBARKED))
-        y_from_center_of_image = round(y - (
-            (height / 2) + OFFSET_Y_CAM_EMBARKED))
-
-        real_x, real_y = self.robot_cam_pixel_to_xy_converter \
-            .convert_pixel_to_xy_point_given_angle((x_from_center_of_image, y_from_center_of_image),
-                                                   self.__cardinal_to_angle(self.zone_dep_cardinal))
+        real_x, real_y = self.robot_mover.move_robot_from_embarked_referential(x, y, self.zone_dep_cardinal, width, height)
 
         return (real_x, real_y)
 
