@@ -24,14 +24,14 @@ DEBUG = DETECT_POINT_ZONE_DEP_DEBUG
 def detect_point_zone_dep(og_frame):
     frame = og_frame.copy()
 
-    cv2.rectangle(frame, (270, 0), (320, 240), (0, 0, 0), 110)
+    cv2.rectangle(frame, (240, 0), (320, 240), (0, 0, 0), 110)
     cv2.rectangle(frame, (0, 200), (320, 240), (0, 0, 0), 110)
 
     edges = canny(frame, point_zone_dep_mask, 80, 100)
 
     edges = cv2.dilate(
         edges,
-        kernel=cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (4, 4)),
+        kernel=cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (2, 2)),
         iterations=1)
 
     if DEBUG:
@@ -56,6 +56,15 @@ def detect_point_zone_dep(og_frame):
     # if (len(shape.approx) != 1):
     #     raise Exception('Detect contour pieces have found multiple shape')
 
-    (x, y) = find_center(shape.approx[0][1], 4, shape)
+    (x, y) = find_center(shape.approx[0][1], 2.5, og_frame.copy())
+
+    if (x == 0 and y == 0):
+        raise Exception('Can\'t find the first visible point of the zone dep')
+
+    if DEBUG:
+        frame1 = og_frame.copy()
+        cv2.circle(frame1, (x, y), 4, [255, 51, 51])
+        cv2.imshow('DETECT ZONE DEP -- DEBUG', frame1)
+        cv2.waitKey()
 
     return (x, y)

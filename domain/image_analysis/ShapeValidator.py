@@ -2,7 +2,6 @@ import cv2
 
 
 class ShapeValidator:
-
     def __init__(self):
         self.shape = ""
 

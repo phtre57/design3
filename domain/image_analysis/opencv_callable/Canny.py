@@ -18,6 +18,13 @@ def point_zone_dep_mask(frame):
     return mask
 
 
+def detect_contour_mask(frame):
+    kernel = np.ones((2, 2), np.uint8)
+    mask = cv2.morphologyEx(frame, cv2.MORPH_OPEN, kernel)
+
+    return mask
+
+
 def dilate_mask(frame):
     mask = cv2.dilate(
         frame,

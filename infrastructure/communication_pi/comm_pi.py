@@ -117,7 +117,7 @@ class Communication_pi:
         self.sio.emit('sendPosition', commande)
         self.ready = False
         self.waitForReadySignal()
-        time.sleep(1)
+        time.sleep(0.2)
 
     def getImage(self):
         while True:
