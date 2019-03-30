@@ -22,6 +22,21 @@ class RobotMover:
 
         return real_x, real_y
 
+    def fallback_from_cardinality(self, cardinal_str):
+        fallback_move = -70
+
+        if cardinal_str == EAST():
+            return fallback_move, 0
+        elif cardinal_str == NORTH():
+            return fallback_move, 0
+        elif cardinal_str == WEST():
+            return fallback_move, 0
+        elif cardinal_str == SOUTH():
+            return fallback_move, 0
+        else:
+            return None
+
+
     def __cardinal_to_angle(self, cardinal_str):
 
         if cardinal_str == EAST():
