@@ -13,11 +13,11 @@ class InitSequence():
         self.X_END_START_ZONE = x_end_start_zone
         self.Y_END_START_ZONE = y_end_start_zone
         self.cap = cap
-        self.zone_start_point
-        self.zone_dep_cardinal
-        self.zone_dep_point
-        self.zone_pickup_cardinal
-        self.zone_pickup_point
+        self.zone_start_point = None
+        self.zone_dep_cardinal = None
+        self.zone_dep_point = None
+        self.zone_pickup_cardinal = None
+        self.zone_pickup_point = None
 
     def init(self):
         self.__detect_start_zone()

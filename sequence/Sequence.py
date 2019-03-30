@@ -19,6 +19,7 @@ from util.Logger import Logger
 from domain.image_analysis.Cardinal import *
 from domain.image_analysis.opencv_callable.DetectPointZoneDep import detect_point_zone_dep
 from sequence.InitSequence import InitSequence
+from domain.RobotMover import *
 
 DEBUG = False
 ROBOT_DANCE_X_POSITIVE = "50,0,0\n"
@@ -43,13 +44,15 @@ logger = Logger(__name__)
 
 class Sequence:
     def __init__(self, cap, comm_pi, world_cam_pixel_to_xy_converter,
-                 robot_cam_pixel_to_xy_converter, show_ui):
+                 robot_cam_pixel_to_xy_converter, comm_ui):
         self.cap = cap
         self.X_END = None
         self.Y_END = None
         self.comm_pi = comm_pi
         self.world_cam_pixel_to_xy_converter = world_cam_pixel_to_xy_converter
         self.robot_cam_pixel_to_xy_converter = robot_cam_pixel_to_xy_converter
+        self.robot_mover = RobotMover(world_cam_pixel_to_xy_converter,
+                                      robot_cam_pixel_to_xy_converter)
         self.real_path = None
         self.starting_point = None
         self.smooth_path = None
@@ -68,7 +71,8 @@ class Sequence:
         self.comm_ui = comm_ui
 
     def __init_sequence(self):
-        initSequence = InitSequence(X_END_START_ZONE, Y_END_START_ZONE)
+        initSequence = InitSequence(X_END_START_ZONE, Y_END_START_ZONE,
+                                    self.cap)
         self.zone_start_point, self.zone_dep_cardinal, self.zone_dep_point, self.zone_pickup_cardinal, self.zone_pickup_point = initSequence.init(
         )
 
@@ -372,66 +376,52 @@ class Sequence:
         x_mm_movement_point_negative = (-30, 0)
         y_mm_movement_point = (0, 30)
         y_mm_movement_point_negative = (0, -30)
-        number_of_increment = 8
-
-        real_x_inverse, real_y_inverse = None, None
 
         if self.zone_pickup_cardinal == SOUTH():
             logger.log_info("Move around south pick up...")
-            for i in range(number_of_increment):
-                x, y = self.robot_cam_pixel_to_xy_converter.convert_real_xy_given_angle(
-                    x_mm_movement_point_negative, -90)
-                self.comm_pi.sendCoordinates(x, y)
-                piece_grabbed, real_x_inverse, real_y_inverse = self.grab_piece(
-                )
 
-                if piece_grabbed:
-                    break
+            self.__move_on_pickup_zone(x_mm_movement_point_negative, -90)
 
         if self.zone_pickup_cardinal == NORTH():
             logger.log_info("Move around north pick up...")
-            for i in range(number_of_increment):
-                x, y = self.robot_cam_pixel_to_xy_converter.convert_real_xy_given_angle(
-                    x_mm_movement_point, 90)
-                self.comm_pi.sendCoordinates(x, y)
 
-                piece_grabbed, real_x_inverse, real_y_inverse = self.grab_piece(
-                )
-
-                if piece_grabbed:
-                    break
+            self.__move_on_pickup_zone(x_mm_movement_point, 90)
 
         if self.zone_pickup_cardinal == EAST():
             logger.log_info("Move around east pick up...")
-            for i in range(number_of_increment):
-                x, y = self.robot_cam_pixel_to_xy_converter.convert_real_xy_given_angle(
-                    y_mm_movement_point_negative, 0)
-                self.comm_pi.sendCoordinates(x, y)
 
-                piece_grabbed, real_x_inverse, real_y_inverse = self.grab_piece(
-                )
-
-                if piece_grabbed:
-                    break
+            self.__move_on_pickup_zone(y_mm_movement_point_negative, 0)
 
         if self.zone_pickup_cardinal == WEST():
             logger.log_info("Move around west pick up...")
-            for i in range(number_of_increment):
-                x, y = self.robot_cam_pixel_to_xy_converter.convert_real_xy_given_angle(
-                    y_mm_movement_point, 180)
-                self.comm_pi.sendCoordinates(x, y)
 
-                piece_grabbed, real_x_inverse, real_y_inverse = self.grab_piece(
-                )
-
-                if piece_grabbed:
-                    break
+            self.__move_on_pickup_zone(y_mm_movement_point, 180)
 
         # validate_piece_was_grabbed = self.validate_piece_taken(
         #     real_x_inverse, real_y_inverse)
 
         # if validate_piece_was_grabbed is False:
         #     self.move_robot_around_pickup_zone()
+
+    def __move_on_pickup_zone(self, moving_point, angle):
+        number_of_increment = 8
+        i = 0
+
+        while i < number_of_increment:
+            if number_of_increment == number_of_increment - 1:
+                number_of_increment = 0
+                moving_point = (moving_point[0] * -1, moving_point[1] * -1)
+
+            x, y = self.robot_cam_pixel_to_xy_converter.convert_real_xy_given_angle(
+                moving_point, angle)
+            self.comm_pi.sendCoordinates(x, y)
+
+            piece_grabbed, real_x_inverse, real_y_inverse = self.grab_piece()
+
+            if piece_grabbed:
+                break
+
+            i += 1
 
     def validate_piece_taken(self, x, y):
         self.comm_pi.sendCoordinates(x * -1, y * -1)
@@ -440,7 +430,7 @@ class Sequence:
         try:
             x, y = detect_piece(robot_img, self.piece_shape, self.piece_color)
             return False
-        except Exception as ex:
+        except Exception:
             logger.log_critical(
                 "Could not find piece, continuing to move to detect it...")
             logger.log_critical(traceback.print_exc())
@@ -454,30 +444,17 @@ class Sequence:
         try:
             x, y = detect_piece(robot_img, self.piece_shape, self.piece_color)
             logger.log_info("Found piece!")
-        except Exception as ex:
+        except Exception:
             logger.log_critical(
                 "Could not find piece, continuing to move to detect it...")
             logger.log_critical(traceback.print_exc())
             return False, 0, 0
 
-        x_from_center_of_image = round(x - (
-            (width / 2) + OFFSET_X_CAM_EMBARKED))
-        y_from_center_of_image = round(y - (
-            (height / 2) + OFFSET_Y_CAM_EMBARKED))
-
-        # x_from_center_of_image = round((width / 2 + OFFSET_X_CAM_EMBARKED) - x)
-        # y_from_center_of_image = round((height / 2 + OFFSET_Y_CAM_EMBARKED) - y)
-
-        real_x, real_y = self.robot_cam_pixel_to_xy_converter\
-            .convert_pixel_to_xy_point_given_angle((x_from_center_of_image, y_from_center_of_image),
-                                                   self.__cardinal_to_angle(self.zone_pickup_cardinal))
-
+        real_x, real_y = self.robot_mover.move_robot_from_embarked_referential(
+            x, y, self.zone_pickup_cardinal, width, height)
         if DEBUG:
             robot_img = self.take_image()
             cv2.circle(robot_img, (x, y), 5, [255, 255, 255])
-            cv2.circle(robot_img,
-                       (x_from_center_of_image, y_from_center_of_image), 5,
-                       [255, 255, 255])
             cv2.imshow("grab piece frame", robot_img)
             logger.log_info("Real moving point: " + str(real_x) + "," +
                             str(real_y))
@@ -524,14 +501,8 @@ class Sequence:
         logger.log_info('Drop piece, detected center of first point ' +
                         str(x) + ', ' + str(y))
 
-        x_from_center_of_image = round(x - (
-            (width / 2) + OFFSET_X_CAM_EMBARKED))
-        y_from_center_of_image = round(y - (
-            (height / 2) + OFFSET_Y_CAM_EMBARKED))
-
-        real_x, real_y = self.robot_cam_pixel_to_xy_converter \
-            .convert_pixel_to_xy_point_given_angle((x_from_center_of_image, y_from_center_of_image),
-                                                   self.__cardinal_to_angle(self.zone_dep_cardinal))
+        real_x, real_y = self.robot_mover.move_robot_from_embarked_referential(
+            x, y, self.zone_dep_cardinal, width, height)
 
         return (real_x, real_y)
 

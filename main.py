@@ -121,8 +121,8 @@ def main_sequence(ui=True):
     # sequence.charge_robot_at_station()
     # sequence.go_back_from_charge_station()
     # sequence.go_to_decode_qr()
-    sequence.piece_color = None
-    sequence.piece_shape = 'cercle'
+    sequence.piece_color = 'bleu'
+    sequence.piece_shape = None
     sequence.depot_number = 'Zone 1'
     sequence.go_to_zone_pickup()
     sequence.move_robot_around_pickup_zone()
