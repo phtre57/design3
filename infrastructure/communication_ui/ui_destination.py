@@ -16,5 +16,8 @@ def WORLD_FEED_IMAGE(self):
 def EMBARKED_FEED_IMAGE(self):
     return 'embarkedcamfeed'
 
+def EMBARKED_OPENCV_IMAGE(self):
+    return 'embarkedopencv'
+
 def PATHS_IMAGE(self):
     return 'paths'
