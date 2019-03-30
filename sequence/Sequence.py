@@ -409,7 +409,7 @@ class Sequence:
 
         while i < number_of_increment:
             if number_of_increment == number_of_increment - 1:
-                number_of_increment = 0
+                i = 0
                 moving_point = (moving_point[0] * -1, moving_point[1] * -1)
 
             x, y = self.robot_cam_pixel_to_xy_converter.convert_real_xy_given_angle(

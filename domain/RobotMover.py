@@ -16,7 +16,7 @@ class RobotMover:
         y_from_center_of_image = round(y - (
             (image_height / 2) + OFFSET_Y_CAM_EMBARKED))
 
-        real_x, real_y = self.robot_cam_pixel_to_xy_converter \
+        real_x, real_y = self.embarked_converter \
             .convert_pixel_to_xy_point_given_angle((x_from_center_of_image, y_from_center_of_image),
                                                    self.__cardinal_to_angle(cardinal_string))
 
