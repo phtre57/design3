@@ -7,6 +7,9 @@ def TENSION_TEXT(self):
 def SEQUENCE_TEXT(self):
     return 'sequence'
 
+def LOG_TEXT(self):
+    return 'log'
+
 def WORLD_FEED_IMAGE(self):
     return 'worldcamfeed'
 

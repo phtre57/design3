@@ -2,7 +2,6 @@ import socketio
 import base64
 import cv2
 
-
 class Communication_ui():
     def __init__(self):
         self.sio = self.__init_conn()

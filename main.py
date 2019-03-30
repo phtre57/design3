@@ -8,6 +8,7 @@ import sys
 from domain.image_analysis.ImageToGridConverter import *
 from infrastructure.communication_pi.comm_pi import Communication_pi
 from infrastructure.communication_ui.comm_ui import Communication_ui
+from infrastructure.communication_ui.ui_destination import *
 from sequence.Sequence import Sequence
 from util.Logger import Logger
 from util.color import Color
@@ -70,7 +71,7 @@ def init_conn_with_ui():
         sio.emit("eventFromRobot", {
             'data': 'Started',
             'type': 'text',
-            'dest': 'phase'
+            'dest': SEQUENCE_TEXT()
         })
         main_sequence()
 
