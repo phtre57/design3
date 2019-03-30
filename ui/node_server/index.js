@@ -24,6 +24,8 @@ io.on("connection", client => {
     if (data.type === "img") {
       data.data = String.fromCharCode.apply(null, new Uint16Array(data.data));
     }
+
+    console.log(data)
     
     UIClient.emit("event", data);
     client.emit("validation", "v");

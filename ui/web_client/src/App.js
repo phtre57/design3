@@ -75,14 +75,16 @@ class App extends Component {
               </Toolbar>
           </AppBar>
 
-          <div className='main-container' id="main-container" style={container}>
-            <div style={mainPaper}>
-            <Paper elevation={15}>
-            <div style={{...container, ...morePadding}}>
+          <div className='main-container' id="main-container" style={mainContainer}>
+            <Paper elevation={15} style={mainPaper}>
+            <div style={container}>
                 <Paper elevation={4} style={paperStyle}>
-                    <h4 style={textZone}>Informations QR</h4>
-                    <p>{this.state.qrcode}</p>
-                    <div> {this.renderImage(this.state.actualimg)} </div>
+                    <h4 style={textStyle}>Informations Robot</h4>
+                    <div style={textContainer}>
+                    <span>Tension condensateur: {this.state.gettension} </span>
+                    <span>Statut Robot: {this.state.sequence} </span>
+                    <span>Code QR: {this.state.qrcode} </span>
+                    </div>
                 </Paper>
                 <Paper elevation={4} style={paperStyle}>
                     <Timer startSignal={this.startSignal} resetSignal={this.resetSignal}/>
@@ -90,28 +92,37 @@ class App extends Component {
             </div>
             <div style={container}>
                 <Paper elevation={4} style={paperStyle}>
-                    <span style={textZone}>Courant et</span>
-                    <span style={textZone}>tension condensateur</span>
+                    <h4 style={textStyle}>Caméra monde</h4>
+                    <div> {this.renderImage(this.state.optpath)} </div>
                 </Paper>
                 <Paper elevation={4} style={paperStyle}>
-                    <span style={textZone}>États présent du robot</span>
-                    <span style={textZone}>{this.state.phase}</span>
+                    <h4 style={textStyle}>Caméra embarquée</h4>
+                    <div> {this.renderImage(this.state.optpath)} </div>
+                    {/* <div> {this.renderImage(this.state.actualimg)} </div> */}
                 </Paper>
             </div>
             <div style={container}>
                 <Paper elevation={4} style={paperStyle}>
-                    <h4>Trajectoire planifiée & réelle</h4>
+                    <h4 style={textStyle}>Trajectoire planifiée & réelle</h4>
                     <div> {this.renderImage(this.state.optpath)} </div>
+                </Paper>
+                <Paper elevation={4} style={paperStyle}>
+                    <h4 style={textStyle}>Caméra embarquée (openCV)</h4>
+                    <div> {this.renderImage(this.state.optpath)} </div>
+                    {/* <div> {this.renderImage(this.state.actualimg)} </div> */}
                 </Paper>
             </div>
             </Paper>
-            </div>  
             <LogPanel socket={this.state.socket}/>
           </div>
       </div>
     );
   }
 }
+
+const textStyle = {
+  marginTop: '0px'
+};
 
 const app = {
   textAlign: 'center',
@@ -122,6 +133,8 @@ const app = {
 const paperStyle = {
   display: 'flex',
   flexDirection: 'column',
+  alignItems: 'center',
+  width: '100%',
   margin: '10px',
   padding: '10px'
 };
@@ -130,34 +143,43 @@ const container = {
   display: 'flex',
   flexDirection: 'row',
   justifyContent: 'center',
-  height: 'calc(100% - 64px)',
+  flexGrow: '1',
   margin: '0px',
-  width: '100%'
+};
+
+const mainContainer = {
+  height: 'calc(100% - 64px)',
+  display: 'flex',
+  flexDirection: 'row',
+  justifyContent: 'center',
+  margin: '0px',
 };
 
 const mainPaper = {
   marginLeft: '100px',
+  height: 'calc(100% - 34px)',
+  width: '50%',
+  alignItems: 'center',
   marginRight: '100px',
   marginTop: '10px',
-  marginBottom: '0px'
-};
-
-const morePadding = {
-  padding: '10px',
-};
-
-const textZone = {
-  margin: '10px 50px 10px 50px'
+  paddingBottom: '10px'
 };
 
 const imageStyle = {
-  maxWidth: '300px',
-  maxHeight: '300px'
+  maxWidth: '215px',
+  maxHeight: '215px'
 };
 
 const toolbar = {
   alignItems: 'center',
   justifyContent: 'space-between',
-}
+};
+
+const textContainer = {
+  display: 'flex',
+  textAlign: 'left',
+  flexDirection: 'column',
+  width: '90%'
+};
 
 export default App;
