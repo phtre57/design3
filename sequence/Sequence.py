@@ -449,59 +449,48 @@ class Sequence:
 
         if self.zone_pickup_cardinal == SOUTH():
             logger.log_info("Move around south pick up...")
-            for i in range(number_of_increment):
-                x, y = self.robot_cam_pixel_to_xy_converter.convert_real_xy_given_angle(
-                    x_mm_movement_point_negative, -90)
-                self.comm_pi.sendCoordinates(x, y)
-                piece_grabbed, real_x_inverse, real_y_inverse = self.grab_piece()
 
-                if piece_grabbed:
-                    break
+            self.__move_on_pickup_zone(x_mm_movement_point_negative, -90)
 
         if self.zone_pickup_cardinal == NORTH():
             logger.log_info("Move around north pick up...")
-            for i in range(number_of_increment):
-                x, y = self.robot_cam_pixel_to_xy_converter.convert_real_xy_given_angle(
-                    x_mm_movement_point, 90)
-                self.comm_pi.sendCoordinates(x, y)
 
-                piece_grabbed, real_x_inverse, real_y_inverse = self.grab_piece(
-                )
-
-                if piece_grabbed:
-                    break
+            self.__move_on_pickup_zone(x_mm_movement_point, 90)
 
         if self.zone_pickup_cardinal == EAST():
             logger.log_info("Move around east pick up...")
-            for i in range(number_of_increment):
-                x, y = self.robot_cam_pixel_to_xy_converter.convert_real_xy_given_angle(
-                    y_mm_movement_point_negative, 0)
-                self.comm_pi.sendCoordinates(x, y)
 
-                piece_grabbed, real_x_inverse, real_y_inverse = self.grab_piece(
-                )
-
-                if piece_grabbed:
-                    break
+            self.__move_on_pickup_zone(y_mm_movement_point_negative, 0)
 
         if self.zone_pickup_cardinal == WEST():
             logger.log_info("Move around west pick up...")
-            for i in range(number_of_increment):
-                x, y = self.robot_cam_pixel_to_xy_converter.convert_real_xy_given_angle(
-                    y_mm_movement_point, 180)
-                self.comm_pi.sendCoordinates(x, y)
 
-                piece_grabbed, real_x_inverse, real_y_inverse = self.grab_piece(
-                )
-
-                if piece_grabbed:
-                    break
+            self.__move_on_pickup_zone(y_mm_movement_point, 180)
 
         # validate_piece_was_grabbed = self.validate_piece_taken(
         #     real_x_inverse, real_y_inverse)
 
         # if validate_piece_was_grabbed is False:
         #     self.move_robot_around_pickup_zone()
+
+    def __move_on_pickup_zone(self, moving_point, angle):
+        number_of_increment = 8
+        i = 0
+
+        while i < number_of_increment:
+            if number_of_increment == number_of_increment - 1:
+                number_of_increment = 0
+                moving_point = (moving_point[0] * -1, moving_point[1] * -1)
+
+            x, y = self.robot_cam_pixel_to_xy_converter.convert_real_xy_given_angle(moving_point, angle)
+            self.comm_pi.sendCoordinates(x, y)
+
+            piece_grabbed, real_x_inverse, real_y_inverse = self.grab_piece()
+
+            if piece_grabbed:
+                break
+
+            i += 1
 
     def validate_piece_taken(self, x, y):
         self.comm_pi.sendCoordinates(x * -1, y * -1)
