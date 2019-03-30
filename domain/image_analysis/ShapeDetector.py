@@ -5,8 +5,11 @@ import numpy as np
 from domain.image_analysis.ShapeValidator import ShapeValidator
 from domain.image_analysis.Shape import Shape
 from context.config import SHAPE_DETECTOR_DEBUG
+from util.Logger import Logger
 
 DEBUG = SHAPE_DETECTOR_DEBUG
+
+logger = Logger(__name__)
 
 
 class ShapeDetector:
@@ -34,14 +37,20 @@ class ShapeDetector:
         self.comparator_cnts = None
         self.coord_limiter = None
         self.x_coord_limiter = 0
+        self.external_cnts = False
 
     def detect(self, frame, og_frame):
         frame = frame.copy()
 
         self.shapes = []
 
-        cnts = cv2.findContours(frame.copy(), cv2.RETR_EXTERNAL,
-                                cv2.CHAIN_APPROX_SIMPLE)
+        if (self.external_cnts):
+            cnts = cv2.findContours(frame.copy(), cv2.RETR_EXTERNAL,
+                                    cv2.CHAIN_APPROX_SIMPLE)
+        else:
+            cnts = cv2.findContours(frame.copy(), cv2.RETR_TREE,
+                                    cv2.CHAIN_APPROX_SIMPLE)
+
         cnts = imutils.grab_contours(cnts)
 
         if DEBUG:
@@ -92,7 +101,8 @@ class ShapeDetector:
                     continue
 
             if (self.shape_only is not None and self.shape_only == 'circle'):
-                approx = cv2.approxPolyDP(c, 0.02 * peri, True)
+                print('ok')
+                approx = cv2.approxPolyDP(c, 0.05 * peri, True)
             else:
                 approx = cv2.approxPolyDP(c, 0.05 * peri, True)
 
@@ -203,12 +213,18 @@ class ShapeDetector:
             shape = shapeValidator.validate(approx)
 
             if (self.shape_only is not None):
-                if (shape != self.shape_only):
+                if ((self.shape_only == 'squaretangle'
+                     and shape == 'rectangle') or
+                    (self.shape_only == 'squaretangle' and shape == 'square')):
+                    logger.log_info(
+                        'Rectangle or square accepted as squaretangle')
+                elif (shape != self.shape_only):
                     if (DEBUG):
                         print(len(approx))
                         print('SKIPPED NOT THE RIGHT SHAPE')
                     continue
 
+            logger.log_info('SHAPE DETECTOR - DETECTED A ' + str(shape))
             self.shapes.append(shape)
             shapes_with_approx.append([shape, approx, c, (wRect, hRect)])
 
@@ -259,3 +275,6 @@ class ShapeDetector:
     def set_coord_limiter(self, x):
         self.coord_limiter = True
         self.x_coord_limiter = x
+
+    def set_external_cnts(self, v):
+        self.external_cnts = v

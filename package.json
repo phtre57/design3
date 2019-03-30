@@ -13,10 +13,10 @@
     "main": "python -m main",
     "start": "node ui/node_server/index.js",
     "client": "cd ./ui/web_client && yarn start",
-    "test-l": "python -m main --d True",
-    "test-large": "python -m test.LargeTest.MovingRobotTestLarge",
+    "test-l": "python -O -m main --d True",
+    "test-large": "python -O -m test.LargeTest.MovingRobotTestLarge",
     "deco": "python -m test.LargeTest.DecoTestLarge",
-    "calibrate": "python -m util.CalibrateCams"
+    "calibrate": "python -O -m util.CalibrateCams"
   },
   "repository": {
     "type": "git",

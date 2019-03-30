@@ -6,7 +6,7 @@ import cv2
 import os
 import inspect
 
-SHOW = False
+SHOW = True
 
 
 class DetectContourPiecesTest(unittest.TestCase):
@@ -21,35 +21,59 @@ class DetectContourPiecesTest(unittest.TestCase):
         path = os.path.normpath(os.path.join(path, os.pardir))
         # path = os.path.join(path, "./image_samples/real_image/pieces.jpg")
 
-        path1 = os.path.join(path, "./samples/piece.jpg")
+        path01 = os.path.join(path, "./samples/failed7.jpg")
+        str_shape = 'cercle'
+        self.call_path(path01, str_shape)
+
+        path01 = os.path.join(path, "./samples/failed6.jpg")
+        str_shape = 'triangle'
+        self.call_path(path01, str_shape)
+
+        path1 = os.path.join(path, "./samples/piece40.jpg")
         str_shape = 'pentagon'
         self.call_path(path1, str_shape)
 
-        path2 = os.path.join(path, "./samples/piece1.jpg")
-        str_shape = 'rectangle'
+        path2 = os.path.join(path, "./samples/piece40.jpg")
+        str_shape = 'triangle'
         self.call_path(path2, str_shape)
 
-        path3 = os.path.join(path, "./samples/piece2.jpg")
-        str_shape = 'pentagon'
+        path3 = os.path.join(path, "./samples/piece43.jpg")
+        str_shape = 'circle'
         self.call_path(path3, str_shape)
 
-        path4 = os.path.join(path, "./samples/piece3.jpg")
-        str_shape = 'circle'
+        path4 = os.path.join(path, "./samples/piece43.jpg")
+        str_shape = 'squaretangle'
         self.call_path(path4, str_shape)
 
-        path5 = os.path.join(path, "./samples/piece4.jpg")
-        str_shape = 'pentagon'
+        path5 = os.path.join(path, "./samples/failed1.jpg")
+        str_shape = 'circle'
         self.call_path(path5, str_shape)
+
+        path6 = os.path.join(path, "./samples/failed4.jpg")
+        str_shape = 'triangle'
+        self.call_path(path6, str_shape)
+
+        path7 = os.path.join(path, "./samples/failed5.jpg")
+        str_shape = 'triangle'
+        self.call_path(path7, str_shape)
+
+        path8 = os.path.join(path, "./samples/failed4.jpg")
+        str_shape = 'circle'
+        self.call_path(path8, str_shape)
+
+        path9 = os.path.join(path, "./samples/failed5.jpg")
+        str_shape = 'circle'
+        self.call_path(path9, str_shape)
 
     def call_path(self, path, str_shape):
         frame = cv2.imread(path)
 
-        cv2.imshow('FROM TEST - FRESH FRAME', frame)
-        cv2.waitKey()
-
         if (SHOW):
+            cv2.imshow('FROM TEST - FRESH FRAME', frame)
+            cv2.waitKey()
+
             (x, y) = detect_contour_pieces(frame, str_shape)
-            cv2.circle(frame, (x, y), 1, [255, 51, 51])
+            cv2.circle(frame, (x, y), 3, [255, 255, 255])
             cv2.imshow('FROM TEST - SHAPE FRAME', frame)
             cv2.waitKey()
 

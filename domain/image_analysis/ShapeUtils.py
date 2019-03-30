@@ -77,11 +77,15 @@ def find_center(c, radius_limit, frame):
 
 def validate_if_contour_is_too_small(c, radius_limit, frame):
     ((x, y), radius) = cv2.minEnclosingCircle(c)
+
     if (DEBUG):
+        print(radius)
+        print(radius_limit)
         frame1 = frame.copy()
         cv2.circle(frame1, (round(x), round(y)), round(radius), [255, 51, 51])
         cv2.imshow('CNTS1', frame1)
         cv2.waitKey()
+
     if (radius < radius_limit):
         return True
     else:
