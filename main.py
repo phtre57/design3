@@ -110,32 +110,6 @@ def init_conn_with_ui():
         main_sequence()
 
 
-def calibrate():
-    logger.log_info("Calibration World Cam phase: ")
-    pixel_to_xy_converter = None
-    try:
-        with open('calibration_data.pkl', 'rb') as input:
-            pixel_to_xy_converter = pickle.load(input)
-
-        return pixel_to_xy_converter
-    except Exception as ex:
-        logger.log_info(ex)
-        traceback.logger.log_info_exc(file=sys.stdout)
-
-
-def calibrateEmbark():
-    logger.log_info("Calibration Embark Cam phase: ")
-    pixel_to_xy_converter = None
-    try:
-        with open('calibration_embark.pkl', 'rb') as input:
-            pixel_to_xy_converter = pickle.load(input)
-
-        return pixel_to_xy_converter
-    except Exception as ex:
-        logger.log_info(ex)
-        traceback.logger.log_info_exc(file=sys.stdout)
-
-
 def init_conn_without_ui():
     main_sequence(False)
 
