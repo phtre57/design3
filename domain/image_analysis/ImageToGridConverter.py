@@ -20,6 +20,8 @@ OBSTACLE_BORDER = 35
 
 LEFT_OBSTACLE_BORDER = 53
 
+CIRCLE_OBSTACLE_RADIUS = 45
+
 X_WALL_LEFT_CORNER = 20
 X_WALL_RIGHT_CORNER = 300
 Y_WALL_UP_CORNER = 60
@@ -49,7 +51,8 @@ class ImageToGridConverter(object):
         self.image = cv2.GaussianBlur(self.image, BLUR_TUPLE, 0)
         self.grid = np.zeros((HEIGHT, LENGTH))
         self.mark_ending_point(x_end, y_end)
-        self.__mark_obstacle_border()
+        #self.__mark_obstacle_border()
+        self.__circle_mark_obstacle_in_image()
         self.__mark_table_wall()
         self.mark_obstacle_in_grid_from_image()
         self.show()
@@ -156,6 +159,36 @@ class ImageToGridConverter(object):
 
                 cv2.circle(self.image, (start_x, start_y + i), 1,
                            [255, 51, 51])
+
+    def __circle_mark_obstacle_in_image(self):
+        hsv = cv2.cvtColor(self.image, cv2.COLOR_BGR2HSV)
+
+        mask = cv2.inRange(hsv, BLUE_HSV_LOW, BLUE_HSV_HIGH)
+        self.obstacles_center_array = self.__find_center_of_obstacle(mask)
+
+        for point in self.obstacles_center_array:
+            x, y = point
+
+            vertical_axis_offset = 10
+            thickness = 1
+            x_offset = 10
+
+            if x > LENGTH / 2 + 100:
+                cv2.ellipse(self.image, (x - x_offset - 10, y),
+                            (CIRCLE_OBSTACLE_RADIUS + 5, CIRCLE_OBSTACLE_RADIUS)
+                            , 0, 0, 360, [255, 51, 51], thickness)
+
+            elif x > LENGTH / 2 + 50:
+                cv2.ellipse(self.image, (x - x_offset, y), (CIRCLE_OBSTACLE_RADIUS, CIRCLE_OBSTACLE_RADIUS - vertical_axis_offset)
+                            , 0, 0, 360, [255, 51, 51], thickness)
+
+            elif x < LENGTH / 2 - 50:
+                cv2.ellipse(self.image, (x + x_offset, y), (CIRCLE_OBSTACLE_RADIUS, CIRCLE_OBSTACLE_RADIUS - vertical_axis_offset)
+                            , 0, 0, 360, [255, 51, 51], thickness)
+
+            else:
+                cv2.ellipse(self.image, (x - x_offset + 5, y), (CIRCLE_OBSTACLE_RADIUS, CIRCLE_OBSTACLE_RADIUS - vertical_axis_offset)
+                            , 0, 0, 360, [255, 51, 51], thickness)
 
     def get_obstacle_border(self):
         return self.obstacle_border

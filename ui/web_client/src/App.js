@@ -93,23 +93,21 @@ class App extends Component {
             <div style={container}>
                 <Paper elevation={4} style={paperStyle}>
                     <h4 style={textStyle}>Caméra monde</h4>
-                    <div> {this.renderImage(this.state.optpath)} </div>
+                    <div> {this.renderImage(this.state.worldcamfeed)} </div>
                 </Paper>
                 <Paper elevation={4} style={paperStyle}>
                     <h4 style={textStyle}>Caméra embarquée</h4>
-                    <div> {this.renderImage(this.state.optpath)} </div>
-                    {/* <div> {this.renderImage(this.state.actualimg)} </div> */}
+                    <div> {this.renderImage(this.state.embarkedcamfeed)} </div>
                 </Paper>
             </div>
             <div style={container}>
                 <Paper elevation={4} style={paperStyle}>
                     <h4 style={textStyle}>Trajectoire planifiée & réelle</h4>
-                    <div> {this.renderImage(this.state.optpath)} </div>
+                    <div> {this.renderImage(this.state.paths)} </div>
                 </Paper>
                 <Paper elevation={4} style={paperStyle}>
                     <h4 style={textStyle}>Caméra embarquée (openCV)</h4>
-                    <div> {this.renderImage(this.state.optpath)} </div>
-                    {/* <div> {this.renderImage(this.state.actualimg)} </div> */}
+                    <div> {this.renderImage(this.state.embarkedopencv)} </div>
                 </Paper>
             </div>
             </Paper>

@@ -43,12 +43,12 @@ logger = Logger(__name__)
 
 class Sequence:
     def __init__(self,
-                 cap,
+                 image_taker,
                  comm_pi,
                  world_cam_pixel_to_xy_converter,
                  robot_cam_pixel_to_xy_converter,
                  wild=False):
-        self.cap = cap
+        self.image_taker = image_taker
         self.X_END = None
         self.Y_END = None
         self.comm_pi = comm_pi
@@ -202,7 +202,7 @@ class Sequence:
 
     def take_image_and_draw(self, smooth_path=None):
         logger.log_info("Capture d'image en cours...")
-        ret, img = self.cap.read()
+        ret, img = self.image_taker.read()
 
         if (smooth_path is not None):
             for point in smooth_path:
@@ -219,7 +219,7 @@ class Sequence:
         logger.log_info("Capture d'image de la camera monde en cours...")
 
         while True:
-            ret, self.img = self.cap.read()
+            ret, self.img = self.image_taker.read()
             if ret:
                 break
 
@@ -432,6 +432,7 @@ class Sequence:
         i = 0
 
         while i < number_of_increment:
+
             x, y = self.robot_cam_pixel_to_xy_converter.convert_real_xy_given_angle(
                 moving_point, angle)
             self.comm_pi.sendCoordinates(x, y)
