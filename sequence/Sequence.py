@@ -8,9 +8,6 @@ from domain.pathfinding.PathSmoother import PathSmoother
 from domain.image_analysis_pathfinding.PixelToXYCoordinatesConverter import *
 from domain.image_analysis.ImageToGridConverter import *
 from domain.image_analysis_pathfinding.RobotDetector import RobotDetector
-from domain.image_analysis.opencv_callable.DetectStartZone import detect_start_zone
-from domain.image_analysis.opencv_callable.DetectZoneDepWorld import detect_zone_dep_world
-from domain.image_analysis.opencv_callable.DetectPickupZone import detect_pickup_zone
 from domain.image_analysis.opencv_callable.DetectQR import *
 from domain.image_analysis.DetectBlurriness import *
 from domain.image_analysis_pathfinding.RobotDetector import *
@@ -21,6 +18,7 @@ from domain.QRCodeDictionnary import *
 from util.Logger import Logger
 from domain.image_analysis.Cardinal import *
 from domain.image_analysis.opencv_callable.DetectPointZoneDep import detect_point_zone_dep
+from sequence.InitSequence import InitSequence
 
 DEBUG = False
 ROBOT_DANCE_X_POSITIVE = "50,0,0\n"
@@ -45,7 +43,7 @@ logger = Logger(__name__)
 
 class Sequence:
     def __init__(self, cap, comm_pi, world_cam_pixel_to_xy_converter,
-                 robot_cam_pixel_to_xy_converter):
+                 robot_cam_pixel_to_xy_converter, show_ui):
         self.cap = cap
         self.X_END = None
         self.Y_END = None
@@ -65,13 +63,14 @@ class Sequence:
         self.zone_pickup_cardinal = None
         self.zone_pickup_point = None
         self.zone_start_point = None
-        self.__init_zones()
+        self.__init_sequence()
         self.comm_pi.moveArm('2000')
+        self.comm_ui = comm_ui
 
-    def __init_zones(self):
-        self.__detect_start_zone()
-        self.__detect_zone_dep()
-        self.__detect_pickup_zone()
+    def __init_sequence(self):
+        initSequence = InitSequence(X_END_START_ZONE, Y_END_START_ZONE)
+        self.zone_start_point, self.zone_dep_cardinal, self.zone_dep_point, self.zone_pickup_cardinal, self.zone_pickup_point = initSequence.init(
+        )
 
         img = self.take_image()
 
@@ -84,74 +83,6 @@ class Sequence:
 
         cv2.imshow("ZONES FOUND", img)
         cv2.waitKey(0)
-
-    def __detect_start_zone(self):
-
-        i = 0
-        while True:
-            try:
-                img = self.take_image()
-                i = i + 1
-                if (i > 20):
-                    logger.log_critical(
-                        'START ZONE NOT DETECTED, FALL BACK TO HARDCODED')
-                    logger.log_debug(traceback.format_exc())
-                    self.zone_start_point = (X_END_START_ZONE,
-                                             Y_END_START_ZONE)
-                    break
-
-                (x, y) = detect_start_zone(img)
-                self.zone_start_point = (round(x / 2), round(y / 2))
-                break
-            except Exception:
-                logger.log_debug('START ZONE NOT DETECTED RETRYING' + str(i))
-
-    def __detect_zone_dep(self):
-
-        i = 0
-        while True:
-            try:
-                img = self.take_image()
-                i = i + 1
-                res = detect_zone_dep_world(img)
-                (x, y) = res['point']
-                self.zone_dep_point = (round(x / 2), round(y / 2))
-                self.zone_dep_cardinal = res['cardinal']
-                break
-            except Exception:
-                logger.log_debug('ZONE DEP WORLD NOT DETECTED RETRYING' +
-                                 str(i))
-                if (i > 20):
-                    logger.log_critical(
-                        'ZONE DEP WORLD NOT DETECTED PROBLEMS, PROBLEMS, PROBLEMS'
-                    )
-                    logger.log_debug(traceback.format_exc())
-                    raise Exception(
-                        'ZONE DEP WORLD NOT DETECTED PROBLEMS, PROBLEMS, PROBLEMS'
-                    )
-
-    def __detect_pickup_zone(self):
-
-        i = 0
-        while True:
-            try:
-                img = self.take_image()
-                i = i + 1
-                res = detect_pickup_zone(img)
-                (x, y) = res['point']
-                self.zone_pickup_point = (round(x / 2), round(y / 2))
-                self.zone_pickup_cardinal = res['cardinal']
-                break
-            except Exception:
-                logger.log_debug('PICKUP ZONE NOT DETECTED RETRYING' + str(i))
-                if (i > 20):
-                    logger.log_critical(
-                        'PICKUP ZONE NOT DETECTED PROBLEMS, PROBLEMS, PROBLEMS'
-                    )
-                    logger.log_debug(traceback.format_exc())
-                    raise Exception(
-                        'PICKUP ZONE NOT DETECTED PROBLEMS, PROBLEMS, PROBLEMS'
-                    )
 
     def __create_smooth_path(self, unsecure=False):
         center_and_image = None
