@@ -1,13 +1,10 @@
 import numpy as np
 
-# YELLOW_HSV_LOW = np.array([20, 100, 160])
-# YELLOW_HSV_HIGH = np.array([30, 255, 255])
-
-# YELLOW_HSV_LOW = np.array([5, 100, 160])
+# YELLOW_HSV_LOW = np.array([10, 205, 215])
 # YELLOW_HSV_HIGH = np.array([80, 255, 255])
 
-YELLOW_HSV_LOW = np.array([10, 205, 215])
-YELLOW_HSV_HIGH = np.array([80, 255, 255])
+YELLOW_HSV_LOW = np.array([20, 220, 220])
+YELLOW_HSV_HIGH = np.array([80, 250, 255])
 
 # RED_HSV_LOW = np.array([0, 60, 100])
 # RED_HSV_HIGH = np.array([10, 255, 255])
@@ -15,10 +12,10 @@ YELLOW_HSV_HIGH = np.array([80, 255, 255])
 RED_HSV_LOW = np.array([0, 60, 100])
 RED_HSV_HIGH = np.array([0, 255, 255])
 
-# BLUE_HSV_LOW = np.array([80, 40, 120])
+# BLUE_HSV_LOW = np.array([80, 15, 120])
 # BLUE_HSV_HIGH = np.array([140, 255, 255])
 
-BLUE_HSV_LOW = np.array([80, 15, 120])
+BLUE_HSV_LOW = np.array([86, 15, 150])
 BLUE_HSV_HIGH = np.array([140, 255, 255])
 
 # GREEN_HSV_LOW = np.array([40, 40, 60])
@@ -55,7 +52,7 @@ class Color:
         self.color = 4
         self.color_code = ([4, 11, 234], [255, 255, 255])
         self.color_code_hsv = (YELLOW_HSV_LOW, YELLOW_HSV_HIGH)
-        self.color_code_hsv_str = '5, 100, 160 | 80, 255, 255'
+        self.color_code_hsv_str = '20, 220, 220 | 80, 250, 255'
 
     def ORANGE(self):
         self.color = 5

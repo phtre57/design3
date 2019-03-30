@@ -9,10 +9,10 @@ PERI_LIMITER_CHECK = False
 PERI_LIMITER_UPPER = 160
 PERI_LIMITER_LOWER = 100
 RECT_LIMITER_CHECK = True
-RECT_W_LIMITER = 6
-RECT_H_LIMITER = 6
-RECT_W_LIMITER_UP = 14
-RECT_H_LIMITER_UP = 14
+RECT_W_LIMITER = 7
+RECT_H_LIMITER = 7
+RECT_W_LIMITER_UP = 12
+RECT_H_LIMITER_UP = 12
 
 RADIUS_LIMITER_CHECK = True
 RADIUS_LIMITER = 7
@@ -27,7 +27,11 @@ def detect_point_zone_dep(og_frame):
     cv2.rectangle(frame, (240, 0), (320, 240), (0, 0, 0), 110)
     cv2.rectangle(frame, (0, 200), (320, 240), (0, 0, 0), 110)
 
-    edges = canny(frame, point_zone_dep_mask, 80, 100)
+    if DEBUG:
+        cv2.imshow('DETECT ZONE DEP -- DEBUG', frame)
+        cv2.waitKey()
+
+    edges = canny(frame, point_zone_dep_mask, 395, 400)
 
     edges = cv2.dilate(
         edges,

@@ -6,19 +6,11 @@ import time
 import traceback
 import sys
 
-from domain.image_analysis.opencv_callable.DetectTable import detect_table
-from domain.image_analysis.ImageToGridConverter import *
-from domain.pathfinding.Astar import Astar
-from test.domain.image_analysis.PathFindingImageTest import test_astar_on_image
-from domain.image_analysis.opencv_callable.DetectQR import decode
-from domain.image_analysis.opencv_callable.DetectContourPieces import detect_contour_pieces
-from domain.image_analysis.opencv_callable.DetectZoneDep import detect_zone_dep
 from infrastructure.communication_pi.comm_pi import Communication_pi
 from infrastructure.communication_ui.comm_ui import Communication_ui
 from sequence.Sequence import Sequence
 from test.LargeTest.TestConstants import *
 from util.Logger import Logger
-from util.color import Color
 
 parser = argparse.ArgumentParser(description='Process some integers.')
 parser.add_argument(
@@ -62,15 +54,20 @@ def main_sequence_old():
     comm_ui.SendImage(shape.frame, "actualimg")
 
 
-def start_cam():
+def start_cam(open=True):
     logger.log_info("Ouverture de la caméra: ")
-    cap = cv2.VideoCapture(1)
+    if open:
+        cap = cv2.VideoCapture(1)
+        if CANCER_MAC_USER:
+            cap.set(3, 640)
+            cap.set(4, 480)
 
-    while True:
-        if cap.isOpened():
-            break
-    logger.log_info("Fin ouverture de la caméra: ")
-    return cap
+        while True:
+            if cap.isOpened():
+                break
+        logger.log_info("Fin ouverture de la caméra: ")
+        return cap
+    return None
 
 
 def calibrate():
@@ -101,12 +98,7 @@ def calibrateEmbark():
 
 def main_sequence(ui=True):
 
-    cap = start_cam()
-    if CANCER_MAC_USER:
-        cap.set(3, 640)
-        cap.set(4, 480)
-
-    _, frame = cap.read()
+    cap = start_cam(False)
 
     # connect(comm_pi)
 
@@ -114,21 +106,22 @@ def main_sequence(ui=True):
     robot_cam_pixel_to_xy_converter = calibrateEmbark()
 
     sequence = Sequence(cap, comm_pi, pixel_to_xy_converter,
-                        robot_cam_pixel_to_xy_converter, ui)
+                        robot_cam_pixel_to_xy_converter, True)
     logger.log_info('Sequence start...')
     # sequence.go_to_start_zone()
     # sequence.go_to_c_charge_station()
     # sequence.charge_robot_at_station()
     # sequence.go_back_from_charge_station()
     # sequence.go_to_decode_qr()
-    sequence.piece_color = 'bleu'
+    sequence.zone_dep_cardinal = 'EAST'
+    sequence.piece_color = 'orange'
     sequence.piece_shape = None
-    sequence.depot_number = 'Zone 1'
-    sequence.go_to_zone_pickup()
-    sequence.move_robot_around_pickup_zone()
-    sequence.go_to_zone_dep()
+    sequence.depot_number = 'Zone 3'
+    # sequence.go_to_zone_pickup()
+    # sequence.move_robot_around_pickup_zone()
+    # sequence.go_to_zone_dep()
     sequence.move_robot_around_zone_dep()
-    sequence.go_to_start_zone()
+    # sequence.go_to_start_zone()
 
     sequence.end()
     logger.log_info('Sequence is done...')
