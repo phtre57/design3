@@ -30,5 +30,11 @@ while True:
     if com == "up_bras":
         comm_pi.moveArm('2000')
 
+    if com == "redOn":
+        comm_pi.redLightOn()
+
+    if com == "redOff":
+        comm_pi.redLightOff()
+
     if com == "quit":
         break

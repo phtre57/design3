@@ -8,6 +8,7 @@ import sys
 from infrastructure.communication_pi.comm_pi import Communication_pi
 from infrastructure.communication_ui.comm_ui import Communication_ui
 from infrastructure.communication_ui.ui_destination import *
+from test.LargeTest.mock.comm_pi import Communication_pi_mock
 from sequence.Sequence import Sequence
 from util.Logger import Logger
 from infrastructure.world_camera.TakeImage import TakeImage
@@ -18,19 +19,20 @@ parser.add_argument(
 args = parser.parse_args()
 
 comm_pi = Communication_pi()
+# comm_pi = Communication_pi_mock()
 logger = Logger(__name__)
 
-CANCER_MAC_USER = True
-SOURCE_MAC_CANCER = 0
+CANCER_MAC_USER = False
+SOURCE_CAM = 1
 
 
-def start_cam(wild=False):
-    if not wild:
-        image_taker = TakeImage(SOURCE_MAC_CANCER, CANCER_MAC_USER)
-        image_taker.start()
+def start_cam():
+    image_taker = cv2.VideoCapture(1)
 
-        return image_taker
-    return None
+    # image_taker = TakeImage(SOURCE_CAM, CANCER_MAC_USER)
+    # image_taker.start()
+
+    return image_taker
 
 
 def calibrate():
@@ -60,27 +62,28 @@ def calibrateEmbark():
 
 
 def main_sequence(ui=True):
-    wild = False
-    image_taker = start_cam(wild)
+    image_taker = start_cam()
 
     pixel_to_xy_converter = calibrate()
     robot_cam_pixel_to_xy_converter = calibrateEmbark()
 
     sequence = Sequence(image_taker, comm_pi, pixel_to_xy_converter,
-                        robot_cam_pixel_to_xy_converter, wild)
+                        robot_cam_pixel_to_xy_converter)
     logger.log_info('Sequence start...')
     # sequence.go_to_start_zone()
     # sequence.go_to_c_charge_station()
     # sequence.charge_robot_at_station()
     # sequence.go_back_from_charge_station()
     # sequence.go_to_decode_qr()
-    sequence.zone_dep_cardinal = 'EAST'
-    sequence.piece_color = 'orange'
-    sequence.piece_shape = None
+    # sequence.zone_dep_cardinal = 'EAST'
+    # sequence.piece_color = 'rouge'
+    # sequence.piece_shape = None
     sequence.depot_number = 'Zone 0'
     # sequence.go_to_zone_pickup()
-    #sequence.move_robot_around_pickup_zone()
-    sequence.go_to_zone_dep()
+    # sequence.move_robot_around_pickup_zone()
+    # sequence.go_to_zone_dep()
+    sequence.move_robot_around_zone_dep()
+    sequence.go_to_start_zone()
 
     sequence.end()
 
