@@ -345,6 +345,9 @@ class Sequence:
                 time.sleep(0.5)
                 tension = self.comm_pi.getTension()
 
+                if tension <= base_tension:
+                    derivative_tension = 0
+
                 if tension > base_tension:
                     derivative_tension += 1
 
