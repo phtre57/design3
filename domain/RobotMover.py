@@ -36,6 +36,19 @@ class RobotMover:
         else:
             return None
 
+    def move_closer_on_plane(self, cardinal_str):
+        fallback_move = -15
+
+        if cardinal_str == EAST():
+            return 0, fallback_move
+        elif cardinal_str == NORTH():
+            return 0, fallback_move
+        elif cardinal_str == WEST():
+            return 0, fallback_move
+        elif cardinal_str == SOUTH():
+            return 0, fallback_move
+        else:
+            return None
 
     def __cardinal_to_angle(self, cardinal_str):
 

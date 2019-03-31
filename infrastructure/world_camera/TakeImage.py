@@ -38,8 +38,8 @@ class TakeImage:
                 self.stop()
             else:
                 (self.ret, self.frame) = self.cam.read()
-                comm_ui = Communication_Ui()
-                comm_ui.SendImage(self.fram, WORLD_FEED_IMAGE)
+                comm_ui = Communication_ui()
+                comm_ui.SendImage(self.frame, WORLD_FEED_IMAGE)
 
     def read(self):
         return (self.ret, self.frame)
