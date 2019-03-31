@@ -6,7 +6,7 @@ from util.color import Color
 from domain.image_analysis.opencv_callable.ColorDetector import create_mask_for_color_detector, destroy_the_image
 
 path = os.path.normpath(os.path.join(os.path.dirname(__file__), os.pardir))
-path = os.path.join(path, "./samples/laphoto")
+path = os.path.join(path, "./samples/piece")
 
 
 def nothing(x):
@@ -27,7 +27,7 @@ cv2.createTrackbar('hu', 'result', 0, 255, nothing)
 cv2.createTrackbar('su', 'result', 0, 255, nothing)
 cv2.createTrackbar('vu', 'result', 0, 255, nothing)
 
-cv2.createTrackbar('fileNo', 'result', 0, 36, nothing)
+cv2.createTrackbar('fileNo', 'result', 84, 93, nothing)
 
 cv2.createTrackbar('default', 'result', 0, 4, nothing)
 
@@ -37,9 +37,9 @@ cv2.createTrackbar('default', 'result', 0, 4, nothing)
 
 while (1):
 
-    # fileNo = cv2.getTrackbarPos('fileNo', 'result')
-    # __path = path + str(fileNo) + '.jpg'
-    __path = path + '.jpg'
+    fileNo = cv2.getTrackbarPos('fileNo', 'result')
+    __path = path + str(fileNo) + '.jpg'
+    # __path = path + '.jpg'
 
     og_frame = cv2.imread(__path)
     frame = og_frame.copy()

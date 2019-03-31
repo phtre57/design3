@@ -8,9 +8,6 @@ from domain.pathfinding.PathSmoother import PathSmoother
 from domain.image_analysis_pathfinding.PixelToXYCoordinatesConverter import *
 from domain.image_analysis.ImageToGridConverter import *
 from domain.image_analysis_pathfinding.RobotDetector import RobotDetector
-from domain.image_analysis.opencv_callable.DetectStartZone import detect_start_zone
-from domain.image_analysis.opencv_callable.DetectZoneDepWorld import detect_zone_dep_world
-from domain.image_analysis.opencv_callable.DetectPickupZone import detect_pickup_zone
 from domain.image_analysis.opencv_callable.DetectQR import *
 from domain.image_analysis.DetectBlurriness import *
 from domain.image_analysis_pathfinding.RobotDetector import *
@@ -21,6 +18,7 @@ from domain.QRCodeDictionnary import *
 from util.Logger import Logger
 from domain.image_analysis.Cardinal import *
 from domain.image_analysis.opencv_callable.DetectPointZoneDep import detect_point_zone_dep
+from sequence.InitSequence import InitSequence
 from domain.RobotMover import *
 
 DEBUG = False
@@ -38,22 +36,26 @@ Y_ARRAY_FOR_QR_STRATEGY = [120, 145, 170, 90]
 
 X_RANGE_FOR_QR_STRATEGY = [200, 230, 260, 285]
 
-OFFSET_Y_CAM_EMBARKED = 150
-OFFSET_X_CAM_EMBARKED = -25
+NUMBER_OF_INCREMENT_PICKUP_ZONE = 15
 
 logger = Logger(__name__)
 
 
 class Sequence:
-    def __init__(self, image_taker, comm_pi, world_cam_pixel_to_xy_converter,
-                 robot_cam_pixel_to_xy_converter):
+    def __init__(self,
+                 image_taker,
+                 comm_pi,
+                 world_cam_pixel_to_xy_converter,
+                 robot_cam_pixel_to_xy_converter,
+                 wild=False):
         self.image_taker = image_taker
         self.X_END = None
         self.Y_END = None
         self.comm_pi = comm_pi
         self.world_cam_pixel_to_xy_converter = world_cam_pixel_to_xy_converter
         self.robot_cam_pixel_to_xy_converter = robot_cam_pixel_to_xy_converter
-        self.robot_mover = RobotMover(world_cam_pixel_to_xy_converter, robot_cam_pixel_to_xy_converter)
+        self.robot_mover = RobotMover(world_cam_pixel_to_xy_converter,
+                                      robot_cam_pixel_to_xy_converter)
         self.real_path = None
         self.starting_point = None
         self.smooth_path = None
@@ -67,13 +69,18 @@ class Sequence:
         self.zone_pickup_cardinal = None
         self.zone_pickup_point = None
         self.zone_start_point = None
-        self.__init_zones()
+        self.wild = wild
+        self.__init_sequence()
         self.comm_pi.moveArm('2000')
 
-    def __init_zones(self):
-        self.__detect_start_zone()
-        self.__detect_zone_dep()
-        self.__detect_pickup_zone()
+    def __init_sequence(self):
+        if self.wild:
+            return
+
+        initSequence = InitSequence(X_END_START_ZONE, Y_END_START_ZONE,
+                                    self.cap)
+        self.zone_start_point, self.zone_dep_cardinal, self.zone_dep_point, self.zone_pickup_cardinal, self.zone_pickup_point = initSequence.init(
+        )
 
         img = self.take_image()
 
@@ -86,74 +93,6 @@ class Sequence:
 
         cv2.imshow("ZONES FOUND", img)
         cv2.waitKey(0)
-
-    def __detect_start_zone(self):
-
-        i = 0
-        while True:
-            try:
-                img = self.take_image()
-                i = i + 1
-                if (i > 20):
-                    logger.log_critical(
-                        'START ZONE NOT DETECTED, FALL BACK TO HARDCODED')
-                    logger.log_debug(traceback.format_exc())
-                    self.zone_start_point = (X_END_START_ZONE,
-                                             Y_END_START_ZONE)
-                    break
-
-                (x, y) = detect_start_zone(img)
-                self.zone_start_point = (round(x / 2), round(y / 2))
-                break
-            except Exception:
-                logger.log_debug('START ZONE NOT DETECTED RETRYING' + str(i))
-
-    def __detect_zone_dep(self):
-
-        i = 0
-        while True:
-            try:
-                img = self.take_image()
-                i = i + 1
-                res = detect_zone_dep_world(img)
-                (x, y) = res['point']
-                self.zone_dep_point = (round(x / 2), round(y / 2))
-                self.zone_dep_cardinal = res['cardinal']
-                break
-            except Exception:
-                logger.log_debug('ZONE DEP WORLD NOT DETECTED RETRYING' +
-                                 str(i))
-                if (i > 20):
-                    logger.log_critical(
-                        'ZONE DEP WORLD NOT DETECTED PROBLEMS, PROBLEMS, PROBLEMS'
-                    )
-                    logger.log_debug(traceback.format_exc())
-                    raise Exception(
-                        'ZONE DEP WORLD NOT DETECTED PROBLEMS, PROBLEMS, PROBLEMS'
-                    )
-
-    def __detect_pickup_zone(self):
-
-        i = 0
-        while True:
-            try:
-                img = self.take_image()
-                i = i + 1
-                res = detect_pickup_zone(img)
-                (x, y) = res['point']
-                self.zone_pickup_point = (round(x / 2), round(y / 2))
-                self.zone_pickup_cardinal = res['cardinal']
-                break
-            except Exception:
-                logger.log_debug('PICKUP ZONE NOT DETECTED RETRYING' + str(i))
-                if (i > 20):
-                    logger.log_critical(
-                        'PICKUP ZONE NOT DETECTED PROBLEMS, PROBLEMS, PROBLEMS'
-                    )
-                    logger.log_debug(traceback.format_exc())
-                    raise Exception(
-                        'PICKUP ZONE NOT DETECTED PROBLEMS, PROBLEMS, PROBLEMS'
-                    )
 
     def __create_smooth_path(self, unsecure=False):
         center_and_image = None
@@ -274,6 +213,9 @@ class Sequence:
         return img
 
     def take_image(self):
+        if self.wild:
+            return
+
         logger.log_info("Capture d'image de la camera monde en cours...")
 
         while True:
@@ -438,59 +380,70 @@ class Sequence:
         time.sleep(1)
 
     def move_robot_around_pickup_zone(self):
-        self.comm_pi.changeCondensateurLow()
-        x_mm_movement_point = (30, 0)
-        x_mm_movement_point_negative = (-30, 0)
-        y_mm_movement_point = (0, 30)
-        y_mm_movement_point_negative = (0, -30)
-        number_of_increment = 8
+        self.__try_to_move_robot_around_pickup_zone()
 
-        real_x_inverse, real_y_inverse = None, None
+    def __try_to_move_robot_around_pickup_zone(self):
+        MOVEMENT_OFFSET = 20
+        self.comm_pi.changeCondensateurLow()
+        x_mm_movement_point = (MOVEMENT_OFFSET, 0)
+        x_mm_movement_point_negative = (-1 * MOVEMENT_OFFSET, 0)
+        y_mm_movement_point = (0, MOVEMENT_OFFSET)
+        y_mm_movement_point_negative = (0, -1 * MOVEMENT_OFFSET)
 
         if self.zone_pickup_cardinal == SOUTH():
             logger.log_info("Move around south pick up...")
-
-            self.__move_on_pickup_zone(x_mm_movement_point_negative, -90)
+            self.__validate_if_pickup_sequence_is_done_and_move(
+                x_mm_movement_point_negative, -90)
 
         if self.zone_pickup_cardinal == NORTH():
             logger.log_info("Move around north pick up...")
-
-            self.__move_on_pickup_zone(x_mm_movement_point, 90)
+            self.__validate_if_pickup_sequence_is_done_and_move(
+                x_mm_movement_point, 90)
 
         if self.zone_pickup_cardinal == EAST():
             logger.log_info("Move around east pick up...")
-
-            self.__move_on_pickup_zone(y_mm_movement_point_negative, 0)
+            self.__validate_if_pickup_sequence_is_done_and_move(
+                y_mm_movement_point_negative, 0)
 
         if self.zone_pickup_cardinal == WEST():
             logger.log_info("Move around west pick up...")
+            self.__validate_if_pickup_sequence_is_done_and_move(
+                y_mm_movement_point, 180)
 
-            self.__move_on_pickup_zone(y_mm_movement_point, 180)
+    def __validate_if_pickup_sequence_is_done_and_move(self, movement_point,
+                                                       angle):
+        piece_grabbed = False
+        while not piece_grabbed:
+            piece_grabbed, real_x, real_y = self.__move_on_pickup_zone(
+                movement_point, angle)
 
-        # validate_piece_was_grabbed = self.validate_piece_taken(
-        #     real_x_inverse, real_y_inverse)
+            if piece_grabbed:
+                validate_piece_was_grabbed = self.validate_piece_taken(
+                    real_x, real_y)
+                if validate_piece_was_grabbed is False:
+                    self.__try_to_move_robot_around_pickup_zone()
 
-        # if validate_piece_was_grabbed is False:
-        #     self.move_robot_around_pickup_zone()
+                break
+
+            self.go_to_zone_pickup()
 
     def __move_on_pickup_zone(self, moving_point, angle):
-        number_of_increment = 8
+        number_of_increment = NUMBER_OF_INCREMENT_PICKUP_ZONE
         i = 0
 
         while i < number_of_increment:
-            if number_of_increment == number_of_increment - 1:
-                i = 0
-                moving_point = (moving_point[0] * -1, moving_point[1] * -1)
 
-            x, y = self.robot_cam_pixel_to_xy_converter.convert_real_xy_given_angle(moving_point, angle)
+            x, y = self.robot_cam_pixel_to_xy_converter.convert_real_xy_given_angle(
+                moving_point, angle)
             self.comm_pi.sendCoordinates(x, y)
 
-            piece_grabbed, real_x_inverse, real_y_inverse = self.grab_piece()
+            piece_grabbed, real_x, real_y = self.grab_piece()
 
             if piece_grabbed:
                 break
 
             i += 1
+        return (piece_grabbed, real_x, real_y)
 
     def validate_piece_taken(self, x, y):
         self.comm_pi.sendCoordinates(x * -1, y * -1)
@@ -498,10 +451,10 @@ class Sequence:
 
         try:
             x, y = detect_piece(robot_img, self.piece_shape, self.piece_color)
+            logger.log_critical("VALIDATE PIECE TAKEN - FOUND ONE...")
             return False
-        except Exception as ex:
-            logger.log_critical(
-                "Could not find piece, continuing to move to detect it...")
+        except Exception:
+            logger.log_critical("VALIDATE PIECE TAKEN - Yes we grabbed it...")
             logger.log_critical(traceback.print_exc())
             return True
 
@@ -513,14 +466,14 @@ class Sequence:
         try:
             x, y = detect_piece(robot_img, self.piece_shape, self.piece_color)
             logger.log_info("Found piece!")
-        except Exception as ex:
+        except Exception:
             logger.log_critical(
                 "Could not find piece, continuing to move to detect it...")
             logger.log_critical(traceback.print_exc())
             return False, 0, 0
 
-        real_x, real_y = self.robot_mover.move_robot_from_embarked_referential(x, y, self.zone_pickup_cardinal, width,
-                                                                               height)
+        real_x, real_y = self.robot_mover.move_robot_from_embarked_referential(
+            x, y, self.zone_pickup_cardinal, width, height)
         if DEBUG:
             robot_img = self.take_image()
             cv2.circle(robot_img, (x, y), 5, [255, 255, 255])
@@ -528,10 +481,13 @@ class Sequence:
             logger.log_info("Real moving point: " + str(real_x) + "," +
                             str(real_y))
 
-        logger.log_critical("Point to be sent to grab piece: " + str(real_x) +
-                            ", " + str(real_y))
-        if real_y < -105:
+        if real_y < -80:
+            logger.log_critical("Piece point is too far : " + str(real_x) +
+                                ", " + str(real_y))
             return False, 0, 0
+
+        logger.log_critical("Piece point accepted and sent : " + str(real_x) +
+                            ", " + str(real_y))
 
         self.comm_pi.sendCoordinates(round(real_x), round(real_y))
 
@@ -570,27 +526,36 @@ class Sequence:
         logger.log_info('Drop piece, detected center of first point ' +
                         str(x) + ', ' + str(y))
 
-        real_x, real_y = self.robot_mover.move_robot_from_embarked_referential(x, y, self.zone_dep_cardinal, width, height)
+        real_x, real_y = self.robot_mover.move_robot_from_embarked_referential(
+            x, y, self.zone_dep_cardinal, width, height)
 
         return (real_x, real_y)
 
     def __move_to_point_zone_dep(self):
 
         if self.depot_number == ZONE_0:
-            (x, y) = self.__detect_x_y_point_zone_dep()
-            self.comm_pi.sendCoordinates(round(x), round(y))
+            is_made_move = False
+            while not is_made_move:
+                (x, y) = self.__detect_x_y_point_zone_dep()
+
+                if (y < -80):
+                    is_made_move = False
+                    self.comm_pi.sendCoordinates(0, -10)
+                else:
+                    self.comm_pi.sendCoordinates(round(x), round(y))
+                    is_made_move = True
 
         elif self.depot_number == ZONE_1:
             for i in range(2):
-                self.__send_move_to_zone_dep(i < 2 - 1)
+                self.__try_send_move_to_zone_dep(i < 2 - 1)
 
         elif self.depot_number == ZONE_2:
             for i in range(3):
-                self.__send_move_to_zone_dep(i < 3 - 1)
+                self.__try_send_move_to_zone_dep(i < 3 - 1)
 
         elif self.depot_number == ZONE_3:
             for i in range(4):
-                self.__send_move_to_zone_dep(i < 4 - 1)
+                self.__try_send_move_to_zone_dep(i < 4 - 1)
 
         else:
             logger.log_critical(
@@ -598,12 +563,27 @@ class Sequence:
             raise Exception(
                 "No zone dep given to adjust movement to drop piece")
 
+    def __try_send_move_to_zone_dep(self, cond):
+        is_made_move = False
+        while not is_made_move:
+            is_made_move = self.__send_move_to_zone_dep(cond)
+
     def __send_move_to_zone_dep(self, adjust):
         (x, y) = self.__detect_x_y_point_zone_dep()
+
+        if (y < -80):
+            self.comm_pi.sendCoordinates(0, -10)
+            return False
+
         self.comm_pi.sendCoordinates(round(x), round(y))
-        self.__rotate_robot_on_zone_plane(self.zone_dep_cardinal, 3)
+
+        if not self.wild:
+            self.__rotate_robot_on_zone_plane(self.zone_dep_cardinal, 3)
+
         if adjust:
             self.comm_pi.sendCoordinates(0, 0)
+
+        return True
 
     def __cardinal_to_angle(self, cardinal_str):
 

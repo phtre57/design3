@@ -101,7 +101,6 @@ class ShapeDetector:
                     continue
 
             if (self.shape_only is not None and self.shape_only == 'circle'):
-                print('ok')
                 approx = cv2.approxPolyDP(c, 0.05 * peri, True)
             else:
                 approx = cv2.approxPolyDP(c, 0.05 * peri, True)
