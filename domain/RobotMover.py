@@ -1,16 +1,16 @@
 from domain.image_analysis.Cardinal import *
 
-OFFSET_Y_CAM_EMBARKED = 150
-OFFSET_X_CAM_EMBARKED = -25
+OFFSET_Y_CAM_EMBARKED = 140
+OFFSET_X_CAM_EMBARKED = -20
 
 
 class RobotMover:
-
     def __init__(self, world_converter, embarked_converter):
         self.world_converter = world_converter
         self.embarked_converter = embarked_converter
 
-    def move_robot_from_embarked_referential(self, x, y, cardinal_string, image_width, image_height):
+    def move_robot_from_embarked_referential(self, x, y, cardinal_string,
+                                             image_width, image_height):
         x_from_center_of_image = round(x - (
             (image_width / 2) + OFFSET_X_CAM_EMBARKED))
         y_from_center_of_image = round(y - (

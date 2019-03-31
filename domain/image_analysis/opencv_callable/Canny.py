@@ -12,9 +12,9 @@ def canny(frame, maskFunc, lower=100, upper=200):
 
 
 def point_zone_dep_mask(frame):
-    kernel = np.ones((9, 9), np.uint8)
+    mask = frame
+    kernel = np.ones((10, 10), np.uint8)
     mask = cv2.morphologyEx(frame, cv2.MORPH_OPEN, kernel)
-
     return mask
 
 
