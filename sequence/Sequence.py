@@ -38,6 +38,8 @@ X_RANGE_FOR_QR_STRATEGY = [200, 230, 260, 285]
 
 NUMBER_OF_INCREMENT_PICKUP_ZONE = 15
 
+TENSION_THRESHOLD = 3.5
+
 logger = Logger(__name__)
 
 
@@ -255,6 +257,7 @@ class Sequence:
         self.__rotate_robot_on_zone_pickup()
 
     def end(self):
+        self.comm_pi.redLightOff()
         self.comm_pi.disconnectFromPi()
 
     def go_to_decode_qr(self):
@@ -322,15 +325,29 @@ class Sequence:
 
         return img
 
-    def go_to_c_charge_station(self):
+    def go_to_charge_robot(self):
+        decision_tension = self.__is_current_tension_too_high_to_charge()
+        if (decision_tension):
+            return
+
+        self.__go_to_c_charge_station()
+        self.__charge_robot_at_station()
+        self.__go_back_from_charge_station()
+
+    def __is_current_tension_too_high_to_charge(self):
+        tension = self.comm_pi.getTension()
+        if (tension > TENSION_THRESHOLD):
+            return True
+        else:
+            return False
+
+    def __go_to_c_charge_station(self):
         self.__send_rotation_angle()
         time.sleep(0.5)
-        self.comm_pi.sendCoordinates(-340, -381)
-        # WAIT TO CHARGE
+        self.comm_pi.sendCoordinates(-360, -381)
         time.sleep(1)
-        # GET RESPONSE
 
-    def charge_robot_at_station(self):
+    def __charge_robot_at_station(self):
         self.comm_pi.changeCondensateurHigh()
         base_tension = self.comm_pi.getTension()
 
@@ -345,8 +362,12 @@ class Sequence:
                 time.sleep(0.5)
                 tension = self.comm_pi.getTension()
 
+                if tension <= base_tension:
+                    derivative_tension = 0
+
                 if tension > base_tension:
                     derivative_tension += 1
+                    base_tension = tension
 
                 if derivative_tension > 5:
                     break
@@ -367,13 +388,16 @@ class Sequence:
 
         logger.log_info("Robot is charged now!")
 
-    def go_back_from_charge_station(self):
+    def __go_back_from_charge_station(self):
         time.sleep(0.5)
-        self.comm_pi.sendCoordinates(340, 381)
+        self.comm_pi.sendCoordinates(360, 381)
         time.sleep(1)
 
     def move_robot_around_pickup_zone(self):
         self.__try_to_move_robot_around_pickup_zone()
+        (x, y) = self.robot_mover.fallback_from_cardinality(
+            self.zone_pickup_cardinal)
+        self.comm_pi.sendCoordinates(x, y)
 
     def __try_to_move_robot_around_pickup_zone(self):
         MOVEMENT_OFFSET = 20
@@ -418,6 +442,9 @@ class Sequence:
 
                 break
 
+            (x, y) = self.robot_mover.fallback_from_cardinality(
+                self.zone_pickup_cardinal)
+            self.comm_pi.sendCoordinates(x, y)
             self.go_to_zone_pickup()
 
     def __move_on_pickup_zone(self, moving_point, angle):
@@ -500,6 +527,9 @@ class Sequence:
             try:
                 self.__move_to_point_zone_dep()
                 self.drop_piece()
+                (x, y) = self.robot_mover.fallback_from_cardinality(
+                    self.zone_dep_cardinal)
+                self.comm_pi.sendCoordinates(x, y)
                 break
             except Exception:
                 logger.log_info('Retrying to approach the zone dep')
@@ -507,9 +537,9 @@ class Sequence:
                 pass
 
     def __retry_move_robot_around_zone_dep(self):
-        logger.log_info('Redoing pathfinding to approach the zone dep')
-        # self.go_to_zone_dep()
-
+        logger.log_info('Moving closer to approach the zone dep')
+        (x, y) = self.robot_mover.move_closer_on_plane(self.zone_dep_cardinal)
+        self.comm_pi.sendCoordinates(x, y)
         self.move_robot_around_zone_dep
 
     def drop_piece(self):
@@ -538,7 +568,6 @@ class Sequence:
         return (real_x, real_y)
 
     def __move_to_point_zone_dep(self):
-
         if self.depot_number == ZONE_0:
             is_made_move = False
             while not is_made_move:
@@ -583,7 +612,7 @@ class Sequence:
 
         self.comm_pi.sendCoordinates(round(x), round(y))
 
-        self.__rotate_robot_on_zone_plane(self.zone_dep_cardinal, 3)
+        # self.__rotate_robot_on_zone_plane(self.zone_dep_cardinal, 3)
 
         if adjust:
             self.comm_pi.sendCoordinates(0, 0)
@@ -591,7 +620,6 @@ class Sequence:
         return True
 
     def __cardinal_to_angle(self, cardinal_str):
-
         if cardinal_str == EAST():
             return 0
         elif cardinal_str == NORTH():
@@ -632,7 +660,7 @@ class Sequence:
             rotate_function(robot_angle)
             if first_it < 3:
                 logger.log_info('Correction angle ' + str(first_it))
-                first_it = first_it + 1
+                first_it = first_it + 2
                 self.__rotate_robot_on_zone_plane(cardinal, first_it)
 
     def __rotate_to_north(self, current_robot_angle):
@@ -652,7 +680,5 @@ class Sequence:
         self.comm_pi.sendAngle(rotate_angle)
 
     def end_sequence(self):
-        while True:
-            self.comm_pi.redLightOn()
-            time.sleep(0.5)
-            self.comm_pi.redLightOff()
+        self.comm_pi.redLightOn()
+        time.sleep(5)

@@ -71,20 +71,18 @@ def main_sequence(ui=True):
                         robot_cam_pixel_to_xy_converter)
     logger.log_info('Sequence start...')
     # sequence.go_to_start_zone()
-    # sequence.go_to_c_charge_station()
-    # sequence.charge_robot_at_station()
-    # sequence.go_back_from_charge_station()
+    # sequence.go_to_charge_robot()
     # sequence.go_to_decode_qr()
     # sequence.zone_dep_cardinal = 'EAST'
-    # sequence.piece_color = 'rouge'
-    # sequence.piece_shape = None
-    sequence.depot_number = 'Zone 0'
-    # sequence.go_to_zone_pickup()
-    # sequence.move_robot_around_pickup_zone()
+    sequence.piece_color = None
+    sequence.piece_shape = 'cercle'
+    # sequence.depot_number = 'Zone 0'
+    sequence.go_to_zone_pickup()
+    sequence.move_robot_around_pickup_zone()
     # sequence.go_to_zone_dep()
-    sequence.move_robot_around_zone_dep()
-    sequence.go_to_start_zone()
-
+    # sequence.move_robot_around_zone_dep()
+    # sequence.go_to_start_zone()
+    # sequence.end_sequence()
     sequence.end()
 
     logger.log_info('Sequence is done...')
