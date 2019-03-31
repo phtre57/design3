@@ -6,6 +6,7 @@ import time
 
 logger = Logger(__name__)
 
+
 class TakeImage:
     def __init__(self, src=0, is_cancer_mac_user=0):
         logger.log_info("Ouverture de la caméra: ")

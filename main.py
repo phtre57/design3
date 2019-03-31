@@ -20,12 +20,13 @@ args = parser.parse_args()
 comm_pi = Communication_pi()
 logger = Logger(__name__)
 
-CANCER_MAC_USER = False
+CANCER_MAC_USER = True
+SOURCE_MAC_CANCER = 0
 
 
 def start_cam(wild=False):
     if not wild:
-        image_taker = TakeImage(1, CANCER_MAC_USER)
+        image_taker = TakeImage(SOURCE_MAC_CANCER, CANCER_MAC_USER)
         image_taker.start()
 
         return image_taker
@@ -59,7 +60,7 @@ def calibrateEmbark():
 
 
 def main_sequence(ui=True):
-    wild = True
+    wild = False
     image_taker = start_cam(wild)
 
     pixel_to_xy_converter = calibrate()
@@ -76,10 +77,10 @@ def main_sequence(ui=True):
     sequence.zone_dep_cardinal = 'EAST'
     sequence.piece_color = 'orange'
     sequence.piece_shape = None
-    sequence.depot_number = 'Zone 3'
+    sequence.depot_number = 'Zone 0'
     # sequence.go_to_zone_pickup()
-    sequence.move_robot_around_pickup_zone()
-    # sequence.go_to_zone_dep()
+    #sequence.move_robot_around_pickup_zone()
+    sequence.go_to_zone_dep()
 
     sequence.end()
 

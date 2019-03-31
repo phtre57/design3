@@ -9,10 +9,10 @@ logger = Logger(__name__)
 
 
 class InitSequence():
-    def __init__(self, x_end_start_zone, y_end_start_zone, cap):
+    def __init__(self, x_end_start_zone, y_end_start_zone, image_taker):
         self.X_END_START_ZONE = x_end_start_zone
         self.Y_END_START_ZONE = y_end_start_zone
-        self.cap = cap
+        self.image_taker = image_taker
         self.zone_start_point = None
         self.zone_dep_cardinal = None
         self.zone_dep_point = None
@@ -32,7 +32,7 @@ class InitSequence():
         logger.log_info("Capture d'image de la camera monde en cours...")
 
         while True:
-            ret, img = self.cap.read()
+            ret, img = self.image_taker.read()
             if ret:
                 break
 

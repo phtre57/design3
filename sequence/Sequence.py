@@ -78,9 +78,8 @@ class Sequence:
             return
 
         initSequence = InitSequence(X_END_START_ZONE, Y_END_START_ZONE,
-                                    self.cap)
-        self.zone_start_point, self.zone_dep_cardinal, self.zone_dep_point, self.zone_pickup_cardinal, self.zone_pickup_point = initSequence.init(
-        )
+                                    self.image_taker)
+        self.zone_start_point, self.zone_dep_cardinal, self.zone_dep_point, self.zone_pickup_cardinal, self.zone_pickup_point = initSequence.init()
 
         img = self.take_image()
 
@@ -121,7 +120,7 @@ class Sequence:
             else:
                 grid_converter = ImageToGridConverter(
                     center_and_image['image'], center_and_image['center'][0],
-                    center_and_image['center'][1], self.X_END, self.Y_END)
+                    center_and_image['center'][1], self.X_END, self.Y_END, 0, 0, CIRCLE_OBSTACLE_RADIUS, True)
 
             astar = Astar(grid_converter.grid, HEIGHT, LENGTH)
             path = astar.find_path()

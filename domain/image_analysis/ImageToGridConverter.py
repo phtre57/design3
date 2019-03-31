@@ -176,7 +176,7 @@ class ImageToGridConverter(object):
         for point in self.obstacles_center_array:
             x, y = point
 
-            vertical_axis_offset = 10
+            vertical_axis_offset = 7
             thickness = -1
             x_offset = 10
 
