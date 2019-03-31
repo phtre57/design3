@@ -21,12 +21,15 @@ class Communication_ui():
         return sio
 
     def SendImage(self, frame, dest):
-        _, buffer = cv2.imencode('.jpg', frame)
-        encoded = base64.b64encode(buffer)
-        self.sio.emit('eventFromRobot', {'data': encoded, 'type': 'img', 'dest': dest})
+        if (__debug__):
+            _, buffer = cv2.imencode('.jpg', frame)
+            encoded = base64.b64encode(buffer)
+            self.sio.emit('eventFromRobot', {'data': encoded, 'type': 'img', 'dest': dest})
         
     def SendText(self, val, dest):
-        self.sio.emit('eventFromRobot', {'data': val, 'type': 'text', 'dest': dest})
+        if (__debug__):
+            self.sio.emit('eventFromRobot', {'data': val, 'type': 'text', 'dest': dest})
 
     def SendLog(self, val, dest):
-        self.sio.emit('sendLog', {'data': val, 'type': 'text', 'dest': dest})
+        if (__debug__):    
+            self.sio.emit('sendLog', {'data': val, 'type': 'text', 'dest': dest})

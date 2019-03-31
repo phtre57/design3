@@ -1,5 +1,6 @@
 from threading import Thread
 from util.Logger import Logger
+from infrastructure.communication_ui.comm_ui import *
 
 import cv2
 import time
@@ -37,6 +38,8 @@ class TakeImage:
                 self.stop()
             else:
                 (self.ret, self.frame) = self.cam.read()
+                comm_ui = Communication_Ui()
+                comm_ui.SendImage(self.fram, WORLD_FEED_IMAGE)
 
     def read(self):
         return (self.ret, self.frame)
