@@ -12,7 +12,7 @@ from infrastructure.communication_ui.ui_destination import *
 from sequence.Sequence import Sequence
 from util.Logger import Logger
 from util.color import Color
-from infrastructure.camera.TakeImage import TakeImage
+from infrastructure.world_camera.TakeImage import TakeImage
 
 CANCER_MAC_USER = False
 
