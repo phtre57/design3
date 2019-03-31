@@ -42,12 +42,8 @@ logger = Logger(__name__)
 
 
 class Sequence:
-    def __init__(self,
-                 image_taker,
-                 comm_pi,
-                 world_cam_pixel_to_xy_converter,
-                 robot_cam_pixel_to_xy_converter,
-                 wild=False):
+    def __init__(self, image_taker, comm_pi, world_cam_pixel_to_xy_converter,
+                 robot_cam_pixel_to_xy_converter):
         self.image_taker = image_taker
         self.X_END = None
         self.Y_END = None
@@ -69,17 +65,14 @@ class Sequence:
         self.zone_pickup_cardinal = None
         self.zone_pickup_point = None
         self.zone_start_point = None
-        self.wild = wild
         self.__init_sequence()
         self.comm_pi.moveArm('2000')
 
     def __init_sequence(self):
-        if self.wild:
-            return
-
         initSequence = InitSequence(X_END_START_ZONE, Y_END_START_ZONE,
                                     self.image_taker)
-        self.zone_start_point, self.zone_dep_cardinal, self.zone_dep_point, self.zone_pickup_cardinal, self.zone_pickup_point = initSequence.init()
+        self.zone_start_point, self.zone_dep_cardinal, self.zone_dep_point, self.zone_pickup_cardinal, self.zone_pickup_point = initSequence.init(
+        )
 
         img = self.take_image()
 
@@ -120,7 +113,11 @@ class Sequence:
             else:
                 grid_converter = ImageToGridConverter(
                     center_and_image['image'], center_and_image['center'][0],
-                    center_and_image['center'][1], self.X_END, self.Y_END, 0, 0, CIRCLE_OBSTACLE_RADIUS, True)
+                    center_and_image['center'][1], self.X_END, self.Y_END)
+                # grid_converter = ImageToGridConverter(
+                #     center_and_image['image'], center_and_image['center'][0],
+                #     center_and_image['center'][1], self.X_END, self.Y_END, 0,
+                #     0, CIRCLE_OBSTACLE_RADIUS, True)
 
             astar = Astar(grid_converter.grid, HEIGHT, LENGTH)
             path = astar.find_path()
@@ -212,9 +209,6 @@ class Sequence:
         return img
 
     def take_image(self):
-        if self.wild:
-            return
-
         logger.log_info("Capture d'image de la camera monde en cours...")
 
         while True:
@@ -502,8 +496,21 @@ class Sequence:
         return True, real_x, real_y
 
     def move_robot_around_zone_dep(self):
-        self.__move_to_point_zone_dep()
-        self.drop_piece()
+        while True:
+            try:
+                self.__move_to_point_zone_dep()
+                self.drop_piece()
+                break
+            except Exception:
+                logger.log_info('Retrying to approach the zone dep')
+                self.__retry_move_robot_around_zone_dep()
+                pass
+
+    def __retry_move_robot_around_zone_dep(self):
+        logger.log_info('Redoing pathfinding to approach the zone dep')
+        # self.go_to_zone_dep()
+
+        self.move_robot_around_zone_dep
 
     def drop_piece(self):
         logger.log_info('Drop the arm')
@@ -576,8 +583,7 @@ class Sequence:
 
         self.comm_pi.sendCoordinates(round(x), round(y))
 
-        if not self.wild:
-            self.__rotate_robot_on_zone_plane(self.zone_dep_cardinal, 3)
+        self.__rotate_robot_on_zone_plane(self.zone_dep_cardinal, 3)
 
         if adjust:
             self.comm_pi.sendCoordinates(0, 0)
@@ -644,3 +650,9 @@ class Sequence:
     def __rotate_to_west(self, current_robot_angle):
         rotate_angle = round(180 - current_robot_angle) * -1
         self.comm_pi.sendAngle(rotate_angle)
+
+    def end_sequence(self):
+        while True:
+            self.comm_pi.redLightOn()
+            time.sleep(0.5)
+            self.comm_pi.redLightOff()

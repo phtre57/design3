@@ -154,6 +154,14 @@ class Communication_pi:
         self.ready = False
         self.waitForReadySignal()
 
+    def redLightOn(self):
+        logger.log_info('Red Light sent on')
+        self.sio.emit('redLightDistrictOn', 'Go')
+
+    def redLightOff(self):
+        logger.log_info('Red Light sent off')
+        self.sio.emit('redLightDistrictOff', 'Go')
+
     def changeServoVert(self, commande):
         logger.log_info("Servo vertical envoyees: " + commande)
         self.sio.emit('servoVert', str(commande))

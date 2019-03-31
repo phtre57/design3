@@ -20,7 +20,7 @@ OBSTACLE_BORDER = 35
 
 LEFT_OBSTACLE_BORDER = 53
 
-CIRCLE_OBSTACLE_RADIUS = 45
+CIRCLE_OBSTACLE_RADIUS = 43
 
 X_WALL_LEFT_CORNER = 20
 X_WALL_RIGHT_CORNER = 300
@@ -176,26 +176,36 @@ class ImageToGridConverter(object):
         for point in self.obstacles_center_array:
             x, y = point
 
-            vertical_axis_offset = 7
-            thickness = -1
+            vertical_axis_offset = 3
+            thickness = 1
             x_offset = 10
 
             if x > LENGTH / 2 + 100:
-                cv2.ellipse(self.image, (x - x_offset - 10, y),
-                            (self.circle_obstacle_border + 5, self.circle_obstacle_border)
-                            , 0, 0, 360, [255, 51, 51], thickness)
+                cv2.ellipse(self.image, (x - x_offset - 15, y),
+                            (self.circle_obstacle_border + 5,
+                             self.circle_obstacle_border), 0, 0, 360,
+                            [255, 51, 51], thickness)
 
             elif x > LENGTH / 2 + 50:
-                cv2.ellipse(self.image, (x - x_offset, y), (self.circle_obstacle_border, self.circle_obstacle_border - vertical_axis_offset)
-                            , 0, 0, 360, [255, 51, 51], thickness)
+                cv2.ellipse(
+                    self.image, (x - x_offset, y),
+                    (self.circle_obstacle_border,
+                     self.circle_obstacle_border - vertical_axis_offset), 0, 0,
+                    360, [255, 51, 51], thickness)
 
             elif x < LENGTH / 2 - 50:
-                cv2.ellipse(self.image, (x + x_offset, y), (self.circle_obstacle_border, self.circle_obstacle_border - vertical_axis_offset)
-                            , 0, 0, 360, [255, 51, 51], thickness)
+                cv2.ellipse(
+                    self.image, (x + x_offset, y),
+                    (self.circle_obstacle_border,
+                     self.circle_obstacle_border - vertical_axis_offset), 0, 0,
+                    360, [255, 51, 51], thickness)
 
             else:
-                cv2.ellipse(self.image, (x - x_offset + 5, y), (self.circle_obstacle_border, self.circle_obstacle_border - vertical_axis_offset)
-                            , 0, 0, 360, [255, 51, 51], thickness)
+                cv2.ellipse(
+                    self.image, (x - x_offset + 5, y),
+                    (self.circle_obstacle_border,
+                     self.circle_obstacle_border - vertical_axis_offset), 0, 0,
+                    360, [255, 51, 51], thickness)
 
     def get_obstacle_border(self):
         return self.obstacle_border
