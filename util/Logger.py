@@ -5,7 +5,7 @@ from io import StringIO
 
 from infrastructure.communication_ui.comm_ui import Communication_ui
 
-RUNNING_COV = True
+RUNNING_COV = False
 
 class Logger(object):
     def __init__(self, module_name):
