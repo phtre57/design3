@@ -22,12 +22,16 @@ comm_pi = Communication_pi()
 # comm_pi = Communication_pi_mock()
 logger = Logger(__name__)
 
-CANCER_MAC_USER = False
+CANCER_MAC_USER = True
 SOURCE_CAM = 1
 
 
 def start_cam():
     image_taker = cv2.VideoCapture(1)
+
+    if CANCER_MAC_USER:
+        image_taker.set(3, 640)
+        image_taker.set(4, 480)
 
     # image_taker = TakeImage(SOURCE_CAM, CANCER_MAC_USER)
     # image_taker.start()
