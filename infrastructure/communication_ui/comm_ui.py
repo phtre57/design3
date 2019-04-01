@@ -11,7 +11,7 @@ class Communication_ui():
         if (__debug__):
             try:
                 sio = socketio.Client()
-                sio.connect('http://localhost:4000?token=robot')
+                sio.connect('http://localhost:4001?token=robot')
 
                 @sio.on('validation')
                 def on_validation(v):

@@ -6,7 +6,7 @@ import cv2
 import os
 import inspect
 
-SHOW = True
+SHOW = False
 
 
 class DetectContourPiecesTest(unittest.TestCase):

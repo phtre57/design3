@@ -3,6 +3,8 @@ import time
 import cv2
 import base64
 
+from infrastructure.communication_ui.comm_ui import Communication_ui
+from infrastructure.communication_ui.ui_destination import *
 from util.Logger import *
 
 logger = Logger(__name__)
@@ -24,6 +26,7 @@ class Communication_pi:
     def __init(self):
         self.sio = socketio.Client()
         self.sio.connect(self.url)
+        self.sio.emit('sendUrl', 'http://192.168.0.53:4001')
 
         @self.sio.on('readySignal')
         def sendCoord(message):
@@ -43,6 +46,26 @@ class Communication_pi:
             img = cv2.imread('./test.jpg')
             logger.log_info("self.img changed...")
             self.image = img
+
+        @self.sio.on('sendEmbarkedImage')
+        def recvEmbarkedImage(message):
+            logger.log_info("Image from embarked received...")
+            frame_data = base64.b64decode(message)
+
+            with open('test.jpg', 'wb') as f_output:
+                f_output.write(frame_data)
+
+            time.sleep(0.5)
+
+            img = cv2.imread('./test.jpg')
+
+            # cv2.imshow('hi', img)
+            # cv2.waitKey()
+
+            print('img received from embarked')
+
+            comm_ui = Communication_ui()
+            comm_ui.SendImage(img, EMBARKED_FEED_IMAGE())
 
         @self.sio.on('recvTension')
         def recvTension(message):

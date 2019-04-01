@@ -85,8 +85,8 @@ class Sequence:
         cv2.circle(img, ((self.zone_start_point[0] * 2),
                          (self.zone_start_point[1] * 2)), 1, [0, 0, 255])
 
-        cv2.imshow("ZONES FOUND", img)
-        cv2.waitKey(0)
+        # cv2.imshow("ZONES FOUND", img)
+        # cv2.waitKey(0)
 
     def __create_smooth_path(self, unsecure=False):
         center_and_image = None
@@ -195,8 +195,8 @@ class Sequence:
             cv2.circle(grid_converter.image, (point[0], point[1]), 1,
                        [0, 0, 255])
 
-        cv2.imshow("path", grid_converter.image)
-        cv2.waitKey(0)
+        # cv2.imshow("path", grid_converter.image)
+        # cv2.waitKey(0)
 
     def take_image_and_draw(self, smooth_path=None):
         logger.log_info("Capture d'image en cours...")
