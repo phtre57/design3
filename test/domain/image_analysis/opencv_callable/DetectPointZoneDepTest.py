@@ -6,14 +6,14 @@ import cv2
 import os
 import inspect
 
-SHOW = True
+SHOW = False
 
 
 class DetectContourPiecesTest(unittest.TestCase):
     def setUp(self):
         print("In method ", self._testMethodName)
 
-    def test_givenPieces_thenTheCorrectShapeIsGivenForEveryPieces(self):
+    def test_givenZoneDep_thenTheNearestPointIsDetected(self):
         path = os.path.normpath(
             os.path.join(os.path.dirname(__file__), os.pardir))
         path = os.path.normpath(os.path.join(path, os.pardir))
@@ -22,8 +22,8 @@ class DetectContourPiecesTest(unittest.TestCase):
         # path = os.path.join(path, "./image_samples/real_image/pieces.jpg")
 
         # path1 = os.path.join(path, "./samples/zonedep4.jpg")
-        path1 = os.path.join(path, "./test.jpg")
-        self.call_path(path1)
+        # path1 = os.path.join(path, "./test.jpg")
+        # self.call_path(path1)
 
         path2 = os.path.join(path, "./samples/zonedep5.jpg")
         self.call_path(path2)
@@ -53,7 +53,9 @@ class DetectContourPiecesTest(unittest.TestCase):
             cv2.imshow('FROM TEST - SHAPE FRAME', frame)
             cv2.waitKey()
 
-        self.assertEqual(1, 1)
+        # Validation que ce qui est trouvé n'est pas bidon
+        self.assertNotEqual(x, 0)
+        self.assertNotEqual(y, 0)
 
 
 if __name__ == '__main__':

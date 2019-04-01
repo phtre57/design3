@@ -6,7 +6,7 @@ from util.Logger import Logger
 logger = Logger(__name__)
 
 
-def detect_piece(frame, str_shape, str_color):
+def detect_piece(frame, str_shape, str_color, validation=False):
     logger.log_info('Detected piece got ' + str(str_shape) + " " +
                     str(str_color))
     frame = frame.copy()
@@ -24,9 +24,9 @@ def detect_piece(frame, str_shape, str_color):
             color.YELLOW()
         else:
             raise Exception('This color is not recognized')
-        return color_detector(frame, color)
+        return color_detector(frame, color, validation=False)
     elif (str_shape is not None):
-        return detect_contour_pieces(frame, str_shape)
+        return detect_contour_pieces(frame, str_shape, validation=False)
     else:
         logger.log_critical('Detect Piece, les params sont vraiment pas bon ' +
                             str(str_shape) + str(str_color))

@@ -7,8 +7,8 @@ import os
 import inspect
 import time
 
-LIVE = True
-
+LIVE = False
+SHOW = False
 
 class DetectStartZoneTest(unittest.TestCase):
     def setUp(self):
@@ -29,9 +29,10 @@ class DetectStartZoneTest(unittest.TestCase):
 
             (x, y) = detect_start_zone(frame)
 
-            cv2.circle(frame, (x, y), 1, [255, 51, 51])
-            cv2.imshow('SHAPE FRAME', frame)
-            cv2.waitKey()
+            if (SHOW):
+                cv2.circle(frame, (x, y), 1, [255, 51, 51])
+                cv2.imshow('SHAPE FRAME', frame)
+                cv2.waitKey()
 
             self.assertEqual(1, 1)
         else:
@@ -44,8 +45,8 @@ class DetectStartZoneTest(unittest.TestCase):
             path2 = os.path.join(path, "./samples/sample3.jpg")
             self.call_path(path2)
 
-            path3 = os.path.join(path, "./samples/sample4.jpg")
-            self.call_path(path3)
+            # path3 = os.path.join(path, "./samples/sample4.jpg")
+            # self.call_path(path3)
 
             path4 = os.path.join(path, "./samples/sample5.jpg")
             self.call_path(path4)
@@ -53,8 +54,8 @@ class DetectStartZoneTest(unittest.TestCase):
             path5 = os.path.join(path, "./samples/sample6.jpg")
             self.call_path(path5)
 
-            path6 = os.path.join(path, "./samples/sample7.jpg")
-            self.call_path(path6)
+            # path6 = os.path.join(path, "./samples/sample7.jpg")
+            # self.call_path(path6)
 
             path7 = os.path.join(path, "./samples/sample8.jpg")
             self.call_path(path7)
@@ -65,16 +66,22 @@ class DetectStartZoneTest(unittest.TestCase):
     def call_path(self, path):
         frame = cv2.imread(path)
 
-        cv2.imshow('FRESH FRAME', frame)
-        cv2.waitKey()
+        if (SHOW):
+            cv2.imshow('FRESH FRAME', frame)
+            cv2.waitKey()
 
         (x, y) = detect_start_zone(frame)
 
-        cv2.circle(frame, (x, y), 1, [255, 51, 51])
-        cv2.imshow('SHAPE FRAME', frame)
-        cv2.waitKey()
+        if (SHOW):
+            cv2.circle(frame, (x, y), 1, [255, 51, 51])
+            cv2.imshow('SHAPE FRAME', frame)
+            cv2.waitKey()
 
-        self.assertEqual(1, 1)
+        self.assertEqual(x < 170, True)
+        self.assertEqual(x > 165, True)
+        self.assertEqual(y < 250, True)
+        self.assertEqual(y > 240, True)
+
 
 
 if __name__ == '__main__':

@@ -5,7 +5,6 @@ from domain.image_analysis.ShapeDetector import ShapeDetector
 from domain.image_analysis.opencv_callable.Canny import *
 from domain.image_analysis.ShapeUtils import *
 from context.config import DETECT_ZONE_DEP_WORLD_DEBUG
-from domain.image_analysis.opencv_callable.ref_shape import ref
 from util.Logger import Logger
 from domain.image_analysis.Cardinal import *
 
@@ -39,38 +38,11 @@ def detect_zone_dep_world(og_frame,
     frame = frame.copy()
     IMG_HEIGHT, IMG_WIDTH, _ = frame.shape
 
-    edges = canny(frame, erode_mask_zone_dep_world, canny_down, canny_up)
-
-    if (DEBUG):
-        cv2.imshow('DEBUG', edges)
-        cv2.waitKey()
-
-    edges = cv2.morphologyEx(
-        edges, cv2.MORPH_CLOSE,
-        cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (5, 5)))
-    kernelerode = np.ones((3, 3), np.uint8)
-    edges = cv2.erode(edges, kernelerode, iterations=1)
-
-    if (DEBUG):
-        cv2.imshow('DEBUG', edges)
-        cv2.waitKey()
+    edges = __canny(frame, canny_down, canny_up)
 
     shapeDetector = ShapeDetector(PERI_LIMITER_CHECK, RECT_LIMITER_CHECK,
                                   RADIUS_LIMITER_CHECK)
-    if (flipped):
-        shapeDetector.set_rect_limiter(
-            RECT_H_LIMITER,
-            RECT_W_LIMITER,
-            angle_limiter=None,
-            h_rect_limit_up=RECT_W_LIMITER_UP,
-            w_rect_limit_up=RECT_H_LIMITER_UP)
-    else:
-        shapeDetector.set_rect_limiter(
-            RECT_W_LIMITER,
-            RECT_H_LIMITER,
-            angle_limiter=None,
-            w_rect_limit_up=RECT_W_LIMITER_UP,
-            h_rect_limit_up=RECT_H_LIMITER_UP)
+    __shapeDetectorSettings(shapeDetector, flipped)
     shape = shapeDetector.detect(edges, og_frame.copy())
 
     if DEBUG:
@@ -104,24 +76,61 @@ def detect_zone_dep_world(og_frame,
             'ZONE DEPOT WORLD - Fallback to lower (70) bracket canny strategy')
         return detect_zone_dep_world(og_frame, 70, 150)
 
-    shape.center = find_center(shape.approx[0][2], 10, shape.frame)
+    (x, y) = find_center(shape.approx[0][2], 10, shape.frame)
 
     if (flipped):
-        center = adjust_start_zone_offset_upside_down(shape.center, IMG_WIDTH,
-                                                      shape.approx[0][3])
+        center = __adjust_start_zone_offset_upside_down((x, y), IMG_WIDTH,
+                                                        shape.approx[0][3])
         logger.log_debug('ZONE DEPOT WORLD - Found center ' + str(center[0]) +
                          ' ' + str(center[1]) + ' ' + center[2])
         return {'point': (center[0], center[1]), 'cardinal': center[2]}
     else:
-        center = adjust_start_zone_offset(shape.center, IMG_HEIGHT,
-                                          shape.approx[0][3])
+        center = __adjust_start_zone_offset((x, y), IMG_HEIGHT,
+                                            shape.approx[0][3])
         logger.log_debug('ZONE DEPOT WORLD - Found center ' + str(center[0]) +
                          ' ' + str(center[1]) + ' ' + center[2])
 
         return {'point': (center[0], center[1]), 'cardinal': center[2]}
 
 
-def adjust_start_zone_offset_upside_down(point, width, w_h_rect):
+def __shapeDetectorSettings(shapeDetector, flipped):
+    if (flipped):
+        shapeDetector.set_rect_limiter(
+            RECT_H_LIMITER,
+            RECT_W_LIMITER,
+            angle_limiter=None,
+            h_rect_limit_up=RECT_W_LIMITER_UP,
+            w_rect_limit_up=RECT_H_LIMITER_UP)
+    else:
+        shapeDetector.set_rect_limiter(
+            RECT_W_LIMITER,
+            RECT_H_LIMITER,
+            angle_limiter=None,
+            w_rect_limit_up=RECT_W_LIMITER_UP,
+            h_rect_limit_up=RECT_H_LIMITER_UP)
+
+
+def __canny(frame, canny_down, canny_up):
+    edges = canny(frame, erode_mask_zone_dep_world, canny_down, canny_up)
+
+    if (DEBUG):
+        cv2.imshow('DEBUG', edges)
+        cv2.waitKey()
+
+    edges = cv2.morphologyEx(
+        edges, cv2.MORPH_CLOSE,
+        cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (5, 5)))
+    kernelerode = np.ones((3, 3), np.uint8)
+    edges = cv2.erode(edges, kernelerode, iterations=1)
+
+    if (DEBUG):
+        cv2.imshow('DEBUG', edges)
+        cv2.waitKey()
+
+    return edges
+
+
+def __adjust_start_zone_offset_upside_down(point, width, w_h_rect):
     if (point[0] > width / 2):
         return (point[0] - OFFSET_PATHFINDING_EAST,
                 point[1] - round(w_h_rect[1] / 2) - 25, EAST())
@@ -130,7 +139,7 @@ def adjust_start_zone_offset_upside_down(point, width, w_h_rect):
                 point[1] + round(w_h_rect[1] / 2) + 25, WEST())
 
 
-def adjust_start_zone_offset(point, height, w_h_rect):
+def __adjust_start_zone_offset(point, height, w_h_rect):
     # Faire les deux bords de la table avec un beau if
     if (point[1] > height / 2):
         return (point[0] + round(w_h_rect[0] / 2) + 25,

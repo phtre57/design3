@@ -220,10 +220,12 @@ class ShapeDetector:
                 elif (shape != self.shape_only):
                     if (DEBUG):
                         print(len(approx))
+                        logger.log_info('SHAPE DETECTOR - DETECTED A ' + str(shape))
                         print('SKIPPED NOT THE RIGHT SHAPE')
                     continue
 
             logger.log_info('SHAPE DETECTOR - DETECTED A ' + str(shape))
+            
             self.shapes.append(shape)
             shapes_with_approx.append([shape, approx, c, (wRect, hRect)])
 

@@ -9,6 +9,8 @@ logger = Logger(__name__)
 
 URL = 'http://192.168.0.38:4000'
 
+TENSION_FACTOR = 4
+
 
 class Communication_pi:
     def __init__(self, url=URL):
@@ -16,7 +18,6 @@ class Communication_pi:
         self.ready = True
         self.image = None
         self.sio = None
-        self.image = None
         self.tension = None
         self.url = url
         self.__init()
@@ -57,7 +58,7 @@ class Communication_pi:
         def disconnect(message):
             logger.log_info("Disconnected from Pi...")
             self.sio = socketio.Client()
-            self.sio.connect(url)
+            self.sio.connect(self.url)
 
         logger.log_info("Fin création de la communication...")
 
@@ -72,18 +73,9 @@ class Communication_pi:
 
             time.sleep(0.2)
 
-    def connectToPi(self):
-        logger.log_info("Connecte au serveur...")
-
     def disconnectFromPi(self):
         logger.log_info("Deconnecte du pi...")
         self.sio.emit('disconnect', 'bye Pi <3')
-
-    def changeCondensateur(self):
-        logger.log_info("Signal envoyee pour condensateur...")
-        self.sio.emit('condensateurChange', 1)
-        self.ready = False
-        self.waitForReadySignal()
 
     def changeCondensateurHigh(self):
         logger.log_info("Signal envoyee pour condensateur...")
@@ -156,11 +148,11 @@ class Communication_pi:
 
     def redLightOn(self):
         logger.log_info('Red Light sent on')
-        self.sio.emit('redLightDistrictOn', 'Go')
+        self.sio.emit('redLightDistrictOn', 'Carambole')
 
     def redLightOff(self):
         logger.log_info('Red Light sent off')
-        self.sio.emit('redLightDistrictOff', 'Go')
+        self.sio.emit('redLightDistrictOff', 'Figue')
 
     def changeServoVert(self, commande):
         logger.log_info("Servo vertical envoyees: " + commande)
@@ -178,6 +170,7 @@ class Communication_pi:
         while True:
             try:
                 tension = self.getTensionPi()
+                tension = tension * TENSION_FACTOR
                 return tension
             except Exception:
                 logger.log_critical(
@@ -186,7 +179,7 @@ class Communication_pi:
                 pass
 
     def getTensionPi(self):
-        self.sio.emit('getTension', 'Courge spaghetti')
+        self.sio.emit('getTension', 'Mangue')
 
         self.tension = None
         t = time.time()
@@ -195,9 +188,8 @@ class Communication_pi:
             if (tt - t > 20):
                 self.__init()
                 raise Exception('Tension not found')
-                break
 
             time.sleep(0.01)
 
-        logger.log_info("Tension recu: " + str(self.tension))
+        logger.log_info("Tension recu: " + str(self.tension * TENSION_FACTOR))
         return self.tension

@@ -29,6 +29,10 @@ SOURCE_CAM = 1
 def start_cam():
     image_taker = cv2.VideoCapture(1)
 
+    if CANCER_MAC_USER:
+        image_taker.set(3, 640)
+        image_taker.set(4, 480)
+
     # image_taker = TakeImage(SOURCE_CAM, CANCER_MAC_USER)
     # image_taker.start()
 
@@ -70,19 +74,19 @@ def main_sequence(ui=True):
     sequence = Sequence(image_taker, comm_pi, pixel_to_xy_converter,
                         robot_cam_pixel_to_xy_converter)
     logger.log_info('Sequence start...')
-    # sequence.go_to_start_zone()
+    sequence.go_to_start_zone()
     # sequence.go_to_charge_robot()
     # sequence.go_to_decode_qr()
     # sequence.zone_dep_cardinal = 'EAST'
-    sequence.piece_color = None
-    sequence.piece_shape = 'cercle'
-    # sequence.depot_number = 'Zone 0'
-    sequence.go_to_zone_pickup()
-    sequence.move_robot_around_pickup_zone()
-    # sequence.go_to_zone_dep()
-    # sequence.move_robot_around_zone_dep()
-    # sequence.go_to_start_zone()
-    # sequence.end_sequence()
+    sequence.piece_color = 'vert'
+    sequence.piece_shape = None
+    sequence.depot_number = 'Zone 0'
+    # sequence.go_to_zone_pickup()
+    # sequence.move_robot_around_pickup_zone()
+    sequence.go_to_zone_dep()
+    sequence.move_robot_around_zone_dep()
+    sequence.go_to_start_zone()
+    sequence.end_sequence()
     sequence.end()
 
     logger.log_info('Sequence is done...')
