@@ -39,10 +39,8 @@ def color_detector(frame, color):
         cv2.waitKey()
 
     shape = None
-    # shape.res_contour = find_where_the_shape_is(frame, shape, color,
-    # RADIUS_LIMIT, True)
 
-    return find_where_the_shape_is(frame, shape, color, RADIUS_LIMIT, True)
+    return find_where_the_shape_is(frame, shape, color, RADIUS_LIMIT)
 
 
 def destroy_the_image(mask):
