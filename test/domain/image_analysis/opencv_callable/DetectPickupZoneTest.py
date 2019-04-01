@@ -7,7 +7,7 @@ import os
 import inspect
 
 LIVE = False
-
+SHOW = False
 
 class DetectPickupZoneTest(unittest.TestCase):
     def setUp(self):
@@ -29,8 +29,9 @@ class DetectPickupZoneTest(unittest.TestCase):
 
             cv2.circle(frame, res['point'], 1, [255, 51, 51])
 
-            cv2.imshow('SHAPE FRAME', frame)
-            cv2.waitKey()
+            if (SHOW):
+                cv2.imshow('SHAPE FRAME', frame)
+                cv2.waitKey()
 
             self.assertNotEqual(res['point'], (0, 0))
 
@@ -54,6 +55,7 @@ class DetectPickupZoneTest(unittest.TestCase):
             path5 = os.path.join(path, "./samples/sample6.jpg")
             self.call_path(path5)
 
+            # Flipped
             path6 = os.path.join(path, "./samples/sample7.jpg")
             self.call_path(path6)
 
@@ -106,17 +108,20 @@ class DetectPickupZoneTest(unittest.TestCase):
     def call_path(self, path):
         frame = cv2.imread(path)
 
-        cv2.imshow('FRESH FRAME', frame)
-        cv2.waitKey()
+        if (SHOW):
+            cv2.imshow('FRESH FRAME', frame)
+            cv2.waitKey()
 
         res = detect_pickup_zone(frame)
 
         cv2.circle(frame, res['point'], 1, [255, 51, 51])
 
-        cv2.imshow('SHAPE FRAME', frame)
-        cv2.waitKey()
+        if (SHOW):
+            cv2.imshow('SHAPE FRAME', frame)
+            cv2.waitKey()
 
-        self.assertNotEqual(res['point'], (0, 0))
+        self.assertNotEqual(res['point'][0], 0)
+        self.assertNotEqual(res['point'][1], 0)
 
         print('Done with ', path)
 

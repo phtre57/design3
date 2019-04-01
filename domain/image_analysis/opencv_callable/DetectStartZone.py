@@ -32,8 +32,8 @@ logger = Logger(__name__)
 
 def detect_start_zone(og_frame, alpha=1.5):
     frame = og_frame.copy()
-
     frame = cv2.convertScaleAbs(frame, alpha=alpha, beta=100)
+    
     edges = canny(frame, erode_mask)
 
     if (DEBUG):
@@ -45,7 +45,6 @@ def detect_start_zone(og_frame, alpha=1.5):
     shapeDetector.set_peri_limiter(PERI_LIMITER_LOWER, PERI_LIMITER_UPPER)
     shapeDetector.set_rect_limiter(RECT_W_LIMITER, RECT_H_LIMITER, None,
                                    RECT_W_LIMITER_UP, RECT_H_LIMITER_UP)
-
     shape = shapeDetector.detect(edges, og_frame.copy())
 
     mask = shape.frameClean
@@ -55,9 +54,18 @@ def detect_start_zone(og_frame, alpha=1.5):
         cv2.waitKey()
 
     output = cv2.bitwise_and(frame, frame, mask=mask)
-
     shape.set_frame(output)
 
+    __decision(shape)
+
+    (x, y) = find_center_for_zone_dep(frame, shape.approx[0][2], 100)
+
+    logger.log_debug('START ZONE - Found center ' + str(x) + ' ' + str(y))
+    cv2.circle(shape.frame, (x, y), 1, [255, 51, 51])
+
+    return (x, y)
+
+def __decision(shape):
     if (len(shape.approx) == 0):
         cv2.imshow('RAISE', shape.frame)
         cv2.waitKey()
@@ -66,13 +74,3 @@ def detect_start_zone(og_frame, alpha=1.5):
         shape.approx = shape.approx[:1]
         logger.log_warning(
             'Found multiples possible start zone, took the first one')
-
-    shape.center = find_center_for_zone_dep(frame, shape.approx[0][2], 100)
-
-    logger.log_debug('START ZONE - Found center ' + str(shape.center[0]) +
-                     ' ' + str(shape.center[1]))
-
-    cv2.circle(shape.frame, (shape.center[0], shape.center[1]), 1,
-               [255, 51, 51])
-
-    return (shape.center[0], shape.center[1])

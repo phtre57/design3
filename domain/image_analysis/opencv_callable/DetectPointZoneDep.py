@@ -24,8 +24,7 @@ DEBUG = DETECT_POINT_ZONE_DEP_DEBUG
 def detect_point_zone_dep(og_frame):
     frame = og_frame.copy()
 
-    cv2.rectangle(frame, (240, 0), (320, 240), (0, 0, 0), 110)
-    cv2.rectangle(frame, (0, 200), (320, 240), (0, 0, 0), 110)
+    __create_mask(frame)
 
     if DEBUG:
         cv2.imshow('DETECT ZONE DEP -- DEBUG', frame)
@@ -57,9 +56,7 @@ def detect_point_zone_dep(og_frame):
 
     shape.set_frame(shape.frameClean)
 
-    # if (len(shape.approx) != 1):
-    #     raise Exception('Detect contour pieces have found multiple shape')
-
+    # shape.approx[0][1], la forme détectée la plus basse vu que opencv commence à scanner de bas en haut
     (x, y) = find_center(shape.approx[0][1], 2.5, og_frame.copy())
 
     if (x == 0 and y == 0):
@@ -72,3 +69,7 @@ def detect_point_zone_dep(og_frame):
         cv2.waitKey()
 
     return (x, y)
+
+def __create_mask(frame):
+    cv2.rectangle(frame, (240, 0), (320, 240), (0, 0, 0), 110)
+    cv2.rectangle(frame, (0, 200), (320, 240), (0, 0, 0), 110)

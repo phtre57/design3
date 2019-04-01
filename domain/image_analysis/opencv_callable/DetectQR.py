@@ -20,8 +20,6 @@ def decode(im):
 
     for obj in decodedObjects:
         if obj.type == "QRCODE":
-            # print('Type : ', obj.type)
-            # print('Data : ', obj.data,'\n')
             data = obj.data
             data = str(data, "utf-8")
             code = data.split('-')[0]
