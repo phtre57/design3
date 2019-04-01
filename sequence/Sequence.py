@@ -274,10 +274,10 @@ class Sequence:
                         break
                 except Exception as ex:
                     logger.log_error(ex)
+                    logger.log_debug(traceback.format_exc())
                     logger.log_debug(
                         'Decode QR fallback to other point, obstacle in the way'
                     )
-                    logger.log_debug(traceback.format_exc())
                     pass
 
             if stop_outer_loop:

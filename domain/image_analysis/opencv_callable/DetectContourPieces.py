@@ -4,6 +4,7 @@ from domain.image_analysis.ShapeDetector import ShapeDetector
 from domain.image_analysis.opencv_callable.Canny import canny, detect_contour_mask
 from domain.image_analysis.ShapeUtils import find_center
 from domain.QRCodeDictionnary import *
+from domain.image_analysis.opencv_callable.ref_shape import *
 from util.Logger import Logger
 
 PERI_LIMITER_CHECK = False
@@ -57,7 +58,7 @@ def detect_contour_pieces(og_frame, _str_shape):
 
     if (len(shape.approx) != 1):
         raise Exception('Detect contour pieces have found multiple shape')
-
+    
     (x, y) = find_center(shape.approx[0][1], 4, shape)
 
     return (x, y)
