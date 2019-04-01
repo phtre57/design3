@@ -113,6 +113,11 @@ class ImageToGridConverter(object):
 
         for contour in contours:
             try:
+                perimeter = cv2.arcLength(contour, True)
+
+                if perimeter < 1:
+                    continue
+
                 M = cv2.moments(contour)
                 x_center_of_contour = int(M["m10"] / M["m00"])
                 y_center_of_contour = int(M["m01"] / M["m00"])
