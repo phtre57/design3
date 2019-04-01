@@ -5,7 +5,6 @@ from domain.image_analysis.ShapeDetector import ShapeDetector
 from domain.image_analysis.opencv_callable.Canny import *
 from domain.image_analysis.ShapeUtils import *
 from context.config import DETECT_ZONE_DEP_WORLD_DEBUG
-from domain.image_analysis.opencv_callable.ref_shape import ref
 from util.Logger import Logger
 from domain.image_analysis.Cardinal import *
 
@@ -81,17 +80,18 @@ def detect_zone_dep_world(og_frame,
 
     if (flipped):
         center = __adjust_start_zone_offset_upside_down((x, y), IMG_WIDTH,
-                                                      shape.approx[0][3])
+                                                        shape.approx[0][3])
         logger.log_debug('ZONE DEPOT WORLD - Found center ' + str(center[0]) +
                          ' ' + str(center[1]) + ' ' + center[2])
         return {'point': (center[0], center[1]), 'cardinal': center[2]}
     else:
         center = __adjust_start_zone_offset((x, y), IMG_HEIGHT,
-                                          shape.approx[0][3])
+                                            shape.approx[0][3])
         logger.log_debug('ZONE DEPOT WORLD - Found center ' + str(center[0]) +
                          ' ' + str(center[1]) + ' ' + center[2])
 
         return {'point': (center[0], center[1]), 'cardinal': center[2]}
+
 
 def __shapeDetectorSettings(shapeDetector, flipped):
     if (flipped):
@@ -108,6 +108,7 @@ def __shapeDetectorSettings(shapeDetector, flipped):
             angle_limiter=None,
             w_rect_limit_up=RECT_W_LIMITER_UP,
             h_rect_limit_up=RECT_H_LIMITER_UP)
+
 
 def __canny(frame, canny_down, canny_up):
     edges = canny(frame, erode_mask_zone_dep_world, canny_down, canny_up)
@@ -127,6 +128,7 @@ def __canny(frame, canny_down, canny_up):
         cv2.waitKey()
 
     return edges
+
 
 def __adjust_start_zone_offset_upside_down(point, width, w_h_rect):
     if (point[0] > width / 2):
