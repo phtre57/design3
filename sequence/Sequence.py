@@ -327,7 +327,7 @@ class Sequence:
         decision_tension = self.__is_current_tension_too_high_to_charge()
         if (decision_tension):
             logger.log_info(
-                "Robot already has that eletric feel now!! It is charged enough"
+                "Robot already has that eletric feel now!! It is charged enough!"
             )
             return
 
@@ -604,6 +604,10 @@ class Sequence:
 
     def __send_move_to_zone_dep(self, adjust):
         (x, y) = self.__detect_x_y_point_zone_dep()
+
+        if x < -40:
+            self.comm_pi.sendCoordinates(-10, -10)
+            return False
 
         if (y < -80):
             self.comm_pi.sendCoordinates(0, -10)
