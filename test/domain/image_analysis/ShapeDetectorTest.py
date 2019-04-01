@@ -16,7 +16,7 @@ class DetectContourPiecesTest(unittest.TestCase):
         path = os.path.normpath(os.path.join(os.path.dirname(__file__), os.pardir))
         path = os.path.normpath(os.path.join(path, os.pardir))
         path = os.path.normpath(os.path.join(path, os.pardir))
-        path = os.path.join(path, "./image_samples/real_image/pieces.jpg")
+        path = os.path.join(path, "./samples/sampleio2.jpg")
 
         og_frame = cv2.imread(path)
         frame = og_frame.copy()
@@ -28,10 +28,7 @@ class DetectContourPiecesTest(unittest.TestCase):
         shape = shapeDetector.detect(frame, og_frame)
         shape = shapeDetector.detect(shape.frameCnts, og_frame)
 
-        # cv2.imshow('EDGES', shape.frameWithText)
-        # cv2.waitKey()
-
-        self.assertEqual(shape.shapes, ['circle', 'rectangle', 'circle', 'pentagon'])
+        self.assertEqual(shape.shapes[0], 'pentagon')
 
 if __name__ == '__main__':
     unittest.main()

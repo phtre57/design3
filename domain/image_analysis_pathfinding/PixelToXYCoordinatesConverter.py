@@ -78,7 +78,7 @@ class PixelToXYCoordinatesConverter:
 
         ret, corners = cv2.findChessboardCorners(
             gray, (self.nb_lines, self.nb_columns), None)
-        print("Ret value: " + str(ret))
+        # print("Ret value: " + str(ret))
 
         if ret:
             self.__create_real_world_object_points()

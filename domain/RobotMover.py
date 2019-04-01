@@ -1,7 +1,7 @@
 from domain.image_analysis.Cardinal import *
 
 OFFSET_Y_CAM_EMBARKED = 140
-OFFSET_X_CAM_EMBARKED = -20
+OFFSET_X_CAM_EMBARKED = -30
 
 
 class RobotMover:

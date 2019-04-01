@@ -7,6 +7,7 @@ from domain.pathfinding.Astar import Astar
 from domain.pathfinding.PathSmoother import PathSmoother
 from domain.image_analysis_pathfinding.RobotDetector import RobotDetector
 
+SHOW = False
 
 def test_astar_on_image(image_path, blur=False):
     img = cv2.imread(image_path)
@@ -65,13 +66,15 @@ def test_on_robot_discovery_and_path_finding_with_blur():
     print("Total time: ", end - start)
     print("Average time: ", (end - start) / 6)
 
-    cv2.imshow("path1", path1)
-    cv2.imshow("path2", path2)
-    cv2.imshow("path3", path3)
-    cv2.imshow("path4", path4)
-    cv2.imshow("path5", path5)
-    cv2.imshow("path6", path6)
-    cv2.waitKey(0)
+
+    if (SHOW):
+        cv2.imshow("path1", path1)
+        cv2.imshow("path2", path2)
+        cv2.imshow("path3", path3)
+        cv2.imshow("path4", path4)
+        cv2.imshow("path5", path5)
+        cv2.imshow("path6", path6)
+        cv2.waitKey(0)
 
 
 def test_on_real_image(show_images):
@@ -184,7 +187,7 @@ def test_on_real_image(show_images):
 
 class PathFindingImageTest(unittest.TestCase):
     def test_pathfinding_on_real_image(self):
-        test_on_real_image(True)
+        test_on_real_image(False)
 
 
 if __name__ == '__main__':
