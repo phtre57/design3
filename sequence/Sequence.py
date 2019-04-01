@@ -284,11 +284,7 @@ class Sequence:
                 break
 
     def __try_to_decode_qr(self):
-        img = None
-        while True:
-            img = self.comm_pi.getImage()
-            if detect_blurriness(img) is False:
-                break
+        img = self.__get_image()
 
         if DEBUG:
             cv2.imshow("qr", img)
