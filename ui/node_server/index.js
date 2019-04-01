@@ -27,7 +27,7 @@ io.on('connection', client => {
       data.data = String.fromCharCode.apply(null, new Uint16Array(data.data));
     }
 
-    console.log(data);
+    console.log(data.dest);
 
     UIClient.emit('event', data);
     client.emit('validation', 'v');
@@ -43,7 +43,7 @@ io.on('connection', client => {
       data.data = String.fromCharCode.apply(null, new Uint16Array(data.data));
     }
 
-    console.log(data);
+    console.log(data.dest);
 
     UIClient.emit('event', data);
     client.emit('validation', 'v');
@@ -53,6 +53,8 @@ io.on('connection', client => {
   client.on('sendEmbarkedImage', data => {
     console.log('Got image from embarked');
 
+    console.log(data.dest);
+
     // if (data.type === 'img') {
     //   data.data = String.fromCharCode.apply(null, new Uint16Array(data.data));
     // }
@@ -61,8 +63,8 @@ io.on('connection', client => {
   });
 
   client.on('sendLog', data => {
-    console.log('sendLog');
-    console.log(data);
+    // console.log('sendLog');
+    // console.log(data);
     UIClient.emit('event', data);
     client.emit('validation', 'v');
     client.disconnect();

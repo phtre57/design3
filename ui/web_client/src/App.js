@@ -173,8 +173,8 @@ const mainPaper = {
 };
 
 const imageStyle = {
-  maxWidth: '215px',
-  maxHeight: '215px'
+  // maxWidth: '215px',
+  // maxHeight: '215px'
 };
 
 const toolbar = {

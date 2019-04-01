@@ -20,6 +20,8 @@ from domain.image_analysis.Cardinal import *
 from domain.image_analysis.opencv_callable.DetectPointZoneDep import detect_point_zone_dep
 from sequence.InitSequence import InitSequence
 from domain.RobotMover import *
+from infrastructure.communication_ui.comm_ui import Communication_ui
+from infrastructure.communication_ui.ui_destination import *
 
 DEBUG = False
 ROBOT_DANCE_X_POSITIVE = "50,0,0\n"
@@ -165,6 +167,7 @@ class Sequence:
             while True:
                 try:
                     center_and_image = self.__find_current_center_robot()
+                    self.__draw_robot_on_path_image(center_and_image['image'], center_and_image['center'])
                     self.starting_point = self.world_cam_pixel_to_xy_converter.convert_to_xy_point(
                         (center_and_image['center'][0],
                          center_and_image['center'][1]))
@@ -172,6 +175,12 @@ class Sequence:
                 except Exception as ex:
                     logger.log_error(ex)
                     logger.log_critical(traceback.format_exc())
+
+    def __draw_robot_on_path_image(self, img, center):
+        img = img.copy()
+        cv2.circle(img, (center[0] * 2, center[1] * 2), 1, [0, 0, 255])
+        comm_ui = Communication_ui()
+        comm_ui.SendImage(img, PATHS_IMAGE())
 
     def __find_current_center_robot(self):
         img = self.take_image_and_draw(self.smooth_path)
@@ -220,6 +229,9 @@ class Sequence:
             if ret:
                 break
 
+        comm_ui = Communication_ui()
+        comm_ui.SendImage(self.img, WORLD_FEED_IMAGE())
+
         # cv2.destroyAllWindows()
 
         return self.img
@@ -242,15 +254,21 @@ class Sequence:
         self.__send_coordinates()
 
     def go_to_start_zone(self):
+        comm_ui = Communication_ui()
+        comm_ui.SendText('Going to start zone', SEQUENCE_TEXT())
         self.set_end_point(self.zone_start_point[0], self.zone_start_point[1])
         self.start()
 
     def go_to_zone_dep(self):
+        comm_ui = Communication_ui()
+        comm_ui.SendText('Going to zone depôt', SEQUENCE_TEXT())
         self.set_end_point(self.zone_dep_point[0], self.zone_dep_point[1])
         self.start()
         self.__rotate_robot_on_zone_dep()
 
     def go_to_zone_pickup(self):
+        comm_ui = Communication_ui()
+        comm_ui.SendText('Going to zone pickup', SEQUENCE_TEXT())
         self.comm_pi.changeServoVert('6000')
         self.comm_pi.changeServoHori('2000')
         self.set_end_point(self.zone_pickup_point[0],
@@ -259,10 +277,14 @@ class Sequence:
         self.__rotate_robot_on_zone_pickup()
 
     def end(self):
+        comm_ui = Communication_ui()
+        comm_ui.SendText('Sequence is over and done', SEQUENCE_TEXT())
         self.comm_pi.redLightOff()
         self.comm_pi.disconnectFromPi()
 
     def go_to_decode_qr(self):
+        comm_ui = Communication_ui()
+        comm_ui.SendText('Going to decode code QR', SEQUENCE_TEXT())
         self.comm_pi.changeServoVert('6000')
         self.comm_pi.changeServoHori('5500')
         stop_outer_loop = False
@@ -297,6 +319,8 @@ class Sequence:
         self.piece_color = dict_of_values[COULEUR]
         self.piece_shape = dict_of_values[PIECE]
         self.depot_number = dict_of_values[ZONE]
+        comm_ui = Communication_ui()
+        comm_ui.SendText(self.depot_number + ' ' + self.piece_color + ' ' + self.piece_shape, SEQUENCE_TEXT())
         logger.log_info("Values of qr code: " + str(dict_of_values))
         logger.log_info(
             ("Value of self.piece_color: " + str(self.piece_color)))
@@ -324,6 +348,8 @@ class Sequence:
         return img
 
     def go_to_charge_robot(self):
+        comm_ui = Communication_ui()
+        comm_ui.SendText('Going to charge robot', SEQUENCE_TEXT())
         decision_tension = self.__is_current_tension_too_high_to_charge()
         if (decision_tension):
             logger.log_info(
@@ -399,6 +425,8 @@ class Sequence:
         self.comm_pi.sendCoordinates(x, y)
 
     def __try_to_move_robot_around_pickup_zone(self):
+        comm_ui = Communication_ui()
+        comm_ui.SendText('Moving around pickup zone', SEQUENCE_TEXT())
         MOVEMENT_OFFSET = 20
         self.comm_pi.changeCondensateurLow()
         x_mm_movement_point = (MOVEMENT_OFFSET, 0)
@@ -525,6 +553,8 @@ class Sequence:
         return True, real_x, real_y
 
     def move_robot_around_zone_dep(self):
+        comm_ui = Communication_ui()
+        comm_ui.SendText('Moving around zone depôt', SEQUENCE_TEXT())
         while True:
             try:
                 self.__move_to_point_zone_dep()
@@ -695,5 +725,7 @@ class Sequence:
         self.comm_pi.sendAngle(rotate_angle)
 
     def end_sequence(self):
+        comm_ui = Communication_ui()
+        comm_ui.SendText('Sequence is done', SEQUENCE_TEXT())
         self.comm_pi.redLightOn()
         time.sleep(5)

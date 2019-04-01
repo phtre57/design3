@@ -81,17 +81,17 @@ def main_sequence(ui=True):
     logger.log_info('Sequence start...')
     sequence.go_to_start_zone()
     # sequence.go_to_charge_robot()
-    # sequence.go_to_decode_qr()
+    sequence.go_to_decode_qr()
     # sequence.zone_dep_cardinal = 'EAST'
     sequence.piece_color = 'vert'
     sequence.piece_shape = None
     # sequence.depot_number = 'Zone 0'
     sequence.go_to_zone_pickup()
     sequence.move_robot_around_pickup_zone()
-    # sequence.go_to_zone_dep()
-    # sequence.move_robot_around_zone_dep()
-    # sequence.go_to_start_zone()
-    # sequence.end_sequence()
+    sequence.go_to_zone_dep()
+    sequence.move_robot_around_zone_dep()
+    sequence.go_to_start_zone()
+    sequence.end_sequence()
     sequence.end()
 
     logger.log_info('Sequence is done...')

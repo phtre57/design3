@@ -60,9 +60,6 @@ class Communication_pi:
 
             img = cv2.imread('./test.jpg')
 
-            # cv2.imshow('hi', img)
-            # cv2.waitKey()
-
             print('img received from embarked')
 
             comm_ui = Communication_ui()
