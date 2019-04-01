@@ -4,6 +4,7 @@ from domain.image_analysis.ShapeDetector import ShapeDetector
 from domain.image_analysis.opencv_callable.Canny import canny, detect_contour_mask
 from domain.image_analysis.ShapeUtils import find_center
 from domain.QRCodeDictionnary import *
+from util.Logger import Logger
 
 PERI_LIMITER_CHECK = False
 PERI_LIMITER_UPPER = 160
@@ -17,17 +18,28 @@ RADIUS_LIMITER_CHECK = False
 RADIUS_LIMITER = 90
 RAIDUS_POSITIVE = True
 
+logger = Logger(__name__)
 
-def detect_contour_pieces(og_frame, str_shape):
-    str_shape = translate_str_shape(str_shape)
+DEBUG = True
+
+
+def detect_contour_pieces(og_frame, _str_shape):
+    str_shape = translate_str_shape(_str_shape)
+
+    logger.log_info('DETECT CONTOUR PIECES received ' + str(_str_shape) +
+                    ' translated it to ' + str(str_shape))
 
     frame = og_frame.copy()
     frame = frame.copy()
 
+    cv2.rectangle(frame, (200, 0), (320, 240), (0, 0, 0), 110)
+    cv2.rectangle(frame, (245, 0), (320, 240), (0, 0, 0), 110)
+
     edges = canny(frame, detect_contour_mask, 170, 200)
 
-    cv2.imshow('ok', edges)
-    cv2.waitKey()
+    if DEBUG:
+        cv2.imshow('ok', edges)
+        cv2.waitKey()
 
     shapeDetector = ShapeDetector(PERI_LIMITER_CHECK, RECT_LIMITER_CHECK,
                                   RADIUS_LIMITER_CHECK)

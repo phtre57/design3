@@ -7,6 +7,8 @@ logger = Logger(__name__)
 
 
 def detect_piece(frame, str_shape, str_color):
+    logger.log_info('Detected piece got ' + str(str_shape) + " " +
+                    str(str_color))
     frame = frame.copy()
     if (str_color is not None):
         color = Color()

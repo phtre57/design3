@@ -23,10 +23,10 @@ class ColorDetectorTest(unittest.TestCase):
         path = os.path.normpath(os.path.join(path, os.pardir))
         path = os.path.normpath(os.path.join(path, os.pardir))
         # path = os.path.join(path, "./image_samples/real_image/pieces.jpg")
-        path1 = os.path.join(path, "./samples/failed5.jpg")
+        path1 = os.path.join(path, "./samples/failed8.jpg")
         path1 = os.path.join(path, "./test.jpg")
         color = Color()
-        color.GREEN()
+        color.BLUE()
         self.call_path(path1, color)
 
         # path2 = os.path.join(path, "./samples/piece1.jpg")

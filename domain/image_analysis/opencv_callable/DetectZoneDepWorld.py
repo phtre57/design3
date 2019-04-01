@@ -13,7 +13,7 @@ PERI_LIMITER_CHECK = False
 PERI_LIMITER_UPPER = 100000
 PERI_LIMITER_LOWER = 150
 RECT_LIMITER_CHECK = True
-RECT_W_LIMITER = 60
+RECT_W_LIMITER = 65
 RECT_H_LIMITER = 15
 RECT_W_LIMITER_UP = 100
 RECT_H_LIMITER_UP = 40
@@ -124,17 +124,17 @@ def detect_zone_dep_world(og_frame,
 def adjust_start_zone_offset_upside_down(point, width, w_h_rect):
     if (point[0] > width / 2):
         return (point[0] - OFFSET_PATHFINDING_EAST,
-                point[1] - round(w_h_rect[1] / 2) - 20, EAST())
+                point[1] - round(w_h_rect[1] / 2) - 25, EAST())
     else:
         return (point[0] + OFFSET_PATHFINDING_WEST,
-                point[1] + round(w_h_rect[1] / 2) + 20, WEST())
+                point[1] + round(w_h_rect[1] / 2) + 25, WEST())
 
 
 def adjust_start_zone_offset(point, height, w_h_rect):
     # Faire les deux bords de la table avec un beau if
     if (point[1] > height / 2):
-        return (point[0] + round(w_h_rect[0] / 2) + 20,
+        return (point[0] + round(w_h_rect[0] / 2) + 25,
                 point[1] - OFFSET_PATHFINDING_SOUTH, SOUTH())
     else:
-        return (point[0] - round(w_h_rect[0] / 2) - 20,
+        return (point[0] - round(w_h_rect[0] / 2) - 25,
                 point[1] + OFFSET_PATHFINDING_NORTH, NORTH())

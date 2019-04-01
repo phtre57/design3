@@ -6,7 +6,7 @@ import cv2
 import os
 import inspect
 
-LIVE = False
+LIVE = True
 
 
 class DetectZoneDepWorldTest(unittest.TestCase):
