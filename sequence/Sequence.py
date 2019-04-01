@@ -22,6 +22,7 @@ from sequence.InitSequence import InitSequence
 from domain.RobotMover import *
 
 DEBUG = False
+SHOW_PATH = False
 ROBOT_DANCE_X_POSITIVE = "50,0,0\n"
 ROBOT_DANCE_X_NEGATIVE = "-50,0,0\n"
 
@@ -40,7 +41,7 @@ NUMBER_OF_INCREMENT_PICKUP_ZONE = 20
 
 TENSION_THRESHOLD = 3.5 * 4
 
-CHARGE_STATION_MOVE = (-355, -390)
+CHARGE_STATION_MOVE = (-340, -390)
 
 logger = Logger(__name__)
 
@@ -197,8 +198,9 @@ class Sequence:
             cv2.circle(grid_converter.image, (point[0], point[1]), 1,
                        [0, 0, 255])
 
-        cv2.imshow("path", grid_converter.image)
-        cv2.waitKey(0)
+        if SHOW_PATH:
+            cv2.imshow("path", grid_converter.image)
+            cv2.waitKey(0)
 
     def take_image_and_draw(self, smooth_path=None):
         logger.log_info("Capture d'image en cours...")
@@ -571,8 +573,7 @@ class Sequence:
 
     def __move_to_point_zone_dep(self):
         if self.depot_number == ZONE_0:
-            for i in range(1):
-                self.__try_send_move_to_zone_dep(i < 1 - 1)
+            self.__try_send_move_to_zone_dep(1)
             # is_made_move = False
             # while not is_made_move:
             #     (x, y) = self.__detect_x_y_point_zone_dep()
