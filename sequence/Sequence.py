@@ -41,7 +41,7 @@ NUMBER_OF_INCREMENT_PICKUP_ZONE = 20
 
 TENSION_THRESHOLD = 3.5 * 4
 
-CHARGE_STATION_MOVE = (-340, -390)
+CHARGE_STATION_MOVE = (-345, -390)
 
 logger = Logger(__name__)
 
@@ -347,8 +347,11 @@ class Sequence:
     def __go_to_c_charge_station(self):
         self.__send_rotation_angle()
         time.sleep(0.5)
-        self.comm_pi.sendCoordinates(CHARGE_STATION_MOVE[0],
-                                     CHARGE_STATION_MOVE[1])
+        iteration = 6
+        for i in range(iteration):
+            self.comm_pi.sendCoordinates(round(CHARGE_STATION_MOVE[0] / iteration),
+                                         round(CHARGE_STATION_MOVE[1] / iteration))
+
         time.sleep(1)
 
     def __charge_robot_at_station(self):
@@ -383,7 +386,7 @@ class Sequence:
             time.sleep(0.3)
             tension = self.comm_pi.getTension()
             logger.log_info('Tension now while charging ' + str(tension))
-            if tension > 4.30 * 4:
+            if tension > 4 * 4:
                 break
 
         logger.log_info("Robot is charged now!")
@@ -479,7 +482,7 @@ class Sequence:
             return False
         except Exception:
             logger.log_critical("VALIDATE PIECE TAKEN - Yes we grabbed it...")
-            logger.log_critical(traceback.print_exc())
+            logger.log_critical(traceback.format_exc())
             return True
 
     def grab_piece(self):
@@ -493,7 +496,7 @@ class Sequence:
         except Exception:
             logger.log_critical(
                 "Could not find piece, continuing to move to detect it...")
-            logger.log_critical(traceback.print_exc())
+            logger.log_critical(traceback.format_exc())
             return False, 0, 0
 
         real_x, real_y = self.robot_mover.move_robot_from_embarked_referential(
@@ -535,8 +538,9 @@ class Sequence:
                     self.zone_dep_cardinal)
                 self.comm_pi.sendCoordinates(x, y)
                 break
-            except Exception:
+            except Exception as ex:
                 logger.log_info('Retrying to approach the zone dep')
+                logger.logger.critical(traceback.format_exc())
                 self.__retry_move_robot_around_zone_dep()
                 pass
 
@@ -586,16 +590,19 @@ class Sequence:
             #         is_made_move = True
 
         elif self.depot_number == ZONE_1:
-            for i in range(2):
-                self.__try_send_move_to_zone_dep(i < 2 - 1)
+            iteration = 2
+            for i in range(iteration):
+                self.__try_send_move_to_zone_dep(i < iteration - 1)
 
         elif self.depot_number == ZONE_2:
-            for i in range(3):
-                self.__try_send_move_to_zone_dep(i < 3 - 1)
+            iteration = 3
+            for i in range(iteration):
+                self.__try_send_move_to_zone_dep(i < iteration - 1)
 
         elif self.depot_number == ZONE_3:
-            for i in range(4):
-                self.__try_send_move_to_zone_dep(i < 4 - 1)
+            iteration = 4
+            for i in range(iteration):
+                self.__try_send_move_to_zone_dep(i < iteration - 1)
 
         else:
             logger.log_critical(
