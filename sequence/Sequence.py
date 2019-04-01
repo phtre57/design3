@@ -326,7 +326,9 @@ class Sequence:
     def go_to_charge_robot(self):
         decision_tension = self.__is_current_tension_too_high_to_charge()
         if (decision_tension):
-            logger.log_info("Robot already has that eletric feel now!! It is charged enough")
+            logger.log_info(
+                "Robot already has that eletric feel now!! It is charged enough"
+            )
             return
 
         self.__go_to_c_charge_station()
@@ -343,7 +345,8 @@ class Sequence:
     def __go_to_c_charge_station(self):
         self.__send_rotation_angle()
         time.sleep(0.5)
-        self.comm_pi.sendCoordinates(CHARGE_STATION_MOVE[0], CHARGE_STATION_MOVE[1])
+        self.comm_pi.sendCoordinates(CHARGE_STATION_MOVE[0],
+                                     CHARGE_STATION_MOVE[1])
         time.sleep(1)
 
     def __charge_robot_at_station(self):
@@ -385,7 +388,8 @@ class Sequence:
 
     def __go_back_from_charge_station(self):
         time.sleep(0.5)
-        self.comm_pi.sendCoordinates(CHARGE_STATION_MOVE[0] * -1, CHARGE_STATION_MOVE[1] * -1)
+        self.comm_pi.sendCoordinates(CHARGE_STATION_MOVE[0] * -1,
+                                     CHARGE_STATION_MOVE[1] * -1)
         time.sleep(1)
 
     def move_robot_around_pickup_zone(self):
