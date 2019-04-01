@@ -327,7 +327,7 @@ class Sequence:
         decision_tension = self.__is_current_tension_too_high_to_charge()
         if (decision_tension):
             logger.log_info(
-                "Robot already has that eletric feel now!! It is charged enough"
+                "Robot already has that eletric feel now!! It is charged enough!"
             )
             return
 
