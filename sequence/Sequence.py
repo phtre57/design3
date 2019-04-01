@@ -36,7 +36,7 @@ Y_ARRAY_FOR_QR_STRATEGY = [120, 145, 170, 90]
 
 X_RANGE_FOR_QR_STRATEGY = [200, 230, 260, 285]
 
-NUMBER_OF_INCREMENT_PICKUP_ZONE = 15
+NUMBER_OF_INCREMENT_PICKUP_ZONE = 20
 
 TENSION_THRESHOLD = 3.5 * 4
 
@@ -81,11 +81,11 @@ class Sequence:
         img = self.take_image()
 
         cv2.circle(img, ((self.zone_dep_point[0] * 2),
-                         (self.zone_dep_point[1] * 2)), 1, [0, 0, 255])
+                         (self.zone_dep_point[1] * 2)), 3, [0, 0, 255])
         cv2.circle(img, ((self.zone_pickup_point[0] * 2),
-                         (self.zone_pickup_point[1] * 2)), 1, [0, 0, 255])
+                         (self.zone_pickup_point[1] * 2)), 3, [0, 0, 255])
         cv2.circle(img, ((self.zone_start_point[0] * 2),
-                         (self.zone_start_point[1] * 2)), 1, [0, 0, 255])
+                         (self.zone_start_point[1] * 2)), 3, [0, 0, 255])
 
         cv2.imshow("ZONES FOUND", img)
         cv2.waitKey(0)
@@ -437,6 +437,8 @@ class Sequence:
                 validate_piece_was_grabbed = self.validate_piece_taken(
                     real_x, real_y)
                 if validate_piece_was_grabbed is False:
+                    # WIP Refaire une seule itération
+                    self.go_to_zone_pickup()
                     self.__try_to_move_robot_around_pickup_zone()
 
                 break
@@ -469,7 +471,8 @@ class Sequence:
         robot_img = self.comm_pi.getImage()
 
         try:
-            x, y = detect_piece(robot_img, self.piece_shape, self.piece_color)
+            x, y = detect_piece(
+                robot_img, self.piece_shape, self.piece_color, validation=True)
             logger.log_critical("VALIDATE PIECE TAKEN - FOUND ONE...")
             return False
         except Exception:
@@ -568,16 +571,18 @@ class Sequence:
 
     def __move_to_point_zone_dep(self):
         if self.depot_number == ZONE_0:
-            is_made_move = False
-            while not is_made_move:
-                (x, y) = self.__detect_x_y_point_zone_dep()
+            for i in range(1):
+                self.__try_send_move_to_zone_dep(i < 1 - 1)
+            # is_made_move = False
+            # while not is_made_move:
+            #     (x, y) = self.__detect_x_y_point_zone_dep()
 
-                if (y < -80):
-                    is_made_move = False
-                    self.comm_pi.sendCoordinates(0, -10)
-                else:
-                    self.comm_pi.sendCoordinates(round(x), round(y))
-                    is_made_move = True
+            #     if (y < -80):
+            #         is_made_move = False
+            #         self.comm_pi.sendCoordinates(0, -10)
+            #     else:
+            #         self.comm_pi.sendCoordinates(round(x), round(y))
+            #         is_made_move = True
 
         elif self.depot_number == ZONE_1:
             for i in range(2):
@@ -605,7 +610,18 @@ class Sequence:
     def __send_move_to_zone_dep(self, adjust):
         (x, y) = self.__detect_x_y_point_zone_dep()
 
+        logger.log_info('DROP PIECE - Attempting a move to ' + str(x) + " " +
+                        str(y))
+
+        if (x > 20):
+            logger.log_info('DROP PIECE - X is too far, getting closer ' +
+                            str(x))
+            self.comm_pi.sendCoordinates(10, 0)
+            return False
+
         if (y < -80):
+            logger.log_info('DROP PIECE - Y is too far, getting closer' +
+                            str(y))
             self.comm_pi.sendCoordinates(0, -10)
             return False
 

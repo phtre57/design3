@@ -33,8 +33,8 @@ def detect_contour_pieces(og_frame, _str_shape):
     frame = og_frame.copy()
     frame = frame.copy()
 
-    cv2.rectangle(frame, (200, 0), (320, 240), (0, 0, 0), 110)
-    cv2.rectangle(frame, (245, 0), (320, 240), (0, 0, 0), 110)
+    cv2.rectangle(frame, (240, 0), (320, 240), (0, 0, 0), 110)
+    cv2.rectangle(frame, (0, 200), (320, 240), (0, 0, 0), 110)
 
     edges = canny(frame, detect_contour_mask, 170, 200)
 
@@ -58,7 +58,7 @@ def detect_contour_pieces(og_frame, _str_shape):
 
     if (len(shape.approx) != 1):
         raise Exception('Detect contour pieces have found multiple shape')
-    
+
     (x, y) = find_center(shape.approx[0][1], 4, shape)
 
     return (x, y)

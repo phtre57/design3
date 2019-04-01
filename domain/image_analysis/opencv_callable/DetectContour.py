@@ -2,36 +2,45 @@ import cv2
 import numpy as np
 import os
 
-methods = ['cv2.TM_CCOEFF', 'cv2.TM_CCOEFF_NORMED', 'cv2.TM_CCORR',
-            'cv2.TM_CCORR_NORMED', 'cv2.TM_SQDIFF', 'cv2.TM_SQDIFF_NORMED']
+methods = [
+    'cv2.TM_CCOEFF', 'cv2.TM_CCOEFF_NORMED', 'cv2.TM_CCORR',
+    'cv2.TM_CCORR_NORMED', 'cv2.TM_SQDIFF', 'cv2.TM_SQDIFF_NORMED'
+]
 
 methods = ['cv2.TM_CCORR_NORMED']
 
-path = os.path.normpath(
-            os.path.join(os.path.dirname(__file__), os.pardir))
+path = os.path.normpath(os.path.join(os.path.dirname(__file__), os.pardir))
 path = os.path.normpath(os.path.join(path, os.pardir))
 path = os.path.normpath(os.path.join(path, os.pardir))
 
-squareFrames = [os.path.join(path, "./samples/piece43.jpg"),
-os.path.join(path, "./samples/piece41.jpg"),
-os.path.join(path, "./samples/sampleio.jpg"),
-os.path.join(path, "./samples/failed1.jpg")]
+squareFrames = [
+    os.path.join(path, "./samples/piece43.jpg"),
+    os.path.join(path, "./samples/piece41.jpg"),
+    os.path.join(path, "./samples/sampleio.jpg"),
+    os.path.join(path, "./samples/failed1.jpg")
+]
 
-circleFrames = [os.path.join(path, "./samples/failed1.jpg"),
-os.path.join(path, "./samples/failed4.jpg"),
-os.path.join(path, "./samples/failed5.jpg"),
-os.path.join(path, "./samples/sampleio3.jpg"),
-os.path.join(path, "./samples/piece43.jpg")]
+circleFrames = [
+    os.path.join(path, "./samples/failed1.jpg"),
+    os.path.join(path, "./samples/failed4.jpg"),
+    os.path.join(path, "./samples/failed5.jpg"),
+    os.path.join(path, "./samples/sampleio3.jpg"),
+    os.path.join(path, "./samples/piece43.jpg")
+]
 
-pentagonFrames = [os.path.join(path, "./samples/piece40.jpg"),
-os.path.join(path, "./samples/sampleio2.jpg")]
+pentagonFrames = [
+    os.path.join(path, "./samples/piece40.jpg"),
+    os.path.join(path, "./samples/sampleio2.jpg")
+]
 
-triangleFrames = [os.path.join(path, "./samples/piece40.jpg"),
-os.path.join(path, "./samples/piece41.jpg"),
-os.path.join(path, "./samples/failed4.jpg"),
-os.path.join(path, "./samples/failed5.jpg"),
-os.path.join(path, "./samples/failed7.jpg"),
-os.path.join(path, "./samples/sampleio1.jpg")]
+triangleFrames = [
+    os.path.join(path, "./samples/piece40.jpg"),
+    os.path.join(path, "./samples/piece41.jpg"),
+    os.path.join(path, "./samples/failed4.jpg"),
+    os.path.join(path, "./samples/failed5.jpg"),
+    os.path.join(path, "./samples/failed7.jpg"),
+    os.path.join(path, "./samples/sampleio1.jpg")
+]
 
 # frames = triangleFrames
 
@@ -72,7 +81,7 @@ image = cv2.imread(path1)
 gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
 h, w = gray.shape[:2]
 
-pathtpl = os.path.join(path, "./samples/tplCircle.jpg")
+pathtpl = os.path.join(path, "./samples/tplTriangle.jpg")
 for file in glob.glob(pathtpl):
     template = cv2.imread(file)
     template = cv2.cvtColor(template, cv2.COLOR_BGR2GRAY)
@@ -84,7 +93,7 @@ for file in glob.glob(pathtpl):
 
     for scale in np.linspace(1, 2, 20):
         # resized = imutils.resize(gray, width=int(gray.shape[1] * scale))
-        resized = cv2.resize(gray, dsize = (0,0), fx = scale, fy = scale)
+        resized = cv2.resize(gray, dsize=(0, 0), fx=scale, fy=scale)
 
         r = gray.shape[1] / float(resized.shape[1])
 

@@ -22,7 +22,7 @@ comm_pi = Communication_pi()
 # comm_pi = Communication_pi_mock()
 logger = Logger(__name__)
 
-CANCER_MAC_USER = True
+CANCER_MAC_USER = False
 SOURCE_CAM = 1
 
 
@@ -75,14 +75,14 @@ def main_sequence(ui=True):
                         robot_cam_pixel_to_xy_converter)
     logger.log_info('Sequence start...')
     sequence.go_to_start_zone()
-    sequence.go_to_charge_robot()
-    sequence.go_to_decode_qr()
+    # sequence.go_to_charge_robot()
+    # sequence.go_to_decode_qr()
     # sequence.zone_dep_cardinal = 'EAST'
-    sequence.piece_color = 'rouge'
+    sequence.piece_color = 'vert'
     sequence.piece_shape = None
     sequence.depot_number = 'Zone 0'
-    sequence.go_to_zone_pickup()
-    sequence.move_robot_around_pickup_zone()
+    # sequence.go_to_zone_pickup()
+    # sequence.move_robot_around_pickup_zone()
     sequence.go_to_zone_dep()
     sequence.move_robot_around_zone_dep()
     sequence.go_to_start_zone()

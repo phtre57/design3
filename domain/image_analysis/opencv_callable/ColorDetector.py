@@ -12,8 +12,8 @@ PERI_LIMITER_CHECK = True
 PERI_LIMITER_UPPER = 300
 PERI_LIMITER_LOWER = 100
 RECT_LIMITER_CHECK = True
-RECT_W_LIMITER = 20
-RECT_H_LIMITER = 20
+RECT_W_LIMITER = 35
+RECT_H_LIMITER = 35
 RECT_W_LIMITER_UP = 50
 RECT_H_LIMITER_UP = 50
 RADIUS_LIMITER_CHECK = True
@@ -23,11 +23,11 @@ RAIDUS_POSITIVE = True
 DEBUG = COLOR_DETECTOR_DEBUG
 
 
-def color_detector(frame, color):
+def color_detector(frame, color, validation=False):
     frame = frame.copy()
 
-    cv2.rectangle(frame, (200, 0), (320, 240), (0, 0, 0), 110)
-    cv2.rectangle(frame, (245, 0), (320, 240), (0, 0, 0), 110)
+    cv2.rectangle(frame, (240, 0), (320, 240), (0, 0, 0), 110)
+    cv2.rectangle(frame, (0, 200), (320, 240), (0, 0, 0), 110)
 
     # shape = create_mask_for_color_detector(frame)
     # frame = shape.frame
