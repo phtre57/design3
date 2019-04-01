@@ -38,7 +38,9 @@ X_RANGE_FOR_QR_STRATEGY = [200, 230, 260, 285]
 
 NUMBER_OF_INCREMENT_PICKUP_ZONE = 15
 
-TENSION_THRESHOLD = 3.5
+TENSION_THRESHOLD = 3.5 * 4
+
+CHARGE_STATION_MOVE = (-355, -390)
 
 logger = Logger(__name__)
 
@@ -61,7 +63,7 @@ class Sequence:
         self.piece_color = None
         self.depot_number = None
         self.piece_shape = None
-        self.retry = 0
+        self.pathfinding_astar_retry = 0
         self.zone_dep_cardinal = None
         self.zone_dep_point = None
         self.zone_pickup_cardinal = None
@@ -101,14 +103,14 @@ class Sequence:
         grid_converter = None
         try:
             if unsecure:
-                self.retry = self.retry + 1
-                print(self.retry)
-                print(OBSTACLE_BORDER - 5 * self.retry)
+                self.pathfinding_astar_retry = self.pathfinding_astar_retry + 1
+                print(self.pathfinding_astar_retry)
+                print(OBSTACLE_BORDER - 5 * self.pathfinding_astar_retry)
                 grid_converter = ImageToGridConverter(
                     center_and_image['image'], center_and_image['center'][0],
                     center_and_image['center'][1], self.X_END, self.Y_END,
-                    OBSTACLE_BORDER - 5 * self.retry,
-                    LEFT_OBSTACLE_BORDER - 5 * self.retry)
+                    OBSTACLE_BORDER - 5 * self.pathfinding_astar_retry,
+                    LEFT_OBSTACLE_BORDER - 5 * self.pathfinding_astar_retry)
                 logger.log_critical(
                     "Unsecure pathfinding with new grid converter with new value for obstacle border: "
                     + str(grid_converter.get_obstacle_border()))
@@ -328,6 +330,7 @@ class Sequence:
     def go_to_charge_robot(self):
         decision_tension = self.__is_current_tension_too_high_to_charge()
         if (decision_tension):
+            logger.log_info("Robot already has that eletric feel now!! It is charged enough")
             return
 
         self.__go_to_c_charge_station()
@@ -344,7 +347,7 @@ class Sequence:
     def __go_to_c_charge_station(self):
         self.__send_rotation_angle()
         time.sleep(0.5)
-        self.comm_pi.sendCoordinates(-360, -381)
+        self.comm_pi.sendCoordinates(CHARGE_STATION_MOVE[0], CHARGE_STATION_MOVE[1])
         time.sleep(1)
 
     def __charge_robot_at_station(self):
@@ -362,15 +365,11 @@ class Sequence:
                 time.sleep(0.5)
                 tension = self.comm_pi.getTension()
 
-                if tension <= base_tension:
-                    derivative_tension = 0
-
-                if tension > base_tension:
-                    derivative_tension += 1
-                    base_tension = tension
-
                 if derivative_tension > 5:
                     break
+
+                if tension > base_tension + 0.05:
+                    derivative_tension += 1
 
             if tension > base_tension:
                 break
@@ -383,14 +382,14 @@ class Sequence:
             time.sleep(0.3)
             tension = self.comm_pi.getTension()
             logger.log_info('Tension now while charging ' + str(tension))
-            if tension > 4.30:
+            if tension > 4.30 * 4:
                 break
 
         logger.log_info("Robot is charged now!")
 
     def __go_back_from_charge_station(self):
         time.sleep(0.5)
-        self.comm_pi.sendCoordinates(360, 381)
+        self.comm_pi.sendCoordinates(CHARGE_STATION_MOVE[0] * -1, CHARGE_STATION_MOVE[1] * -1)
         time.sleep(1)
 
     def move_robot_around_pickup_zone(self):
@@ -540,7 +539,7 @@ class Sequence:
         logger.log_info('Moving closer to approach the zone dep')
         (x, y) = self.robot_mover.move_closer_on_plane(self.zone_dep_cardinal)
         self.comm_pi.sendCoordinates(x, y)
-        self.move_robot_around_zone_dep
+        self.move_robot_around_zone_dep()
 
     def drop_piece(self):
         logger.log_info('Drop the arm')

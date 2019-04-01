@@ -9,6 +9,8 @@ logger = Logger(__name__)
 
 URL = 'http://192.168.0.38:4000'
 
+TENSION_FACTOR = 4
+
 
 class Communication_pi:
     def __init__(self, url=URL):
@@ -57,7 +59,7 @@ class Communication_pi:
         def disconnect(message):
             logger.log_info("Disconnected from Pi...")
             self.sio = socketio.Client()
-            self.sio.connect(url)
+            self.sio.connect(self.url)
 
         logger.log_info("Fin création de la communication...")
 
@@ -178,6 +180,7 @@ class Communication_pi:
         while True:
             try:
                 tension = self.getTensionPi()
+                tension = tension * TENSION_FACTOR
                 return tension
             except Exception:
                 logger.log_critical(
@@ -195,9 +198,8 @@ class Communication_pi:
             if (tt - t > 20):
                 self.__init()
                 raise Exception('Tension not found')
-                break
 
             time.sleep(0.01)
 
-        logger.log_info("Tension recu: " + str(self.tension))
+        logger.log_info("Tension recu: " + str(self.tension * TENSION_FACTOR))
         return self.tension
