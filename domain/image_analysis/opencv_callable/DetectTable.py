@@ -12,20 +12,24 @@ RECT_W_LIMITER = 90
 RECT_H_LIMITER = 90
 RADIUS_LIMITER_CHECK = False
 
+DEBUG = False
 
 def detect_table(og_frame):
     frame = og_frame.copy()
 
     frame = frame.copy()
 
-    edges = canny(frame, erode_mask)
+    edges = canny(frame, erode_mask, 200, 250)
+
+    if DEBUG:
+      cv2.imshow('DETECT TABLE - SHOW EDGES', edges)
+      cv2.waitKey()
+
     shapeDetector = ShapeDetector(PERI_LIMITER_CHECK, RECT_LIMITER_CHECK,
                                   RADIUS_LIMITER_CHECK)
     shapeDetector.set_peri_limiter(PERI_LIMITER_LOWER, PERI_LIMITER_UPPER)
     shapeDetector.set_rect_limiter(RECT_W_LIMITER, RECT_H_LIMITER)
-
     shape = shapeDetector.detect(edges, og_frame.copy())
-    shape = shapeDetector.detect(shape.frameCnts, og_frame.copy())
 
     kernelerode = np.ones((2, 2), np.uint8)
     kernel = np.ones((9, 9), np.uint8)

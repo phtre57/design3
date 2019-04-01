@@ -36,9 +36,11 @@ Y_ARRAY_FOR_QR_STRATEGY = [120, 145, 170, 90]
 
 X_RANGE_FOR_QR_STRATEGY = [200, 230, 260, 285]
 
-NUMBER_OF_INCREMENT_PICKUP_ZONE = 15
+NUMBER_OF_INCREMENT_PICKUP_ZONE = 20
 
-TENSION_THRESHOLD = 3.5
+TENSION_THRESHOLD = 3.5 * 4
+
+CHARGE_STATION_MOVE = (-355, -390)
 
 logger = Logger(__name__)
 
@@ -61,7 +63,7 @@ class Sequence:
         self.piece_color = None
         self.depot_number = None
         self.piece_shape = None
-        self.retry = 0
+        self.pathfinding_astar_retry = 0
         self.zone_dep_cardinal = None
         self.zone_dep_point = None
         self.zone_pickup_cardinal = None
@@ -79,11 +81,11 @@ class Sequence:
         img = self.take_image()
 
         cv2.circle(img, ((self.zone_dep_point[0] * 2),
-                         (self.zone_dep_point[1] * 2)), 1, [0, 0, 255])
+                         (self.zone_dep_point[1] * 2)), 3, [0, 0, 255])
         cv2.circle(img, ((self.zone_pickup_point[0] * 2),
-                         (self.zone_pickup_point[1] * 2)), 1, [0, 0, 255])
+                         (self.zone_pickup_point[1] * 2)), 3, [0, 0, 255])
         cv2.circle(img, ((self.zone_start_point[0] * 2),
-                         (self.zone_start_point[1] * 2)), 1, [0, 0, 255])
+                         (self.zone_start_point[1] * 2)), 3, [0, 0, 255])
 
         # cv2.imshow("ZONES FOUND", img)
         # cv2.waitKey(0)
@@ -101,14 +103,14 @@ class Sequence:
         grid_converter = None
         try:
             if unsecure:
-                self.retry = self.retry + 1
-                print(self.retry)
-                print(OBSTACLE_BORDER - 5 * self.retry)
+                self.pathfinding_astar_retry = self.pathfinding_astar_retry + 1
+                print(self.pathfinding_astar_retry)
+                print(OBSTACLE_BORDER - 5 * self.pathfinding_astar_retry)
                 grid_converter = ImageToGridConverter(
                     center_and_image['image'], center_and_image['center'][0],
                     center_and_image['center'][1], self.X_END, self.Y_END,
-                    OBSTACLE_BORDER - 5 * self.retry,
-                    LEFT_OBSTACLE_BORDER - 5 * self.retry)
+                    OBSTACLE_BORDER - 5 * self.pathfinding_astar_retry,
+                    LEFT_OBSTACLE_BORDER - 5 * self.pathfinding_astar_retry)
                 logger.log_critical(
                     "Unsecure pathfinding with new grid converter with new value for obstacle border: "
                     + str(grid_converter.get_obstacle_border()))
@@ -274,21 +276,17 @@ class Sequence:
                         break
                 except Exception as ex:
                     logger.log_error(ex)
+                    logger.log_debug(traceback.format_exc())
                     logger.log_debug(
                         'Decode QR fallback to other point, obstacle in the way'
                     )
-                    logger.log_debug(traceback.format_exc())
                     pass
 
             if stop_outer_loop:
                 break
 
     def __try_to_decode_qr(self):
-        img = None
-        while True:
-            img = self.comm_pi.getImage()
-            if detect_blurriness(img) is False:
-                break
+        img = self.__get_image()
 
         if DEBUG:
             cv2.imshow("qr", img)
@@ -328,6 +326,9 @@ class Sequence:
     def go_to_charge_robot(self):
         decision_tension = self.__is_current_tension_too_high_to_charge()
         if (decision_tension):
+            logger.log_info(
+                "Robot already has that eletric feel now!! It is charged enough!"
+            )
             return
 
         self.__go_to_c_charge_station()
@@ -344,7 +345,8 @@ class Sequence:
     def __go_to_c_charge_station(self):
         self.__send_rotation_angle()
         time.sleep(0.5)
-        self.comm_pi.sendCoordinates(-360, -381)
+        self.comm_pi.sendCoordinates(CHARGE_STATION_MOVE[0],
+                                     CHARGE_STATION_MOVE[1])
         time.sleep(1)
 
     def __charge_robot_at_station(self):
@@ -362,15 +364,11 @@ class Sequence:
                 time.sleep(0.5)
                 tension = self.comm_pi.getTension()
 
-                if tension <= base_tension:
-                    derivative_tension = 0
-
-                if tension > base_tension:
-                    derivative_tension += 1
-                    base_tension = tension
-
                 if derivative_tension > 5:
                     break
+
+                if tension > base_tension + 0.05:
+                    derivative_tension += 1
 
             if tension > base_tension:
                 break
@@ -383,14 +381,15 @@ class Sequence:
             time.sleep(0.3)
             tension = self.comm_pi.getTension()
             logger.log_info('Tension now while charging ' + str(tension))
-            if tension > 4.30:
+            if tension > 4.30 * 4:
                 break
 
         logger.log_info("Robot is charged now!")
 
     def __go_back_from_charge_station(self):
         time.sleep(0.5)
-        self.comm_pi.sendCoordinates(360, 381)
+        self.comm_pi.sendCoordinates(CHARGE_STATION_MOVE[0] * -1,
+                                     CHARGE_STATION_MOVE[1] * -1)
         time.sleep(1)
 
     def move_robot_around_pickup_zone(self):
@@ -438,6 +437,8 @@ class Sequence:
                 validate_piece_was_grabbed = self.validate_piece_taken(
                     real_x, real_y)
                 if validate_piece_was_grabbed is False:
+                    # WIP Refaire une seule itération
+                    self.go_to_zone_pickup()
                     self.__try_to_move_robot_around_pickup_zone()
 
                 break
@@ -470,7 +471,8 @@ class Sequence:
         robot_img = self.comm_pi.getImage()
 
         try:
-            x, y = detect_piece(robot_img, self.piece_shape, self.piece_color)
+            x, y = detect_piece(
+                robot_img, self.piece_shape, self.piece_color, validation=True)
             logger.log_critical("VALIDATE PIECE TAKEN - FOUND ONE...")
             return False
         except Exception:
@@ -540,7 +542,7 @@ class Sequence:
         logger.log_info('Moving closer to approach the zone dep')
         (x, y) = self.robot_mover.move_closer_on_plane(self.zone_dep_cardinal)
         self.comm_pi.sendCoordinates(x, y)
-        self.move_robot_around_zone_dep
+        self.move_robot_around_zone_dep()
 
     def drop_piece(self):
         logger.log_info('Drop the arm')
@@ -569,16 +571,18 @@ class Sequence:
 
     def __move_to_point_zone_dep(self):
         if self.depot_number == ZONE_0:
-            is_made_move = False
-            while not is_made_move:
-                (x, y) = self.__detect_x_y_point_zone_dep()
+            for i in range(1):
+                self.__try_send_move_to_zone_dep(i < 1 - 1)
+            # is_made_move = False
+            # while not is_made_move:
+            #     (x, y) = self.__detect_x_y_point_zone_dep()
 
-                if (y < -80):
-                    is_made_move = False
-                    self.comm_pi.sendCoordinates(0, -10)
-                else:
-                    self.comm_pi.sendCoordinates(round(x), round(y))
-                    is_made_move = True
+            #     if (y < -80):
+            #         is_made_move = False
+            #         self.comm_pi.sendCoordinates(0, -10)
+            #     else:
+            #         self.comm_pi.sendCoordinates(round(x), round(y))
+            #         is_made_move = True
 
         elif self.depot_number == ZONE_1:
             for i in range(2):
@@ -606,7 +610,18 @@ class Sequence:
     def __send_move_to_zone_dep(self, adjust):
         (x, y) = self.__detect_x_y_point_zone_dep()
 
+        logger.log_info('DROP PIECE - Attempting a move to ' + str(x) + " " +
+                        str(y))
+
+        if (x > 20):
+            logger.log_info('DROP PIECE - X is too far, getting closer ' +
+                            str(x))
+            self.comm_pi.sendCoordinates(10, 0)
+            return False
+
         if (y < -80):
+            logger.log_info('DROP PIECE - Y is too far, getting closer' +
+                            str(y))
             self.comm_pi.sendCoordinates(0, -10)
             return False
 

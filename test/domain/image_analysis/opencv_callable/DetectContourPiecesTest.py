@@ -21,13 +21,17 @@ class DetectContourPiecesTest(unittest.TestCase):
         path = os.path.normpath(os.path.join(path, os.pardir))
         # path = os.path.join(path, "./image_samples/real_image/pieces.jpg")
 
-        path001 = os.path.join(path, "./test.jpg")
-        str_shape = 'pentagon'
-        self.call_path(path001, str_shape)
+        # path001 = os.path.join(path, "./test.jpg")
+        # str_shape = 'pentagon'
+        # self.call_path(path001, str_shape)
 
-        # path01 = os.path.join(path, "./samples/failed7.jpg")
-        # str_shape = 'cercle'
-        # self.call_path(path01, str_shape)
+        path01 = os.path.join(path, "./samples/sampleio3.jpg")
+        str_shape = 'cercle'
+        self.call_path(path01, str_shape)
+
+        path01 = os.path.join(path, "./samples/piece43.jpg")
+        str_shape = 'squaretangle'
+        self.call_path(path01, str_shape)
 
         # path01 = os.path.join(path, "./samples/failed6.jpg")
         # str_shape = 'triangle'
@@ -76,12 +80,15 @@ class DetectContourPiecesTest(unittest.TestCase):
             cv2.imshow('FROM TEST - FRESH FRAME', frame)
             cv2.waitKey()
 
-            (x, y) = detect_contour_pieces(frame, str_shape)
+        (x, y) = detect_contour_pieces(frame, str_shape)
+
+        if (SHOW):
             cv2.circle(frame, (x, y), 3, [255, 255, 255])
             cv2.imshow('FROM TEST - SHAPE FRAME', frame)
             cv2.waitKey()
 
-        self.assertEqual(1, 1)
+        self.assertNotEqual(x, 0)
+        self.assertNotEqual(y, 0)
 
 
 if __name__ == '__main__':

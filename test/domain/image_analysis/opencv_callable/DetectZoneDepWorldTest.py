@@ -6,8 +6,8 @@ import cv2
 import os
 import inspect
 
-LIVE = True
-
+LIVE = False
+SHOW = False
 
 class DetectZoneDepWorldTest(unittest.TestCase):
     def setUp(self):
@@ -29,8 +29,9 @@ class DetectZoneDepWorldTest(unittest.TestCase):
 
             cv2.circle(frame, res['point'], 1, [255, 51, 51])
 
-            cv2.imshow('SHAPE FRAME', frame)
-            cv2.waitKey()
+            if (SHOW):
+                cv2.imshow('SHAPE FRAME', frame)
+                cv2.waitKey()
 
             self.assertNotEqual(res['point'], (0, 0))
 
@@ -74,10 +75,6 @@ class DetectZoneDepWorldTest(unittest.TestCase):
                 path, "./image_samples/real_image/globalmonde2.jpg")
             self.call_path(path03)
 
-            path04 = os.path.join(
-                path, "./image_samples/real_image/globalmonde3.jpg")
-            self.call_path(path04)
-
             path05 = os.path.join(
                 path, "./image_samples/real_image/globalmonde4.jpg")
             self.call_path(path05)
@@ -105,17 +102,19 @@ class DetectZoneDepWorldTest(unittest.TestCase):
     def call_path(self, path):
         frame = cv2.imread(path)
 
-        cv2.imshow('FRESH FRAME', frame)
-        cv2.waitKey()
+        if (SHOW):
+            cv2.imshow('FRESH FRAME', frame)
+            cv2.waitKey()
 
-        res = detect_zone_dep_world(frame)
+        resp = detect_zone_dep_world(frame)
 
-        cv2.circle(frame, res['point'], 1, [255, 51, 51])
+        cv2.circle(frame, resp['point'], 1, [255, 51, 51])
 
-        cv2.imshow('SHAPE FRAME', frame)
-        cv2.waitKey()
+        if (SHOW):
+            cv2.imshow('SHAPE FRAME', frame)
+            cv2.waitKey()
 
-        self.assertNotEqual(res['point'], (0, 0))
+        self.assertNotEqual(resp['point'], (0, 0))
 
         print('Done with ', path)
 

@@ -7,21 +7,13 @@ from context.config import SHAPE_UTILS_DEBUG
 DEBUG = SHAPE_UTILS_DEBUG
 
 
-def find_where_the_shape_is(frame, shape, color, radius_limit, scan_hsv=False):
-
+def find_where_the_shape_is(frame, shape, color, radius_limit):
     mask = None
-    if (scan_hsv):
-        hsv_frame = frame.copy()
-        hsv_frame = cv2.cvtColor(hsv_frame, cv2.COLOR_BGR2HSV)
-        (lower, upper) = color.color_code_hsv
-        mask = cv2.inRange(hsv_frame, lower, upper)
-    else:
-        (lower, upper) = color.color_code
 
-        lower = np.array(lower, dtype="uint8")
-        upper = np.array(upper, dtype="uint8")
-
-        mask = cv2.inRange(frame, lower, upper)
+    hsv_frame = frame.copy()
+    hsv_frame = cv2.cvtColor(hsv_frame, cv2.COLOR_BGR2HSV)
+    (lower, upper) = color.color_code_hsv
+    mask = cv2.inRange(hsv_frame, lower, upper)
 
     if (DEBUG):
         cv2.imshow("COLOR FILTER", mask)
@@ -41,14 +33,6 @@ def find_where_the_shape_is(frame, shape, color, radius_limit, scan_hsv=False):
         raise Exception('Can\'t find center of the shape')
 
     return (cX, cY)
-
-    res_contour = get_contour_related_to_center(shape.approx, cX, cY)
-
-    if (res_contour == 0):
-        raise Exception('Can\'t find contour of the shape')
-
-    res_contour['mask'] = mask
-    return res_contour
 
 
 def get_contour_related_to_center(approx, cX, cY):
