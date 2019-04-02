@@ -4,6 +4,9 @@ import cv2
 import pickle
 import traceback
 import sys
+from threading import Thread
+import base64
+import time
 
 from infrastructure.communication_pi.comm_pi import Communication_pi
 from infrastructure.communication_ui.comm_ui import Communication_ui
@@ -18,11 +21,13 @@ parser.add_argument(
     '--d', dest='debug', type=bool, default=False, help='debug mode')
 args = parser.parse_args()
 
+# time.sleep(30)
 comm_pi = Communication_pi()
+
 # comm_pi = Communication_pi_mock()
 logger = Logger(__name__)
 
-CANCER_MAC_USER = False
+CANCER_MAC_USER = True
 SOURCE_CAM = 1
 
 
@@ -40,7 +45,7 @@ def start_cam():
 
 
 def calibrate():
-    logger.log_info("Calibration World Cam phase: ")
+    logger.log_info("Calibrat   ion World Cam phase: ")
     pixel_to_xy_converter = None
     try:
         with open('calibration_data.pkl', 'rb') as input:
@@ -76,16 +81,16 @@ def main_sequence(ui=True):
     logger.log_info('Sequence start...')
     sequence.go_to_start_zone()
     # sequence.go_to_charge_robot()
-    # sequence.go_to_decode_qr()
+    sequence.go_to_decode_qr()
     # sequence.zone_dep_cardinal = 'EAST'
-    sequence.piece_color = 'vert'
-    sequence.piece_shape = None
-    sequence.depot_number = 'Zone 0'
+    # sequence.piece_color = 'bleu'
+    # sequence.piece_shape = None
+    # sequence.depot_number = 'Zone 0'
     # sequence.go_to_zone_pickup()
-    # sequence.move_robot_around_pickup_zone()
-    sequence.go_to_zone_dep()
-    sequence.move_robot_around_zone_dep()
-    sequence.go_to_start_zone()
+    # sequence.move_robot_around_pickup_zone(validation=True)
+    # sequence.go_to_zone_dep()
+    # sequence.move_robot_around_zone_dep()
+    # sequence.go_to_start_zone()
     sequence.end_sequence()
     sequence.end()
 
@@ -98,7 +103,7 @@ def main_sequence(ui=True):
 def init_conn_with_ui():
     logger.log_info("Waiting start signal")
     sio = socketio.Client()
-    sio.connect('http://localhost:4000?token=MainRobot')
+    sio.connect('http://localhost:4001?token=MainRobot')
 
     @sio.on('validation')
     def on_validation(v):

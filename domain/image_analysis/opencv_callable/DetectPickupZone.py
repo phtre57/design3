@@ -44,7 +44,8 @@ def detect_pickup_zone(og_frame):
     vertical_size = (1, round(rows / 30))
     edges = __vertical_or_horizontal_lines_mask(vertical, vertical_size)
 
-    resp = __find_and_analyse_every_contour(edges, adjust_start_zone_offset, IMG_HEIGHT, og_frame, False)
+    resp = __find_and_analyse_every_contour(edges, adjust_start_zone_offset,
+                                            IMG_HEIGHT, og_frame, False)
 
     if (resp['cardinal'] is None):
         logger.log_debug('PICKUP ZONE - Fallback to upside down strategy')
@@ -52,19 +53,21 @@ def detect_pickup_zone(og_frame):
 
     return resp
 
+
 def detect_pickup_zone_the_other_side(og_frame):
     frame = og_frame.copy()
     frame = frame.copy()
     IMG_HEIGHT, IMG_WIDTH, _ = frame.shape
 
-    edges = __setup_image_and_canny(frame, 2.0)
+    edges = __setup_image_and_canny(frame, 1.0)
 
     horizontal = edges.copy()
     cols = horizontal.shape[1]
     horizontal_size = (round(cols / 30), 1)
     edges = __vertical_or_horizontal_lines_mask(horizontal, horizontal_size)
 
-    resp = __find_and_analyse_every_contour(edges, adjust_start_zone_offset_upside_down, IMG_WIDTH, og_frame, True)
+    resp = __find_and_analyse_every_contour(
+        edges, adjust_start_zone_offset_upside_down, IMG_WIDTH, og_frame, True)
 
     if (resp['cardinal'] is None):
         logger.log_critical('PICKUP ZONE - Can\'t find pickup zone')
@@ -72,15 +75,21 @@ def detect_pickup_zone_the_other_side(og_frame):
 
     return resp
 
+
 def __setup_image_and_canny(frame, alpha):
     frame = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
     frame = cv2.convertScaleAbs(frame, alpha=alpha, beta=100)
+    frame = cv2.convertScaleAbs(frame, alpha=1.0, beta=30)
 
     if DEBUG:
         cv2.imshow('gray', frame)
         cv2.waitKey()
 
-    edges = canny(frame, erode_mask_zone_dep_world, 285, 250)
+    edges = canny(frame, erode_mask_zone_dep_world, 275, 250)
+
+    if DEBUG:
+        cv2.imshow('CANNY', edges)
+        cv2.waitKey()
 
     edges = cv2.morphologyEx(
         edges, cv2.MORPH_CLOSE,
@@ -97,10 +106,10 @@ def __setup_image_and_canny(frame, alpha):
 
     return edges
 
+
 def __vertical_or_horizontal_lines_mask(vertical, size):
-    
-    verticalStructure = cv2.getStructuringElement(cv2.MORPH_RECT,
-                                                  size)
+
+    verticalStructure = cv2.getStructuringElement(cv2.MORPH_RECT, size)
     vertical = cv2.erode(vertical, verticalStructure)
     vertical = cv2.dilate(vertical, verticalStructure)
 
@@ -115,7 +124,9 @@ def __vertical_or_horizontal_lines_mask(vertical, size):
 
     return vertical
 
-def __find_and_analyse_every_contour(edges, adjust_offset_func, width_or_height, og_frame, flipped):
+
+def __find_and_analyse_every_contour(edges, adjust_offset_func,
+                                     width_or_height, og_frame, flipped):
     cnts = cv2.findContours(edges, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
     cnts = imutils.grab_contours(cnts)
     c = max(cnts, key=cv2.contourArea)
@@ -141,13 +152,15 @@ def __find_and_analyse_every_contour(edges, adjust_offset_func, width_or_height,
 
             if flipped:
                 # Flipped verification, it's normal
-                if (abs(wRect) < RECT_H_LIMITER or abs(hRect) < RECT_W_LIMITER):
+                if (abs(wRect) < RECT_H_LIMITER
+                        or abs(hRect) < RECT_W_LIMITER):
                     continue
                 if (abs(wRect) > RECT_H_LIMITER_UP
                         or abs(hRect) > RECT_W_LIMITER_UP):
                     continue
             else:
-                if (abs(wRect) < RECT_W_LIMITER or abs(hRect) < RECT_H_LIMITER):
+                if (abs(wRect) < RECT_W_LIMITER
+                        or abs(hRect) < RECT_H_LIMITER):
                     continue
                 if (abs(wRect) > RECT_W_LIMITER_UP
                         or abs(hRect) > RECT_H_LIMITER_UP):
@@ -159,14 +172,15 @@ def __find_and_analyse_every_contour(edges, adjust_offset_func, width_or_height,
                 cv2.imshow('FOUND', frame1)
                 cv2.waitKey()
 
-            center = adjust_offset_func((round(xRect), round(yRect)),
-                                              wRect, hRect, width_or_height)
+            center = adjust_offset_func((round(xRect), round(yRect)), wRect,
+                                        hRect, width_or_height)
             logger.log_debug('PICKUP ZONE - Found center ' + str(center[0]) +
                              ' ' + str(center[1]) + ' ' + center[2])
 
             return {'point': (center[0], center[1]), 'cardinal': center[2]}
 
     return {'point': (0, 0), 'cardinal': None}
+
 
 def adjust_start_zone_offset_upside_down(point, wRect, hRect, width):
     if (point[0] > width / 2):

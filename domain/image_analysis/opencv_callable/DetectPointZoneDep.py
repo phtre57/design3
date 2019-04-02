@@ -57,10 +57,15 @@ def detect_point_zone_dep(og_frame):
     shape.set_frame(shape.frameClean)
 
     # shape.approx[0][1], la forme détectée la plus basse vu que opencv commence à scanner de bas en haut
+
+    if (len(shape.approx) < 1):
+        return (-1, -1)
+
     (x, y) = find_center(shape.approx[0][1], 2.5, og_frame.copy())
 
     if (x == 0 and y == 0):
-        raise Exception('Can\'t find the first visible point of the zone dep')
+        return (-1, -1)
+        # raise Exception('Can\'t find the first visible point of the zone dep')
 
     if DEBUG:
         frame1 = og_frame.copy()
@@ -69,6 +74,7 @@ def detect_point_zone_dep(og_frame):
         cv2.waitKey()
 
     return (x, y)
+
 
 def __create_mask(frame):
     cv2.rectangle(frame, (240, 0), (320, 240), (0, 0, 0), 110)

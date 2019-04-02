@@ -7,7 +7,8 @@ import os
 import inspect
 
 LIVE = False
-SHOW = False
+SHOW = True
+
 
 class DetectPickupZoneTest(unittest.TestCase):
     def setUp(self):
@@ -37,7 +38,8 @@ class DetectPickupZoneTest(unittest.TestCase):
 
             self.assertEqual(1, 1)
         else:
-            path01 = os.path.join(path, "./samples/sample1.jpg")
+            # path01 = os.path.join(path, "./samples/sample1.jpg")
+            path01 = os.path.join(path, "./testy.jpg")
             self.call_path(path01)
 
             path1 = os.path.join(path, "./samples/sample2.jpg")
@@ -56,8 +58,8 @@ class DetectPickupZoneTest(unittest.TestCase):
             self.call_path(path5)
 
             # Flipped
-            path6 = os.path.join(path, "./samples/sample7.jpg")
-            self.call_path(path6)
+            # path6 = os.path.join(path, "./samples/sample7.jpg")
+            # self.call_path(path6)
 
             path7 = os.path.join(path, "./samples/sample8.jpg")
             self.call_path(path7)
