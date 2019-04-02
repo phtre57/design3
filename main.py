@@ -27,7 +27,7 @@ comm_pi = Communication_pi()
 # comm_pi = Communication_pi_mock()
 logger = Logger(__name__)
 
-CANCER_MAC_USER = False
+CANCER_MAC_USER = True
 SOURCE_CAM = 1
 
 

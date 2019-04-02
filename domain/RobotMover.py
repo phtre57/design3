@@ -32,7 +32,7 @@ class RobotMover:
         elif cardinal_str == WEST():
             return fallback_move, 0
         elif cardinal_str == SOUTH():
-            return fallback_move, 0
+            return fallback_move * 2, 0
         else:
             return None
 
