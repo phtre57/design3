@@ -23,6 +23,7 @@ class Communication_pi:
         self.tension = None
         self.pinState = 0
         self.url = url
+        self.scan_for_qr = False
         self.__init()
 
     def __init(self):
@@ -111,6 +112,9 @@ class Communication_pi:
             if (tt - t > 20):
                 self.__init()
                 break
+
+            if self.scan_for_qr is True:
+                self.sio.emit('getImage', 'ok')
 
             self.sio.emit('teTuSuePins', 'Cherimoya')
             self.sio.sleep(0.2)

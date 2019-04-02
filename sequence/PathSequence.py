@@ -24,10 +24,6 @@ class PathSequence:
         self.actual_robot_path = []
 
     def create_smooth_path(self, unsecure=False):
-
-        cv2.imshow('ok', self.actual_pathfinding_image)
-        cv2.waitKey()
-
         center_and_image = None
         while True:
             try:
@@ -69,12 +65,9 @@ class PathSequence:
 
             path_smoother = PathSmoother(path)
             smooth_path = path_smoother.smooth_path()
-            actual_robot_path = draw_path(smooth_path, grid_converter.image)
+            draw_path(smooth_path, grid_converter.image)
             self.smooth_path = smooth_path
-            return [
-                self.actual_pathfinding_image, self.smooth_path,
-                actual_robot_path
-            ]
+            return self.smooth_path
         except Exception as ex:
             if (isinstance(ex, NoBeginingPointException)):
                 logger.log_debug('NoBeginingPointException have been raised')

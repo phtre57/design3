@@ -8,7 +8,6 @@ from domain.pathfinding.PathSmoother import PathSmoother
 from domain.image_analysis_pathfinding.PixelToXYCoordinatesConverter import *
 from domain.image_analysis.ImageToGridConverter import *
 from domain.image_analysis_pathfinding.RobotDetector import RobotDetector
-from domain.image_analysis.opencv_callable.DetectQR import *
 from domain.image_analysis.DetectBlurriness import *
 from domain.image_analysis_pathfinding.RobotDetector import *
 from domain.pathfinding.Exceptions.NoPathFoundException import *
@@ -25,6 +24,7 @@ from infrastructure.communication_ui.ui_destination import *
 from sequence.PathSequence import PathSequence
 from sequence.DrawSequence import *
 from sequence.UtilSequence import *
+from sequence.QRSequence import try_to_decode_qr
 
 DEBUG = False
 SHOW_PATH = False
@@ -109,21 +109,21 @@ class Sequence:
         comm_ui = Communication_ui()
         comm_ui.SendImage(img, WORLD_FEED_IMAGE())
 
-    def start(self):
+    def start(self, scan_for_qr=False):
         logger.log_info("## Starting path finding")
         create_done = self.__create_smooth_path()
 
-        if (create_done[0] is None):
+        if (create_done is None):
             return
 
         logger.log_info("## Rotating robot")
         self.__send_rotation_angle()
 
         logger.log_info("## Convert to X Y")
-        self.__convert_to_xy(create_done[1])
+        self.__convert_to_xy(create_done)
 
         logger.log_info("## Send coordinates")
-        self.__send_coordinates(create_done[0], create_done[1], create_done[2])
+        self.__send_coordinates(create_done, scan_for_qr)
 
     def __create_smooth_path(self, unsecure=False):
         self.actual_pathfinding_image = self.take_image()
@@ -138,9 +138,21 @@ class Sequence:
         self.starting_point = self.real_path[0]
         self.real_path = self.real_path[1:]
 
-    def __send_coordinates(self, img, smooth_path, actual_robot_path):
+    def __send_coordinates(self, smooth_path, scan_for_qr=False):
+        img = self.take_image()
+        actual_robot_path = [smooth_path[0]]
         for point in self.real_path:
             self.__send_rotation_angle(smooth_path)
+
+            if scan_for_qr is True:
+                img = self.comm_pi.image
+                info_qr = try_to_decode_qr(img)
+                if (info_qr is not None):
+                    self.piece_shape = info_qr['shape']
+                    self.piece_color = info_qr['color']
+                    self.depot_number = info_qr['zone']
+                    self.comm_pi.scan_for_qr = False
+
             x_coord = int(round(point[0] - self.starting_point[0], 0))
             y_coord = int(round(point[1] - self.starting_point[1], 0))
             self.comm_pi.sendCoordinates(x_coord, y_coord)
@@ -149,7 +161,8 @@ class Sequence:
                 try:
                     center_and_image = find_current_center_robot(
                         img, smooth_path)
-                    draw_robot_on_path_image(img, actual_robot_path,
+                    draw_robot_on_path_image(center_and_image['image'],
+                                             actual_robot_path,
                                              center_and_image['center'])
                     self.starting_point = self.world_cam_pixel_to_xy_converter.convert_to_xy_point(
                         (center_and_image['center'][0],
@@ -228,14 +241,20 @@ class Sequence:
         comm_ui.SendText('Going to decode code QR', SEQUENCE_TEXT())
         self.comm_pi.changeServoVert('6000')
         self.comm_pi.changeServoHori('5500')
-        stop_outer_loop = False
+
+        self.comm_pi.scan_for_qr = True
+
         for y in Y_ARRAY_FOR_QR_STRATEGY:
             for x in X_RANGE_FOR_QR_STRATEGY:
                 self.set_end_point(x, y)
                 try:
-                    self.start()
-                    stop_outer_loop = self.__try_to_decode_qr()
-                    if (stop_outer_loop):
+                    self.start(self.comm_pi.scan_for_qr)
+                    # img = self.__get_image_embarked()
+                    # info_qr = try_to_decode_qr(img)
+                    if (scan_for_qr is False):
+                        # self.piece_shape = info_qr['shape']
+                        # self.piece_color = info_qr['color']
+                        # self.depot_number = info_qr['zone']
                         break
                 except Exception as ex:
                     logger.log_error(ex)
@@ -248,37 +267,7 @@ class Sequence:
             if stop_outer_loop:
                 break
 
-    def __try_to_decode_qr(self):
-        img = self.__get_image()
-
-        if DEBUG:
-            cv2.imshow("qr", img)
-            cv2.waitKey(0)
-
-        # try to decode qr
-        dict_of_values = decode(img)
-        self.piece_color = dict_of_values[COULEUR]
-        self.piece_shape = dict_of_values[PIECE]
-        self.depot_number = dict_of_values[ZONE]
-        comm_ui = Communication_ui()
-        string_qr = str(self.depot_number) + ' Couleur: ' + str(
-            self.piece_color) + ' Forme: ' + str(self.piece_shape)
-        comm_ui.SendText(string_qr, QR_CODE_TEXT())
-        logger.log_info("Values of qr code: " + str(dict_of_values))
-        logger.log_info(
-            ("Value of self.piece_color: " + str(self.piece_color)))
-        logger.log_info(
-            ("Value of self.piece_shape: " + str(self.piece_shape)))
-        logger.log_info(
-            ("Value of self.depot_number: " + str(self.depot_number)))
-
-        if dict_of_values is None:
-            return False
-
-        return True
-        # assign attributes for further uses
-
-    def __get_image(self):
+    def __get_image_embarked(self):
         img = None
         while True:
             img = self.comm_pi.getImage()

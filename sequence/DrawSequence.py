@@ -29,16 +29,12 @@ def draw_robot_on_path_image(actual_pathfinding_image, actual_robot_path,
 
 
 def draw_path(smooth_path, img):
-    actual_robot_path = [smooth_path[0]]
-
     for point in smooth_path:
         cv2.circle(img, (point[0], point[1]), 2, [0, 0, 255])
 
     if SHOW_PATH:
         cv2.imshow("path", img)
         cv2.waitKey(0)
-
-    return actual_robot_path
 
 
 def take_image_and_draw(img, smooth_path=None):

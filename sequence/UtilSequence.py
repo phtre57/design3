@@ -9,10 +9,6 @@ logger = Logger(__name__)
 
 
 def find_current_center_robot(img, smooth_path):
-
-    cv2.imshow('okk', img)
-    cv2.waitKey()
-
     img = take_image_and_draw(img, smooth_path)
 
     robot_detector = RobotDetector(img)
