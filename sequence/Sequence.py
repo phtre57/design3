@@ -43,7 +43,7 @@ NUMBER_OF_INCREMENT_PICKUP_ZONE = 20
 
 TENSION_THRESHOLD = 3.5 * 4
 
-CHARGE_STATION_MOVE = (-345, -390)
+CHARGE_STATION_MOVE = (-370, -370)
 
 logger = Logger(__name__)
 
@@ -72,10 +72,15 @@ class Sequence:
         self.zone_pickup_cardinal = None
         self.zone_pickup_point = None
         self.zone_start_point = None
+        self.actual_robot_path = []
+        self.actual_pathfinding_image = None
+        self.validation_piece_taken_pickup_zone = True
         self.__init_sequence()
         self.comm_pi.moveArm('2000')
 
     def __init_sequence(self):
+        self.comm_pi.redLightOff()
+
         initSequence = InitSequence(X_END_START_ZONE, Y_END_START_ZONE,
                                     self.image_taker)
         self.zone_start_point, self.zone_dep_cardinal, self.zone_dep_point, self.zone_pickup_cardinal, self.zone_pickup_point = initSequence.init(
@@ -90,8 +95,8 @@ class Sequence:
         cv2.circle(img, ((self.zone_start_point[0] * 2),
                          (self.zone_start_point[1] * 2)), 3, [0, 0, 255])
 
-        # cv2.imshow("ZONES FOUND", img)
-        # cv2.waitKey(0)
+        comm_ui = Communication_ui()
+        comm_ui.SendImage(img, WORLD_FEED_IMAGE())
 
     def __create_smooth_path(self, unsecure=False):
         center_and_image = None
@@ -129,11 +134,15 @@ class Sequence:
             astar = Astar(grid_converter.grid, HEIGHT, LENGTH)
             path = astar.find_path()
 
+            if (path == []):
+                return False
+
             path_smoother = PathSmoother(path)
             smooth_path = path_smoother.smooth_path()
             self.__draw_path(smooth_path, grid_converter)
 
             self.smooth_path = smooth_path
+            return True
         except Exception as ex:
             if (isinstance(ex, NoBeginingPointException)):
                 logger.log_debug('NoBeginingPointException have been raised')
@@ -168,7 +177,7 @@ class Sequence:
             while True:
                 try:
                     center_and_image = self.__find_current_center_robot()
-                    self.__draw_robot_on_path_image(center_and_image['image'], center_and_image['center'])
+                    self.__draw_robot_on_path_image(center_and_image['center'])
                     self.starting_point = self.world_cam_pixel_to_xy_converter.convert_to_xy_point(
                         (center_and_image['center'][0],
                          center_and_image['center'][1]))
@@ -177,9 +186,19 @@ class Sequence:
                     logger.log_error(ex)
                     logger.log_critical(traceback.format_exc())
 
-    def __draw_robot_on_path_image(self, img, center):
-        img = img.copy()
-        cv2.circle(img, (center[0] * 2, center[1] * 2), 1, [0, 0, 255])
+    def __draw_robot_on_path_image(self, center):
+        img = self.actual_pathfinding_image
+        self.actual_robot_path.append(center)
+        if len(self.actual_robot_path) > 1:
+            for i in range(1, len(self.actual_robot_path)):
+                p1 = (self.actual_robot_path[i - 1][0] * 2,
+                      self.actual_robot_path[i - 1][1] * 2)
+                p2 = (self.actual_robot_path[i][0] * 2,
+                      self.actual_robot_path[i][1] * 2)
+                cv2.line(img, p1, p2, [255, 0, 0], 6)
+
+        cv2.circle(img, (center[0] * 2, center[1] * 2), 2, [255, 0, 0])
+
         comm_ui = Communication_ui()
         comm_ui.SendImage(img, PATHS_IMAGE())
 
@@ -203,8 +222,10 @@ class Sequence:
                 logger.log_debug(traceback.format_exc())
 
     def __draw_path(self, smooth_path, grid_converter):
+        self.actual_robot_path = [smooth_path[0]]
+
         for point in smooth_path:
-            cv2.circle(grid_converter.image, (point[0], point[1]), 1,
+            cv2.circle(grid_converter.image, (point[0], point[1]), 2,
                        [0, 0, 255])
 
         if SHOW_PATH:
@@ -214,13 +235,19 @@ class Sequence:
     def take_image_and_draw(self, smooth_path=None):
         logger.log_info("Capture d'image en cours...")
         ret, img = self.image_taker.read()
+        self.actual_pathfinding_image = img.copy()
 
         if (smooth_path is not None):
             for point in smooth_path:
-                cv2.circle(img, (point[0] * 2, point[1] * 2), 1, [0, 0, 255])
+                cv2.circle(self.actual_pathfinding_image,
+                           (point[0] * 2, point[1] * 2), 4, [0, 0, 255])
+
+            for i in range(1, len(smooth_path)):
+                p1 = (smooth_path[i - 1][0] * 2, smooth_path[i - 1][1] * 2)
+                p2 = (smooth_path[i][0] * 2, smooth_path[i][1] * 2)
+                cv2.line(self.actual_pathfinding_image, p1, p2, [0, 0, 255], 8)
 
         cv2.destroyAllWindows()
-
         return img
 
     def take_image(self):
@@ -244,7 +271,10 @@ class Sequence:
 
     def start(self):
         logger.log_info("## Starting path finding")
-        self.__create_smooth_path()
+        create_done = self.__create_smooth_path()
+
+        if (not create_done):
+            return
 
         logger.log_info("## Rotating robot")
         self.__send_rotation_angle()
@@ -281,8 +311,6 @@ class Sequence:
     def end(self):
         comm_ui = Communication_ui()
         comm_ui.SendText('Sequence is over and done', SEQUENCE_TEXT())
-        self.comm_pi.redLightOff()
-        self.comm_pi.disconnectFromPi()
 
     def go_to_decode_qr(self):
         comm_ui = Communication_ui()
@@ -322,7 +350,9 @@ class Sequence:
         self.piece_shape = dict_of_values[PIECE]
         self.depot_number = dict_of_values[ZONE]
         comm_ui = Communication_ui()
-        comm_ui.SendText(self.depot_number + ' ' + self.piece_color + ' ' + self.piece_shape, SEQUENCE_TEXT())
+        string_qr = str(self.depot_number) + ' Couleur: ' + str(
+            self.piece_color) + ' Forme: ' + str(self.piece_shape)
+        comm_ui.SendText(string_qr, QR_CODE_TEXT())
         logger.log_info("Values of qr code: " + str(dict_of_values))
         logger.log_info(
             ("Value of self.piece_color: " + str(self.piece_color)))
@@ -373,10 +403,15 @@ class Sequence:
     def __go_to_c_charge_station(self):
         self.__send_rotation_angle()
         time.sleep(0.5)
-        iteration = 6
+        iteration = 7
         for i in range(iteration):
-            self.comm_pi.sendCoordinates(round(CHARGE_STATION_MOVE[0] / iteration),
-                                         round(CHARGE_STATION_MOVE[1] / iteration))
+            if (i % 2 == 0):
+                self.__send_rotation_angle()
+
+            self.comm_pi.sendCoordinates(
+                round(CHARGE_STATION_MOVE[0] / iteration),
+                round(CHARGE_STATION_MOVE[1] / iteration))
+            time.sleep(0.2)
 
         time.sleep(1)
 
@@ -423,7 +458,8 @@ class Sequence:
                                      CHARGE_STATION_MOVE[1] * -1)
         time.sleep(1)
 
-    def move_robot_around_pickup_zone(self):
+    def move_robot_around_pickup_zone(self, validation=True):
+        self.validation_piece_taken_pickup_zone = validation
         self.__try_to_move_robot_around_pickup_zone()
         (x, y) = self.robot_mover.fallback_from_cardinality(
             self.zone_pickup_cardinal)
@@ -465,6 +501,9 @@ class Sequence:
         while not piece_grabbed:
             piece_grabbed, real_x, real_y = self.__move_on_pickup_zone(
                 movement_point, angle)
+
+            if not self.validation_piece_taken_pickup_zone:
+                break
 
             if piece_grabbed:
                 validate_piece_was_grabbed = self.validate_piece_taken(
@@ -561,24 +600,23 @@ class Sequence:
         comm_ui = Communication_ui()
         comm_ui.SendText('Moving around zone depôt', SEQUENCE_TEXT())
         while True:
-            try:
-                self.__move_to_point_zone_dep()
-                self.drop_piece()
-                (x, y) = self.robot_mover.fallback_from_cardinality(
-                    self.zone_dep_cardinal)
+            self.__move_to_point_zone_dep()
+            self.drop_piece()
+            (x, y) = self.robot_mover.fallback_from_cardinality(
+                self.zone_dep_cardinal)
+
+            if x == -1 and y == -1:
+                logger.log_info('Retrying to approach the zone dep')
+                self.__retry_move_robot_around_zone_dep()
+            else:
                 self.comm_pi.sendCoordinates(x, y)
                 break
-            except Exception as ex:
-                logger.log_info('Retrying to approach the zone dep')
-                logger.logger.critical(traceback.format_exc())
-                self.__retry_move_robot_around_zone_dep()
-                pass
 
     def __retry_move_robot_around_zone_dep(self):
         logger.log_info('Moving closer to approach the zone dep')
         (x, y) = self.robot_mover.move_closer_on_plane(self.zone_dep_cardinal)
         self.comm_pi.sendCoordinates(x, y)
-        self.move_robot_around_zone_dep()
+        # self.move_robot_around_zone_dep()
 
     def drop_piece(self):
         logger.log_info('Drop the arm')
@@ -608,16 +646,6 @@ class Sequence:
     def __move_to_point_zone_dep(self):
         if self.depot_number == ZONE_0:
             self.__try_send_move_to_zone_dep(1)
-            # is_made_move = False
-            # while not is_made_move:
-            #     (x, y) = self.__detect_x_y_point_zone_dep()
-
-            #     if (y < -80):
-            #         is_made_move = False
-            #         self.comm_pi.sendCoordinates(0, -10)
-            #     else:
-            #         self.comm_pi.sendCoordinates(round(x), round(y))
-            #         is_made_move = True
 
         elif self.depot_number == ZONE_1:
             iteration = 2
@@ -651,16 +679,16 @@ class Sequence:
         logger.log_info('DROP PIECE - Attempting a move to ' + str(x) + " " +
                         str(y))
 
-        if (x > 20):
-            logger.log_info('DROP PIECE - X is too far, getting closer ' +
-                            str(x))
-            self.comm_pi.sendCoordinates(10, 0)
-            return False
-
         if (y < -80):
             logger.log_info('DROP PIECE - Y is too far, getting closer' +
                             str(y))
             self.comm_pi.sendCoordinates(0, -10)
+            return False
+
+        if (x > 20):
+            logger.log_info('DROP PIECE - X is too far, getting closer ' +
+                            str(x))
+            self.comm_pi.sendCoordinates(10, 0)
             return False
 
         self.comm_pi.sendCoordinates(round(x), round(y))
@@ -736,4 +764,4 @@ class Sequence:
         comm_ui = Communication_ui()
         comm_ui.SendText('Sequence is done', SEQUENCE_TEXT())
         self.comm_pi.redLightOn()
-        time.sleep(5)
+        time.sleep(30)

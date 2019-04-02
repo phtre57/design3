@@ -15,7 +15,6 @@ class Communication_ui():
 
                 @sio.on('validation')
                 def on_validation(v):
-                    print('validation')
                     sio.disconnect()
             except Exception:
                 print(

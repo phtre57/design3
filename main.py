@@ -45,7 +45,7 @@ def start_cam():
 
 
 def calibrate():
-    logger.log_info("Calibration World Cam phase: ")
+    logger.log_info("Calibrat   ion World Cam phase: ")
     pixel_to_xy_converter = None
     try:
         with open('calibration_data.pkl', 'rb') as input:
@@ -83,14 +83,14 @@ def main_sequence(ui=True):
     # sequence.go_to_charge_robot()
     sequence.go_to_decode_qr()
     # sequence.zone_dep_cardinal = 'EAST'
-    sequence.piece_color = 'vert'
-    sequence.piece_shape = None
+    # sequence.piece_color = 'bleu'
+    # sequence.piece_shape = None
     # sequence.depot_number = 'Zone 0'
-    sequence.go_to_zone_pickup()
-    sequence.move_robot_around_pickup_zone()
-    sequence.go_to_zone_dep()
-    sequence.move_robot_around_zone_dep()
-    sequence.go_to_start_zone()
+    # sequence.go_to_zone_pickup()
+    # sequence.move_robot_around_pickup_zone(validation=True)
+    # sequence.go_to_zone_dep()
+    # sequence.move_robot_around_zone_dep()
+    # sequence.go_to_start_zone()
     sequence.end_sequence()
     sequence.end()
 

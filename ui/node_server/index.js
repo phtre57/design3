@@ -70,9 +70,7 @@ io.on('connection', client => {
     client.disconnect();
   });
 
-  client.on('disconnect', () => {
-    console.log('bye');
-  });
+  client.on('disconnect', () => {});
 });
 
 server.listen(4001, () => {

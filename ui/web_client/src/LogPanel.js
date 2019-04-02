@@ -12,13 +12,19 @@ class LogPanel extends Component {
       }
 
       let newLogs = this.state.logs;
-      newLogs.push(resp.data);
+      newLogs.unshift(resp.data);
       this.setState({ logs: newLogs });
     });
   }
 
   displayLogs = () => {
     let t = this.state.logs;
+
+    while (t.length > 20) {
+      t.pop();
+    }
+
+    t = t.reverse();
 
     return t.map(log => {
       return <p> {log} </p>;

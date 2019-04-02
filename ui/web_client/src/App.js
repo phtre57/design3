@@ -14,22 +14,61 @@ import openSocket from 'socket.io-client';
 import Timer from './Timer';
 import LogPanel from './LogPanel';
 
+let initialState = {
+  main: '',
+  img: '',
+  showLogs: true,
+  gettension: '',
+  qrcode: '',
+  sequence: '',
+  worldcamfeed: '',
+  embarkedcamfeed: '',
+  embarkedopencv: '',
+  paths: ''
+};
+
 class App extends Component {
-  state = {
-    main: '',
-    img: '',
-    showLogs: true,
-    socket: openSocket('http://localhost:4001?token=UI')
-  };
+  state = initialState;
+
+  initialState() {
+    initialState.socket = this.state.socket;
+    this.setState(initialState);
+  }
+
+  componentWillMount() {
+    let sockObj = {
+      socket: openSocket('http://localhost:4001?token=UI')
+    };
+    let tstate = Object.assign({}, initialState, sockObj);
+    this.setState(tstate);
+  }
 
   componentDidMount() {
     this.state.socket.on('event', resp => {
       this.setState({ [resp.dest]: resp.data });
     });
+    this.getTensionPokeOnPi();
   }
 
+  getTensionPokeOnPi = () => {
+    let piSocket = openSocket('http://192.168.0.38:4000');
+    piSocket.on('recvTension', resp => {
+      this.setState({ gettension: resp });
+    });
+
+    piSocket.on('recvImage', resp => {
+      this.setState({ embarkedopencv: resp });
+    });
+
+    setInterval(() => {
+      piSocket.emit('getTension', 'From React UI Phantom');
+      piSocket.emit('getImage', 'Un frame please');
+    }, 500);
+  };
+
   startSignal = () => {
-    this.state.socket.emit('start', 'start');
+    this.initialState();
+    this.state = this.state.socket.emit('start', 'start');
     console.log('start signal sent');
   };
 
