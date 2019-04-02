@@ -73,6 +73,7 @@ class App extends Component {
   };
 
   resetSignal = () => {
+    this.initialState();
     console.log('reset signal sent');
   };
 
