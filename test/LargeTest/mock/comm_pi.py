@@ -10,7 +10,6 @@ class Communication_pi_mock():
         print("Communication mock: connect")
 
     def getImage(self):
-        input('getImage')
         cap = cv2.VideoCapture(1)
 
         while True:
@@ -26,9 +25,17 @@ class Communication_pi_mock():
         return img
 
     def sendCoordinates(self, x, y):
-        input('sendCoordinates')
         print("Communication mock: sendCoordinates ## " + str(x) + ", " +
               str(y))
+
+    def redLightOff(self):
+        print('Red Light Off')
+
+    def redLightOn(self):
+        print('Red Light On')
+
+    def moveArm(self, commande):
+        print('move Arm')
 
     def disconnectFromPi(self):
         print("Communication mock: disconnect")
@@ -40,13 +47,10 @@ class Communication_pi_mock():
         print("Communication mock: changeCondensateur")
 
     def sendAngle(self, angle):
-        input('sendAngle')
         print("Communication mock: sendAngle ## " + str(angle))
 
     def changeServoHori(self, str):
-        # input('changeServoHori')
         print("Communication mock: changeServoHori ## " + str)
 
     def changeServoVert(self, str):
-        # input('changeServoVert')
         print("Communication mock: changeServoVert ## " + str)

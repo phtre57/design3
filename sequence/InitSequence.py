@@ -1,4 +1,5 @@
 import traceback
+import cv2
 
 from domain.image_analysis.opencv_callable.DetectStartZone import detect_start_zone
 from domain.image_analysis.opencv_callable.DetectZoneDepWorld import detect_zone_dep_world
@@ -9,7 +10,9 @@ logger = Logger(__name__)
 
 
 class InitSequence():
-    def __init__(self, x_end_start_zone, y_end_start_zone, image_taker):
+    def __init__(self, x_end_start_zone, y_end_start_zone, image_taker,
+                 no_world_cam):
+        self.no_world_cam = no_world_cam
         self.X_END_START_ZONE = x_end_start_zone
         self.Y_END_START_ZONE = y_end_start_zone
         self.image_taker = image_taker
@@ -30,6 +33,10 @@ class InitSequence():
 
     def take_image(self):
         logger.log_info("Capture d'image de la camera monde en cours...")
+
+        if (self.no_world_cam):
+            self.img = cv2.imread('./testy.jpg')
+            return self.img
 
         while True:
             ret, img = self.image_taker.read()

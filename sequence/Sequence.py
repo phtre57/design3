@@ -22,6 +22,9 @@ from sequence.InitSequence import InitSequence
 from domain.RobotMover import *
 from infrastructure.communication_ui.comm_ui import Communication_ui
 from infrastructure.communication_ui.ui_destination import *
+from sequence.PathSequence import PathSequence
+from sequence.DrawSequence import *
+from sequence.UtilSequence import *
 
 DEBUG = False
 SHOW_PATH = False
@@ -49,8 +52,13 @@ logger = Logger(__name__)
 
 
 class Sequence:
-    def __init__(self, image_taker, comm_pi, world_cam_pixel_to_xy_converter,
-                 robot_cam_pixel_to_xy_converter):
+    def __init__(self,
+                 image_taker,
+                 comm_pi,
+                 world_cam_pixel_to_xy_converter,
+                 robot_cam_pixel_to_xy_converter,
+                 no_world_cam=False):
+        self.no_world_cam = no_world_cam
         self.image_taker = image_taker
         self.X_END = None
         self.Y_END = None
@@ -82,7 +90,7 @@ class Sequence:
         self.comm_pi.redLightOff()
 
         initSequence = InitSequence(X_END_START_ZONE, Y_END_START_ZONE,
-                                    self.image_taker)
+                                    self.image_taker, self.no_world_cam)
         self.zone_start_point, self.zone_dep_cardinal, self.zone_dep_point, self.zone_pickup_cardinal, self.zone_pickup_point = initSequence.init(
         )
 
@@ -95,89 +103,54 @@ class Sequence:
         cv2.circle(img, ((self.zone_start_point[0] * 2),
                          (self.zone_start_point[1] * 2)), 3, [0, 0, 255])
 
+        # cv2.imshow('ok', img)
+        # cv2.waitKey()
+
         comm_ui = Communication_ui()
         comm_ui.SendImage(img, WORLD_FEED_IMAGE())
 
+    def start(self):
+        logger.log_info("## Starting path finding")
+        create_done = self.__create_smooth_path()
+
+        if (create_done[0] is None):
+            return
+
+        logger.log_info("## Rotating robot")
+        self.__send_rotation_angle()
+
+        logger.log_info("## Convert to X Y")
+        self.__convert_to_xy(create_done[1])
+
+        logger.log_info("## Send coordinates")
+        self.__send_coordinates(create_done[0], create_done[1], create_done[2])
+
     def __create_smooth_path(self, unsecure=False):
-        center_and_image = None
-        while True:
-            try:
-                center_and_image = self.__find_current_center_robot()
-                break
-            except Exception as ex:
-                logger.log_error(ex)
-                logger.log_critical(traceback.format_exc())
+        self.actual_pathfinding_image = self.take_image()
+        pathSequence = PathSequence(self.pathfinding_astar_retry,
+                                    self.actual_pathfinding_image, self.X_END,
+                                    self.Y_END)
+        return pathSequence.create_smooth_path()
 
-        grid_converter = None
-        try:
-            if unsecure:
-                self.pathfinding_astar_retry = self.pathfinding_astar_retry + 1
-                print(self.pathfinding_astar_retry)
-                print(OBSTACLE_BORDER - 5 * self.pathfinding_astar_retry)
-                grid_converter = ImageToGridConverter(
-                    center_and_image['image'], center_and_image['center'][0],
-                    center_and_image['center'][1], self.X_END, self.Y_END,
-                    OBSTACLE_BORDER - 5 * self.pathfinding_astar_retry,
-                    LEFT_OBSTACLE_BORDER - 5 * self.pathfinding_astar_retry)
-                logger.log_critical(
-                    "Unsecure pathfinding with new grid converter with new value for obstacle border: "
-                    + str(grid_converter.get_obstacle_border()))
-            else:
-                grid_converter = ImageToGridConverter(
-                    center_and_image['image'], center_and_image['center'][0],
-                    center_and_image['center'][1], self.X_END, self.Y_END)
-                # grid_converter = ImageToGridConverter(
-                #     center_and_image['image'], center_and_image['center'][0],
-                #     center_and_image['center'][1], self.X_END, self.Y_END, 0,
-                #     0, CIRCLE_OBSTACLE_RADIUS, True)
-
-            astar = Astar(grid_converter.grid, HEIGHT, LENGTH)
-            path = astar.find_path()
-
-            if (path == []):
-                return False
-
-            path_smoother = PathSmoother(path)
-            smooth_path = path_smoother.smooth_path()
-            self.__draw_path(smooth_path, grid_converter)
-
-            self.smooth_path = smooth_path
-            return True
-        except Exception as ex:
-            if (isinstance(ex, NoBeginingPointException)):
-                logger.log_debug('NoBeginingPointException have been raised')
-                logger.log_debug(ex)
-                logger.log_debug(traceback.format_exc())
-                self.__create_smooth_path(True)
-                pass
-            else:
-                logger.log_debug(ex)
-                logger.log_debug(traceback.format_exc())
-                if (DEBUG):
-                    frame = self.take_image()
-                    cv2.circle(frame, (self.X_END * 2, self.Y_END * 2), 1,
-                               [0, 0, 255])
-                    cv2.imshow('OBSTACLE PATH', frame)
-                    cv2.waitKey()
-                raise ex
-
-    def __convert_to_xy(self):
+    def __convert_to_xy(self, smooth_path):
         self.real_path = self.world_cam_pixel_to_xy_converter.convert_to_xy(
-            self.smooth_path)
+            smooth_path)
         self.starting_point = self.real_path[0]
         self.real_path = self.real_path[1:]
 
-    def __send_coordinates(self):
+    def __send_coordinates(self, img, smooth_path, actual_robot_path):
         for point in self.real_path:
-            self.__send_rotation_angle(self.smooth_path)
+            self.__send_rotation_angle(smooth_path)
             x_coord = int(round(point[0] - self.starting_point[0], 0))
             y_coord = int(round(point[1] - self.starting_point[1], 0))
             self.comm_pi.sendCoordinates(x_coord, y_coord)
 
             while True:
                 try:
-                    center_and_image = self.__find_current_center_robot()
-                    self.__draw_robot_on_path_image(center_and_image['center'])
+                    center_and_image = find_current_center_robot(
+                        img, smooth_path)
+                    draw_robot_on_path_image(img, actual_robot_path,
+                                             center_and_image['center'])
                     self.starting_point = self.world_cam_pixel_to_xy_converter.convert_to_xy_point(
                         (center_and_image['center'][0],
                          center_and_image['center'][1]))
@@ -186,31 +159,10 @@ class Sequence:
                     logger.log_error(ex)
                     logger.log_critical(traceback.format_exc())
 
-    def __draw_robot_on_path_image(self, center):
-        img = self.actual_pathfinding_image
-        self.actual_robot_path.append(center)
-        if len(self.actual_robot_path) > 1:
-            for i in range(1, len(self.actual_robot_path)):
-                p1 = (self.actual_robot_path[i - 1][0] * 2,
-                      self.actual_robot_path[i - 1][1] * 2)
-                p2 = (self.actual_robot_path[i][0] * 2,
-                      self.actual_robot_path[i][1] * 2)
-                cv2.line(img, p1, p2, [255, 0, 0], 6)
-
-        cv2.circle(img, (center[0] * 2, center[1] * 2), 2, [255, 0, 0])
-
-        comm_ui = Communication_ui()
-        comm_ui.SendImage(img, PATHS_IMAGE())
-
-    def __find_current_center_robot(self):
-        img = self.take_image_and_draw(self.smooth_path)
-        robot_detector = RobotDetector(img)
-        return {'center': robot_detector.find_center_of_robot(), 'image': img}
-
     def __send_rotation_angle(self, path=None):
         while True:
             try:
-                img = self.take_image_and_draw(path)
+                img = self.take_image()
                 robot_detector = RobotDetector(img)
                 robot_angle = robot_detector.find_angle_of_robot()
                 turning_angle = int(round(robot_angle))
@@ -221,37 +173,12 @@ class Sequence:
                 logger.log_error(ex)
                 logger.log_debug(traceback.format_exc())
 
-    def __draw_path(self, smooth_path, grid_converter):
-        self.actual_robot_path = [smooth_path[0]]
-
-        for point in smooth_path:
-            cv2.circle(grid_converter.image, (point[0], point[1]), 2,
-                       [0, 0, 255])
-
-        if SHOW_PATH:
-            cv2.imshow("path", grid_converter.image)
-            cv2.waitKey(0)
-
-    def take_image_and_draw(self, smooth_path=None):
-        logger.log_info("Capture d'image en cours...")
-        ret, img = self.image_taker.read()
-        self.actual_pathfinding_image = img.copy()
-
-        if (smooth_path is not None):
-            for point in smooth_path:
-                cv2.circle(self.actual_pathfinding_image,
-                           (point[0] * 2, point[1] * 2), 4, [0, 0, 255])
-
-            for i in range(1, len(smooth_path)):
-                p1 = (smooth_path[i - 1][0] * 2, smooth_path[i - 1][1] * 2)
-                p2 = (smooth_path[i][0] * 2, smooth_path[i][1] * 2)
-                cv2.line(self.actual_pathfinding_image, p1, p2, [0, 0, 255], 8)
-
-        cv2.destroyAllWindows()
-        return img
-
     def take_image(self):
         logger.log_info("Capture d'image de la camera monde en cours...")
+
+        if (self.no_world_cam):
+            self.img = cv2.imread('./testy.jpg')
+            return self.img
 
         while True:
             ret, self.img = self.image_taker.read()
@@ -268,22 +195,6 @@ class Sequence:
     def set_end_point(self, x, y):
         self.X_END = x
         self.Y_END = y
-
-    def start(self):
-        logger.log_info("## Starting path finding")
-        create_done = self.__create_smooth_path()
-
-        if (not create_done):
-            return
-
-        logger.log_info("## Rotating robot")
-        self.__send_rotation_angle()
-
-        logger.log_info("## Convert to X Y")
-        self.__convert_to_xy()
-
-        logger.log_info("## Send coordinates")
-        self.__send_coordinates()
 
     def go_to_start_zone(self):
         comm_ui = Communication_ui()
@@ -366,9 +277,6 @@ class Sequence:
 
         return True
         # assign attributes for further uses
-
-    def get_tension(self):
-        self.comm_pi.getTension()
 
     def __get_image(self):
         img = None
@@ -700,65 +608,16 @@ class Sequence:
 
         return True
 
-    def __cardinal_to_angle(self, cardinal_str):
-        if cardinal_str == EAST():
-            return 0
-        elif cardinal_str == NORTH():
-            return 90
-        elif cardinal_str == WEST():
-            return 180
-        elif cardinal_str == SOUTH():
-            return -90
-        else:
-            return None
-
     def __rotate_robot_on_zone_dep(self):
         logger.log_info("Rotate on zone dep plane...")
-        self.__rotate_robot_on_zone_plane(self.zone_dep_cardinal)
+        img = self.take_image()
+        rotate_robot_on_zone_plane(img, self.zone_dep_cardinal, self.comm_pi)
 
     def __rotate_robot_on_zone_pickup(self):
         logger.log_info("Rotate on pickup zone plane...")
-        self.__rotate_robot_on_zone_plane(self.zone_pickup_cardinal)
-
-    def __rotate_robot_on_zone_plane(self, cardinal_point, first_it=0):
         img = self.take_image()
-        robot_detector = RobotDetector(img)
-        robot_angle = robot_detector.find_angle_of_robot()
-
-        self.__decision(EAST(), self.__rotate_to_east, robot_angle, first_it,
-                        cardinal_point)
-        self.__decision(SOUTH(), self.__rotate_to_south, robot_angle, first_it,
-                        cardinal_point)
-        self.__decision(WEST(), self.__rotate_to_west, robot_angle, first_it,
-                        cardinal_point)
-        self.__decision(NORTH(), self.__rotate_to_north, robot_angle, first_it,
-                        cardinal_point)
-
-    def __decision(self, cardinal, rotate_function, robot_angle, first_it,
-                   cardinal_point):
-        if cardinal_point == cardinal:
-            logger.log_info("Rotate to " + cardinal + "...")
-            rotate_function(robot_angle)
-            if first_it < 3:
-                logger.log_info('Correction angle ' + str(first_it))
-                first_it = first_it + 2
-                self.__rotate_robot_on_zone_plane(cardinal, first_it)
-
-    def __rotate_to_north(self, current_robot_angle):
-        rotate_angle = round(90 - current_robot_angle) * -1
-        self.comm_pi.sendAngle(rotate_angle)
-
-    def __rotate_to_east(self, current_robot_angle):
-        rotate_angle = round(0 - current_robot_angle) * -1
-        self.comm_pi.sendAngle(rotate_angle)
-
-    def __rotate_to_south(self, current_robot_angle):
-        rotate_angle = round(-90 - current_robot_angle) * -1
-        self.comm_pi.sendAngle(rotate_angle)
-
-    def __rotate_to_west(self, current_robot_angle):
-        rotate_angle = round(180 - current_robot_angle) * -1
-        self.comm_pi.sendAngle(rotate_angle)
+        rotate_robot_on_zone_plane(img, self.zone_pickup_cardinal,
+                                   self.comm_pi)
 
     def end_sequence(self):
         comm_ui = Communication_ui()

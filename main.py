@@ -22,9 +22,9 @@ parser.add_argument(
 args = parser.parse_args()
 
 # time.sleep(30)
-comm_pi = Communication_pi()
+# comm_pi = Communication_pi()
 
-# comm_pi = Communication_pi_mock()
+comm_pi = Communication_pi_mock()
 logger = Logger(__name__)
 
 CANCER_MAC_USER = True
@@ -45,7 +45,7 @@ def start_cam():
 
 
 def calibrate():
-    logger.log_info("Calibrat   ion World Cam phase: ")
+    logger.log_info("Calibration World Cam phase: ")
     pixel_to_xy_converter = None
     try:
         with open('calibration_data.pkl', 'rb') as input:
@@ -76,17 +76,21 @@ def main_sequence(ui=True):
     pixel_to_xy_converter = calibrate()
     robot_cam_pixel_to_xy_converter = calibrateEmbark()
 
-    sequence = Sequence(image_taker, comm_pi, pixel_to_xy_converter,
-                        robot_cam_pixel_to_xy_converter)
+    sequence = Sequence(
+        image_taker,
+        comm_pi,
+        pixel_to_xy_converter,
+        robot_cam_pixel_to_xy_converter,
+        no_world_cam=True)
     logger.log_info('Sequence start...')
     sequence.go_to_start_zone()
     # sequence.go_to_charge_robot()
-    sequence.go_to_decode_qr()
+    # sequence.go_to_decode_qr()
     # sequence.zone_dep_cardinal = 'EAST'
     # sequence.piece_color = 'bleu'
     # sequence.piece_shape = None
     # sequence.depot_number = 'Zone 0'
-    # sequence.go_to_zone_pickup()
+    sequence.go_to_zone_pickup()
     # sequence.move_robot_around_pickup_zone(validation=True)
     # sequence.go_to_zone_dep()
     # sequence.move_robot_around_zone_dep()
