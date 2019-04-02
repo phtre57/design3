@@ -122,6 +122,10 @@ class Astar(object):
                         heapq.heappush(self.open,
                                        (neighbour.net_cost, neighbour))
 
+        if (abs(self.starting_cell.i - self.ending_cell.i) < 5
+                and abs(self.starting_cell.j - self.ending_cell.j) < 5):
+            return []
+
         if len(self.path_in_pixel_coordinates) == 0:
             raise NoPathFoundException()
 

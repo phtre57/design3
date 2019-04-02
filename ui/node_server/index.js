@@ -1,61 +1,91 @@
-const server = require("http").createServer()
-const io = require("socket.io")(server)
+const server = require('http').createServer();
+const io = require('socket.io')(server);
 
-let robotMainClient = {}
+let UIClient = {};
+let MainBaseStationClient = {};
+let CommUIBaseStationClient = {};
+let robotImageClient = {};
 
-let UIClient = {}
+io.on('connection', client => {
+  onConnect(client);
 
-io.on("connection", client => {
-  onConnect(client)
-
-  client.on("event", data => { 
-    UIClient.emit("event", { data: "chocolat" })
+  client.on('event', data => {
+    UIClient.emit('event', { data: 'chocolat' });
   });
 
   //event from UI for the start signal
-  client.on("start", resp => { 
-    console.log("start");
-    robotMainClient.emit("start", "started");
+  client.on('start', resp => {
+    console.log('start');
+    MainBaseStationClient.emit('start', 'started');
   });
 
-  client.on("eventFromRobot", data => {
-    console.log("eventFromRobot");
-    
-    if (data.type === "img") {
+  // Forward to UI
+  client.on('eventFromRobot', data => {
+    console.log('eventFromRobot');
+
+    if (data.type === 'img') {
       data.data = String.fromCharCode.apply(null, new Uint16Array(data.data));
     }
 
-    console.log(data)
-    
-    UIClient.emit("event", data);
-    client.emit("validation", "v");
+    console.log(data.dest);
+
+    UIClient.emit('event', data);
+    client.emit('validation', 'v');
     client.disconnect();
   });
 
-  client.on("sendLog", data => {
-    console.log("sendLog");
-    console.log(data)
-    UIClient.emit("event", data);
-    client.emit("validation", "v");
+  client.on('sendImage', data => {
+    if (UIClient == {}) {
+      return;
+    }
+
+    if (data.type === 'img') {
+      data.data = String.fromCharCode.apply(null, new Uint16Array(data.data));
+    }
+
+    console.log(data.dest);
+
+    UIClient.emit('event', data);
+    client.emit('validation', 'v');
     client.disconnect();
   });
 
-  client.on("disconnect", () => { 
-    console.log("bye");
-  });
-})
+  client.on('sendEmbarkedImage', data => {
+    console.log('Got image from embarked');
 
-server.listen(4000);
-console.log("Started");
+    console.log(data.dest);
+
+    // if (data.type === 'img') {
+    //   data.data = String.fromCharCode.apply(null, new Uint16Array(data.data));
+    // }
+
+    UIClient.emit('event', data);
+  });
+
+  client.on('sendLog', data => {
+    // console.log('sendLog');
+    // console.log(data);
+    UIClient.emit('event', data);
+    client.emit('validation', 'v');
+    client.disconnect();
+  });
+
+  client.on('disconnect', () => {});
+});
+
+server.listen(4001, () => {
+  console.log('Started');
+});
 
 function onConnect(client) {
-  if (client.handshake.query.token === "UI") {
+  if (client.handshake.query.token === 'UI') {
     UIClient = client;
-    console.log("Hi UI");
-  } else if(client.handshake.query.token === "MainRobot") {
-    robotMainClient = client;
-    console.log("Hi Main Robot");
-  } else {
-    // console.log("Hi Robot");
+    console.log('Hi UIClient');
+  } else if (client.handshake.query.token === 'MainRobot') {
+    MainBaseStationClient = client;
+    console.log('Hi MainRobot');
+  } else if (client.handshake.query.token === 'RobotImageClient') {
+    robotImageClient = client;
+    console.log('Hi RobotImageClient');
   }
 }

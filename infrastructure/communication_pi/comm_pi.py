@@ -3,6 +3,8 @@ import time
 import cv2
 import base64
 
+from infrastructure.communication_ui.comm_ui import Communication_ui
+from infrastructure.communication_ui.ui_destination import *
 from util.Logger import *
 
 logger = Logger(__name__)
@@ -19,17 +21,23 @@ class Communication_pi:
         self.image = None
         self.sio = None
         self.tension = None
+        self.pinState = 0
         self.url = url
         self.__init()
 
     def __init(self):
         self.sio = socketio.Client()
         self.sio.connect(self.url)
+        self.sio.emit('sendUrl', 'http://192.168.0.53:4001')
 
         @self.sio.on('readySignal')
-        def sendCoord(message):
+        def readySignal(message):
             logger.log_info("Self ready switched to True...")
             self.ready = True
+
+        @self.sio.on('recvPins')
+        def recvPings(message):
+            self.pinState = int(message)
 
         @self.sio.on('recvImage')
         def recvImage(message):
@@ -42,8 +50,29 @@ class Communication_pi:
             time.sleep(0.5)
 
             img = cv2.imread('./test.jpg')
+
+            comm_ui = Communication_ui()
+            comm_ui.SendImage(img, EMBARKED_FEED_IMAGE())
+
             logger.log_info("self.img changed...")
             self.image = img
+
+        @self.sio.on('sendEmbarkedImage')
+        def recvEmbarkedImage(message):
+            logger.log_info("Image from embarked received...")
+            frame_data = base64.b64decode(message)
+
+            with open('test.jpg', 'wb') as f_output:
+                f_output.write(frame_data)
+
+            time.sleep(0.5)
+
+            img = cv2.imread('./test.jpg')
+
+            print('img received from embarked')
+
+            comm_ui = Communication_ui()
+            comm_ui.SendImage(img, EMBARKED_FEED_IMAGE())
 
         @self.sio.on('recvTension')
         def recvTension(message):
@@ -71,6 +100,20 @@ class Communication_pi:
                 self.__init()
                 break
 
+            self.sio.sleep(0.2)
+            time.sleep(0.2)
+
+    def waitForPinsSignal(self):
+        t = time.time()
+        self.pinState = 0
+        while self.pinState != 1:
+            tt = time.time()
+            if (tt - t > 20):
+                self.__init()
+                break
+
+            self.sio.emit('teTuSuePins', 'Cherimoya')
+            self.sio.sleep(0.2)
             time.sleep(0.2)
 
     def disconnectFromPi(self):
@@ -93,8 +136,8 @@ class Communication_pi:
         commande = str(round(x)) + "," + str(round(y)) + ",0\n"
         logger.log_info("Coordonnees envoyees: " + commande)
         self.sio.emit('sendPosition', commande)
-        self.ready = False
-        self.waitForReadySignal()
+        self.pinState = 1
+        self.waitForPinsSignal()
 
     def sendAngle(self, angle):
         if abs(int(angle)) > 180:
@@ -107,8 +150,8 @@ class Communication_pi:
         logger.log_info("Angle envoyees: " + str(round(angle)))
         commande = '0,0,' + str(angle) + '\n'
         self.sio.emit('sendPosition', commande)
-        self.ready = False
-        self.waitForReadySignal()
+        self.pinState = 1
+        self.waitForPinsSignal()
         time.sleep(0.2)
 
     def getImage(self):
