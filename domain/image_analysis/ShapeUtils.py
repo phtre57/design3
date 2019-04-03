@@ -1,10 +1,14 @@
 import cv2
 import numpy as np
 import imutils
+import base64
 
 from context.config import SHAPE_UTILS_DEBUG
+from util.Logger import Logger
 
 DEBUG = SHAPE_UTILS_DEBUG
+
+logger = Logger(__name__)
 
 
 def find_where_the_shape_is(frame, shape, color, radius_limit):
@@ -31,6 +35,12 @@ def find_where_the_shape_is(frame, shape, color, radius_limit):
 
     if (cX == 0 and cY == 0):
         raise Exception('Can\'t find center of the shape')
+
+    # frame1 = frame.copy()
+    # cv2.circle(frame1, (cX, cY), round(10), [255, 255, 255])
+    # _, buffer = cv2.imencode('.jpg', frame1)
+    # encoded = base64.b64encode(buffer)
+    # logger.log_debug('IMAGE OF COLOR DETECTOR ' + str(encoded))
 
     return (cX, cY)
 
