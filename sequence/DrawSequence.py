@@ -22,8 +22,8 @@ def draw_robot_on_path_image(actual_pathfinding_image, actual_robot_path,
     comm_ui = Communication_ui()
     comm_ui.SendImage(img, PATHS_IMAGE())
 
-    cv2.imshow("path", img)
-    cv2.waitKey(0)
+    # cv2.imshow("path", img)
+    # cv2.waitKey(0)
 
     return actual_robot_path
 

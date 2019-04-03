@@ -23,8 +23,6 @@ class Communication_ui():
             return sio
 
     def SendImage(self, frame, dest):
-        cv2.imshow('ui', frame)
-        cv2.waitKey()
         if (__debug__):
             _, buffer = cv2.imencode('.jpg', frame)
             encoded = base64.b64encode(buffer)

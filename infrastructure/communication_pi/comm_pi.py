@@ -113,9 +113,6 @@ class Communication_pi:
                 self.__init()
                 break
 
-            if self.scan_for_qr is True:
-                self.sio.emit('getImage', 'ok')
-
             self.sio.emit('teTuSuePins', 'Cherimoya')
             self.sio.sleep(0.2)
             time.sleep(0.2)

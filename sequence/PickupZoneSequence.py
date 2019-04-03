@@ -11,8 +11,11 @@ logger = Logger(__name__)
 
 NUMBER_OF_INCREMENT_PICKUP_ZONE = 20
 
+
 class PickupZoneSequence:
-    def __init__(self, validation, comm_pi, zone_pickup_cardinal, robot_cam_pixel_to_xy_converter, robot_mover, go_to_zone_pickup, piece_shape, piece_color):
+    def __init__(self, validation, comm_pi, zone_pickup_cardinal,
+                 robot_cam_pixel_to_xy_converter, robot_mover,
+                 go_to_zone_pickup, piece_shape, piece_color):
         self.validation_piece_taken_pickup_zone = validation
         self.comm_pi = comm_pi
         self.zone_pickup_cardinal = zone_pickup_cardinal
@@ -33,10 +36,18 @@ class PickupZoneSequence:
         y_mm_movement_point = (0, MOVEMENT_OFFSET)
         y_mm_movement_point_negative = (0, -1 * MOVEMENT_OFFSET)
 
-        self.__decision_with_cardinal(SOUTH(), x_mm_movement_point_negative, -90)
+        self.__decision_with_cardinal(SOUTH(), x_mm_movement_point_negative,
+                                      -90)
+        print('1')
+
         self.__decision_with_cardinal(NORTH(), x_mm_movement_point, 90)
+        print('1')
+
         self.__decision_with_cardinal(EAST(), y_mm_movement_point_negative, 0)
+        print('1')
+
         self.__decision_with_cardinal(WEST(), y_mm_movement_point, 180)
+        print('1')
 
     def __decision_with_cardinal(self, cardinal, movement, angle):
         if self.zone_pickup_cardinal == cardinal:
@@ -47,7 +58,7 @@ class PickupZoneSequence:
     def __validate_if_pickup_sequence_is_done_and_move(self, movement_point,
                                                        angle):
         piece_grabbed = False
-        while not piece_grabbed:
+        while piece_grabbed is False:
             piece_grabbed, real_x, real_y = self.__move_on_pickup_zone(
                 movement_point, angle)
 

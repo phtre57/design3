@@ -135,13 +135,16 @@ class Sequence:
         self.real_path = self.real_path[1:]
 
     def __send_coordinates(self, smooth_path, scan_for_qr=False):
-        img = self.take_image()
         actual_robot_path = [smooth_path[0]]
         for point in self.real_path:
             self.__send_rotation_angle(smooth_path)
 
+            x_coord = int(round(point[0] - self.starting_point[0], 0))
+            y_coord = int(round(point[1] - self.starting_point[1], 0))
+            self.comm_pi.sendCoordinates(x_coord, y_coord)
+
             if scan_for_qr is True:
-                imgqr = self.comm_pi.image
+                imgqr = self.comm_pi.getImage()
                 info_qr = try_to_decode_qr(imgqr)
                 if (info_qr is not None):
                     self.piece_shape = info_qr['shape']
@@ -150,14 +153,12 @@ class Sequence:
                     self.comm_pi.scan_for_qr = False
                     break
 
-            x_coord = int(round(point[0] - self.starting_point[0], 0))
-            y_coord = int(round(point[1] - self.starting_point[1], 0))
-            self.comm_pi.sendCoordinates(x_coord, y_coord)
-
             while True:
                 try:
+                    img = self.take_image()
                     center_and_image = find_current_center_robot(
                         img, smooth_path)
+
                     draw_robot_on_path_image(center_and_image['image'],
                                              actual_robot_path,
                                              center_and_image['center'])
@@ -195,8 +196,8 @@ class Sequence:
             if ret:
                 break
 
-        comm_ui = Communication_ui()
-        comm_ui.SendImage(self.img, WORLD_FEED_IMAGE())
+        # comm_ui = Communication_ui()
+        # comm_ui.SendImage(self.img, WORLD_FEED_IMAGE())
 
         return self.img
 
@@ -219,8 +220,8 @@ class Sequence:
 
     def __rotate_robot_on_zone_dep(self):
         logger.log_info("Rotate on zone dep plane...")
-        img = self.take_image()
-        rotate_robot_on_zone_plane(img, self.zone_dep_cardinal, self.comm_pi)
+        rotate_robot_on_zone_plane(self.image_taker, self.zone_dep_cardinal,
+                                   self.comm_pi)
 
     def go_to_zone_pickup(self):
         comm_ui = Communication_ui()
@@ -234,8 +235,7 @@ class Sequence:
 
     def __rotate_robot_on_zone_pickup(self):
         logger.log_info("Rotate on pickup zone plane...")
-        img = self.take_image()
-        rotate_robot_on_zone_plane(img, self.zone_pickup_cardinal,
+        rotate_robot_on_zone_plane(self.image_taker, self.zone_pickup_cardinal,
                                    self.comm_pi)
 
     def go_to_decode_qr(self):
@@ -273,12 +273,15 @@ class Sequence:
         comm_ui = Communication_ui()
         comm_ui.SendText('Going to charge robot', SEQUENCE_TEXT())
 
-        chargeSequence = ChargeSequence(self.comm_pi, self.__send_rotation_angle)
+        chargeSequence = ChargeSequence(self.comm_pi,
+                                        self.__send_rotation_angle)
         chargeSequence.start()
 
     def move_robot_around_pickup_zone(self, validation=True):
-        pickupZoneSequence = PickupZoneSequence(validation, self.comm_pi, self.zone_pickup_cardinal, 
-            self.robot_cam_pixel_to_xy_converter, self.robot_mover, self.go_to_zone_pickup, self.piece_shape, self.piece_color)
+        pickupZoneSequence = PickupZoneSequence(
+            validation, self.comm_pi, self.zone_pickup_cardinal,
+            self.robot_cam_pixel_to_xy_converter, self.robot_mover,
+            self.go_to_zone_pickup, self.piece_shape, self.piece_color)
         pickupZoneSequence.try_to_move_robot_around_pickup_zone()
         (x, y) = self.robot_mover.fallback_from_cardinality(
             self.zone_pickup_cardinal)
@@ -288,7 +291,9 @@ class Sequence:
         comm_ui = Communication_ui()
         comm_ui.SendText('Moving around zone depôt', SEQUENCE_TEXT())
 
-        zoneDepSequence = ZoneDepSequence(self.depot_number, self.comm_pi, self.robot_mover, self.zone_dep_cardinal)
+        zoneDepSequence = ZoneDepSequence(self.depot_number, self.comm_pi,
+                                          self.robot_mover,
+                                          self.zone_dep_cardinal)
         while True:
             zoneDepSequence.move_to_point_zone_dep()
             zoneDepSequence.drop_piece()

@@ -3,9 +3,15 @@ import cv2
 from domain.image_analysis.opencv_callable.DetectQR import *
 from infrastructure.communication_ui.comm_ui import Communication_ui
 from infrastructure.communication_ui.ui_destination import *
+from domain.QRCodeDictionnary import *
+
 
 def try_to_decode_qr(img_embarked):
     dict_of_values = decode(img_embarked)
+
+    if dict_of_values is None:
+        return None
+
     piece_color = dict_of_values[COULEUR]
     piece_shape = dict_of_values[PIECE]
     depot_number = dict_of_values[ZONE]
@@ -18,9 +24,6 @@ def try_to_decode_qr(img_embarked):
     logger.log_info(("Value of piece_color: " + str(piece_color)))
     logger.log_info(("Value of piece_shape: " + str(piece_shape)))
     logger.log_info(("Value of depot_number: " + str(depot_number)))
-
-    if dict_of_values is None:
-        return None
 
     return {'zone': depot_number, 'color': piece_color, 'shape': piece_shape}
 

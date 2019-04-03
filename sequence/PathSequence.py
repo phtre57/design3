@@ -12,6 +12,8 @@ from util.Logger import Logger
 
 logger = Logger(__name__)
 
+DEBUG = False
+
 
 class PathSequence:
     def __init__(self, pathfinding_astar_retry, actual_pathfinding_image,
