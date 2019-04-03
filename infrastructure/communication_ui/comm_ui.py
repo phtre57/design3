@@ -32,6 +32,10 @@ class Communication_ui():
                 'dest': dest
             })
 
+    def sendStopSignal(self):
+        if (__debug__):
+            self.sio.emit('sendStopSignal', 'Stop')
+
     def SendText(self, val, dest):
         if (__debug__):
             self.sio.emit('eventFromRobot', {

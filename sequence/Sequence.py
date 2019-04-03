@@ -764,4 +764,6 @@ class Sequence:
         comm_ui = Communication_ui()
         comm_ui.SendText('Sequence is done', SEQUENCE_TEXT())
         self.comm_pi.redLightOn()
+        comm_ui = Communication_ui()
+        comm_ui.sendStopSignal()
         time.sleep(30)

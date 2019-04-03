@@ -30,6 +30,8 @@ let initialState = {
 class App extends Component {
   state = initialState;
 
+  timerRef = React.createRef();
+
   initialState() {
     initialState.socket = this.state.socket;
     this.setState(initialState);
@@ -47,6 +49,12 @@ class App extends Component {
     this.state.socket.on('event', resp => {
       this.setState({ [resp.dest]: resp.data });
     });
+
+    this.state.socket.on('sendStopSignal', resp => {
+      this.timerRef.current.flipStatus();
+      this.timerRef.current.stopTimer();
+    });
+
     this.getTensionPokeOnPi();
   }
 
@@ -134,6 +142,7 @@ class App extends Component {
               </Paper>
               <Paper elevation={4} style={paperStyle}>
                 <Timer
+                  ref={this.timerRef}
                   startSignal={this.startSignal}
                   resetSignal={this.resetSignal}
                 />
