@@ -79,6 +79,7 @@ class Sequence:
         self.comm_pi.moveArm('2000')
 
     def __init_sequence(self):
+        self.comm_pi.changeCondensateurHigh()
         self.comm_pi.redLightOff()
 
         initSequence = InitSequence(X_END_START_ZONE, Y_END_START_ZONE,
@@ -545,7 +546,7 @@ class Sequence:
         return (piece_grabbed, real_x, real_y)
 
     def validate_piece_taken(self, x, y):
-        self.comm_pi.sendCoordinates(x * -1, y * -1)
+        self.comm_pi.sendCoordinates(x * -1, y * -1.5)
         robot_img = self.comm_pi.getImage()
 
         try:
@@ -693,7 +694,7 @@ class Sequence:
         if (y < -80):
             logger.log_info('DROP PIECE - Y is too far, getting closer' +
                             str(y))
-            self.comm_pi.sendCoordinates(0, -10)
+            self.comm_pi.sendCoordinates(0, -20)
             return False
 
         if (x > 20):
@@ -777,4 +778,4 @@ class Sequence:
         self.comm_pi.redLightOn()
         comm_ui = Communication_ui()
         comm_ui.sendStopSignal()
-        time.sleep(30)
+        time.sleep(5)
