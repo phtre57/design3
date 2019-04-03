@@ -1,9 +1,15 @@
+import time
+import traceback
 
+from domain.image_analysis.Cardinal import *
+from domain.image_analysis.opencv_callable.DetectPiece import detect_piece
 from infrastructure.communication_ui.comm_ui import Communication_ui
 from infrastructure.communication_ui.ui_destination import *
 from util.Logger import Logger
 
 logger = Logger(__name__)
+
+NUMBER_OF_INCREMENT_PICKUP_ZONE = 20
 
 class PickupZoneSequence:
     def __init__(self, validation, comm_pi, zone_pickup_cardinal, robot_cam_pixel_to_xy_converter, robot_mover, go_to_zone_pickup, piece_shape, piece_color):
@@ -32,7 +38,7 @@ class PickupZoneSequence:
         self.__decision_with_cardinal(EAST(), y_mm_movement_point_negative, 0)
         self.__decision_with_cardinal(WEST(), y_mm_movement_point, 180)
 
-    def __decision_with_cardinal(cardinal, movement, angle)
+    def __decision_with_cardinal(self, cardinal, movement, angle):
         if self.zone_pickup_cardinal == cardinal:
             logger.log_info("Move around " + cardinal + " pick up...")
             self.__validate_if_pickup_sequence_is_done_and_move(

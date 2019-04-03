@@ -12,15 +12,14 @@ from domain.image_analysis.DetectBlurriness import *
 from domain.image_analysis_pathfinding.RobotDetector import *
 from domain.pathfinding.Exceptions.NoPathFoundException import *
 from domain.pathfinding.Exceptions.NoBeginingPointException import *
-from domain.image_analysis.opencv_callable.DetectPiece import *
 from domain.QRCodeDictionnary import *
 from util.Logger import Logger
 from domain.image_analysis.Cardinal import *
-from domain.image_analysis.opencv_callable.DetectPointZoneDep import detect_point_zone_dep
-from sequence.InitSequence import InitSequence
 from domain.RobotMover import *
 from infrastructure.communication_ui.comm_ui import Communication_ui
 from infrastructure.communication_ui.ui_destination import *
+
+from sequence.InitSequence import InitSequence
 from sequence.PathSequence import PathSequence
 from sequence.DrawSequence import *
 from sequence.UtilSequence import *
@@ -44,12 +43,6 @@ Y_END_START_ZONE = 121
 Y_ARRAY_FOR_QR_STRATEGY = [120, 145, 170, 90]
 
 X_RANGE_FOR_QR_STRATEGY = [200, 230, 260, 285]
-
-NUMBER_OF_INCREMENT_PICKUP_ZONE = 20
-
-TENSION_THRESHOLD = 3.5 * 4
-
-CHARGE_STATION_MOVE = (-370, -370)
 
 logger = Logger(__name__)
 
@@ -148,13 +141,14 @@ class Sequence:
             self.__send_rotation_angle(smooth_path)
 
             if scan_for_qr is True:
-                img = self.comm_pi.image
-                info_qr = try_to_decode_qr(img)
+                imgqr = self.comm_pi.image
+                info_qr = try_to_decode_qr(imgqr)
                 if (info_qr is not None):
                     self.piece_shape = info_qr['shape']
                     self.piece_color = info_qr['color']
                     self.depot_number = info_qr['zone']
                     self.comm_pi.scan_for_qr = False
+                    break
 
             x_coord = int(round(point[0] - self.starting_point[0], 0))
             y_coord = int(round(point[1] - self.starting_point[1], 0))
@@ -203,8 +197,6 @@ class Sequence:
 
         comm_ui = Communication_ui()
         comm_ui.SendImage(self.img, WORLD_FEED_IMAGE())
-
-        # cv2.destroyAllWindows()
 
         return self.img
 
@@ -261,7 +253,7 @@ class Sequence:
                     self.start(self.comm_pi.scan_for_qr)
                     # img = self.__get_image_embarked()
                     # info_qr = try_to_decode_qr(img)
-                    if (scan_for_qr is False):
+                    if self.comm_pi.scan_for_qr is False:
                         # self.piece_shape = info_qr['shape']
                         # self.piece_color = info_qr['color']
                         # self.depot_number = info_qr['zone']
@@ -274,19 +266,19 @@ class Sequence:
                     )
                     pass
 
-            if stop_outer_loop:
+            if self.comm_pi.scan_for_qr is False:
                 break
 
     def go_to_charge_robot(self):
         comm_ui = Communication_ui()
         comm_ui.SendText('Going to charge robot', SEQUENCE_TEXT())
 
-        chargeSequence = ChargeSequence(comm_pi, self.__send_rotation_angle)
+        chargeSequence = ChargeSequence(self.comm_pi, self.__send_rotation_angle)
         chargeSequence.start()
 
     def move_robot_around_pickup_zone(self, validation=True):
         pickupZoneSequence = PickupZoneSequence(validation, self.comm_pi, self.zone_pickup_cardinal, 
-            self.robot_cam_pixel_to_xy_converter, self.robot_mover, self.take_image, self.go_to_zone_pickup, piece_shape, piece_color)
+            self.robot_cam_pixel_to_xy_converter, self.robot_mover, self.go_to_zone_pickup, self.piece_shape, self.piece_color)
         pickupZoneSequence.try_to_move_robot_around_pickup_zone()
         (x, y) = self.robot_mover.fallback_from_cardinality(
             self.zone_pickup_cardinal)

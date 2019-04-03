@@ -4,6 +4,9 @@ from util.Logger import Logger
 
 logger = Logger(__name__)
 
+TENSION_THRESHOLD = 3.5 * 4
+CHARGE_STATION_MOVE = (-370, -370)
+
 class ChargeSequence:
     def __init__(self, comm_pi, send_rotation_angle):
         self.comm_pi = comm_pi

@@ -1,7 +1,8 @@
 import cv2
 
 from domain.image_analysis.opencv_callable.DetectQR import *
-
+from infrastructure.communication_ui.comm_ui import Communication_ui
+from infrastructure.communication_ui.ui_destination import *
 
 def try_to_decode_qr(img_embarked):
     dict_of_values = decode(img_embarked)
