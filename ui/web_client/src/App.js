@@ -30,6 +30,8 @@ let initialState = {
 class App extends Component {
   state = initialState;
 
+  timerRef = React.createRef();
+
   initialState() {
     initialState.socket = this.state.socket;
     this.setState(initialState);
@@ -47,13 +49,19 @@ class App extends Component {
     this.state.socket.on('event', resp => {
       this.setState({ [resp.dest]: resp.data });
     });
+
+    this.state.socket.on('sendStopSignal', resp => {
+      this.timerRef.current.flipStatus();
+      this.timerRef.current.stopTimer();
+    });
+
     this.getTensionPokeOnPi();
   }
 
   getTensionPokeOnPi = () => {
     let piSocket = openSocket('http://192.168.0.38:4000');
     piSocket.on('recvTension', resp => {
-      this.setState({ gettension: resp });
+      this.setState({ gettension: resp * 4 });
     });
 
     piSocket.on('recvImage', resp => {
@@ -134,6 +142,7 @@ class App extends Component {
               </Paper>
               <Paper elevation={4} style={paperStyle}>
                 <Timer
+                  ref={this.timerRef}
                   startSignal={this.startSignal}
                   resetSignal={this.resetSignal}
                 />

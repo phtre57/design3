@@ -7,7 +7,8 @@ import os
 import inspect
 
 LIVE = False
-SHOW = False
+SHOW = True
+
 
 class DetectZoneDepWorldTest(unittest.TestCase):
     def setUp(self):

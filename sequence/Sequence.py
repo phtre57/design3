@@ -41,7 +41,7 @@ X_RANGE_FOR_QR_STRATEGY = [200, 230, 260, 285]
 
 NUMBER_OF_INCREMENT_PICKUP_ZONE = 20
 
-TENSION_THRESHOLD = 3.5 * 4
+TENSION_THRESHOLD = 11
 
 CHARGE_STATION_MOVE = (-370, -370)
 
@@ -79,6 +79,7 @@ class Sequence:
         self.comm_pi.moveArm('2000')
 
     def __init_sequence(self):
+        self.comm_pi.changeCondensateurHigh()
         self.comm_pi.redLightOff()
 
         initSequence = InitSequence(X_END_START_ZONE, Y_END_START_ZONE,
@@ -524,13 +525,19 @@ class Sequence:
         number_of_increment = NUMBER_OF_INCREMENT_PICKUP_ZONE
         i = 0
 
+        piece_grabbed = False
+        real_x = 0
+        real_y = 0
         while i < number_of_increment:
-
-            x, y = self.robot_cam_pixel_to_xy_converter.convert_real_xy_given_angle(
-                moving_point, angle)
-            self.comm_pi.sendCoordinates(x, y)
+            if piece_grabbed is False and real_x == 0 and real_y == 0:
+                x, y = self.robot_cam_pixel_to_xy_converter.convert_real_xy_given_angle(
+                    moving_point, angle)
+                self.comm_pi.sendCoordinates(x, y)
 
             piece_grabbed, real_x, real_y = self.grab_piece()
+
+            if piece_grabbed is False:
+                self.comm_pi.sendCoordinates(real_x, real_y)
 
             if piece_grabbed:
                 break
@@ -539,7 +546,7 @@ class Sequence:
         return (piece_grabbed, real_x, real_y)
 
     def validate_piece_taken(self, x, y):
-        self.comm_pi.sendCoordinates(x * -1, y * -1)
+        self.comm_pi.sendCoordinates(x * -1, y * -1.5)
         robot_img = self.comm_pi.getImage()
 
         try:
@@ -579,6 +586,11 @@ class Sequence:
             logger.log_critical("Piece point is too far : " + str(real_x) +
                                 ", " + str(real_y))
             return False, 0, 0
+
+        if (real_x > 20):
+            logger.log_info('DROP PIECE - X is too far, getting closer ' +
+                            str(x))
+            return False, 10, 0
 
         logger.log_critical("Piece point accepted and sent : " + str(real_x) +
                             ", " + str(real_y))
@@ -682,7 +694,7 @@ class Sequence:
         if (y < -80):
             logger.log_info('DROP PIECE - Y is too far, getting closer' +
                             str(y))
-            self.comm_pi.sendCoordinates(0, -10)
+            self.comm_pi.sendCoordinates(0, -20)
             return False
 
         if (x > 20):
@@ -764,4 +776,6 @@ class Sequence:
         comm_ui = Communication_ui()
         comm_ui.SendText('Sequence is done', SEQUENCE_TEXT())
         self.comm_pi.redLightOn()
-        time.sleep(30)
+        comm_ui = Communication_ui()
+        comm_ui.sendStopSignal()
+        time.sleep(5)
