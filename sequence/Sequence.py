@@ -25,6 +25,9 @@ from sequence.PathSequence import PathSequence
 from sequence.DrawSequence import *
 from sequence.UtilSequence import *
 from sequence.QRSequence import try_to_decode_qr
+from sequence.ZoneDepSequence import *
+from sequence.PickupZoneSequence import *
+from sequence.ChargeSequence import *
 
 DEBUG = False
 SHOW_PATH = False
@@ -222,6 +225,11 @@ class Sequence:
         self.start()
         self.__rotate_robot_on_zone_dep()
 
+    def __rotate_robot_on_zone_dep(self):
+        logger.log_info("Rotate on zone dep plane...")
+        img = self.take_image()
+        rotate_robot_on_zone_plane(img, self.zone_dep_cardinal, self.comm_pi)
+
     def go_to_zone_pickup(self):
         comm_ui = Communication_ui()
         comm_ui.SendText('Going to zone pickup', SEQUENCE_TEXT())
@@ -232,9 +240,11 @@ class Sequence:
         self.start()
         self.__rotate_robot_on_zone_pickup()
 
-    def end(self):
-        comm_ui = Communication_ui()
-        comm_ui.SendText('Sequence is over and done', SEQUENCE_TEXT())
+    def __rotate_robot_on_zone_pickup(self):
+        logger.log_info("Rotate on pickup zone plane...")
+        img = self.take_image()
+        rotate_robot_on_zone_plane(img, self.zone_pickup_cardinal,
+                                   self.comm_pi)
 
     def go_to_decode_qr(self):
         comm_ui = Communication_ui()
@@ -267,349 +277,45 @@ class Sequence:
             if stop_outer_loop:
                 break
 
-    def __get_image_embarked(self):
-        img = None
-        while True:
-            img = self.comm_pi.getImage()
-            if detect_blurriness(img) is False:
-                break
-
-        return img
-
     def go_to_charge_robot(self):
         comm_ui = Communication_ui()
         comm_ui.SendText('Going to charge robot', SEQUENCE_TEXT())
-        decision_tension = self.__is_current_tension_too_high_to_charge()
-        if (decision_tension):
-            logger.log_info(
-                "Robot already has that eletric feel now!! It is charged enough!"
-            )
-            return
 
-        self.__go_to_c_charge_station()
-        self.__charge_robot_at_station()
-        self.__go_back_from_charge_station()
-
-    def __is_current_tension_too_high_to_charge(self):
-        tension = self.comm_pi.getTension()
-        if (tension > TENSION_THRESHOLD):
-            return True
-        else:
-            return False
-
-    def __go_to_c_charge_station(self):
-        self.__send_rotation_angle()
-        time.sleep(0.5)
-        iteration = 7
-        for i in range(iteration):
-            if (i % 2 == 0):
-                self.__send_rotation_angle()
-
-            self.comm_pi.sendCoordinates(
-                round(CHARGE_STATION_MOVE[0] / iteration),
-                round(CHARGE_STATION_MOVE[1] / iteration))
-            time.sleep(0.2)
-
-        time.sleep(1)
-
-    def __charge_robot_at_station(self):
-        self.comm_pi.changeCondensateurHigh()
-        base_tension = self.comm_pi.getTension()
-
-        increment = 0
-        while True:
-            self.comm_pi.sendCoordinates(0, -13)
-            time.sleep(1.5)
-
-            derivative_tension = 0
-            tension = 0
-            for i in range(10):
-                time.sleep(0.5)
-                tension = self.comm_pi.getTension()
-
-                if derivative_tension > 5:
-                    break
-
-                if tension > base_tension + 0.05:
-                    derivative_tension += 1
-
-            if tension > base_tension:
-                break
-
-            increment += 1
-
-        logger.log_info("Charging robot waiting for that electric feel now...")
-
-        while True:
-            time.sleep(0.3)
-            tension = self.comm_pi.getTension()
-            logger.log_info('Tension now while charging ' + str(tension))
-            if tension > 4 * 4:
-                break
-
-        logger.log_info("Robot is charged now!")
-
-    def __go_back_from_charge_station(self):
-        time.sleep(0.5)
-        self.comm_pi.sendCoordinates(CHARGE_STATION_MOVE[0] * -1,
-                                     CHARGE_STATION_MOVE[1] * -1)
-        time.sleep(1)
+        chargeSequence = ChargeSequence(comm_pi, self.__send_rotation_angle)
+        chargeSequence.start()
 
     def move_robot_around_pickup_zone(self, validation=True):
-        self.validation_piece_taken_pickup_zone = validation
-        self.__try_to_move_robot_around_pickup_zone()
+        pickupZoneSequence = PickupZoneSequence(validation, self.comm_pi, self.zone_pickup_cardinal, 
+            self.robot_cam_pixel_to_xy_converter, self.robot_mover, self.take_image, self.go_to_zone_pickup, piece_shape, piece_color)
+        pickupZoneSequence.try_to_move_robot_around_pickup_zone()
         (x, y) = self.robot_mover.fallback_from_cardinality(
             self.zone_pickup_cardinal)
         self.comm_pi.sendCoordinates(x, y)
 
-    def __try_to_move_robot_around_pickup_zone(self):
-        comm_ui = Communication_ui()
-        comm_ui.SendText('Moving around pickup zone', SEQUENCE_TEXT())
-        MOVEMENT_OFFSET = 20
-        self.comm_pi.changeCondensateurLow()
-        x_mm_movement_point = (MOVEMENT_OFFSET, 0)
-        x_mm_movement_point_negative = (-1 * MOVEMENT_OFFSET, 0)
-        y_mm_movement_point = (0, MOVEMENT_OFFSET)
-        y_mm_movement_point_negative = (0, -1 * MOVEMENT_OFFSET)
-
-        if self.zone_pickup_cardinal == SOUTH():
-            logger.log_info("Move around south pick up...")
-            self.__validate_if_pickup_sequence_is_done_and_move(
-                x_mm_movement_point_negative, -90)
-
-        if self.zone_pickup_cardinal == NORTH():
-            logger.log_info("Move around north pick up...")
-            self.__validate_if_pickup_sequence_is_done_and_move(
-                x_mm_movement_point, 90)
-
-        if self.zone_pickup_cardinal == EAST():
-            logger.log_info("Move around east pick up...")
-            self.__validate_if_pickup_sequence_is_done_and_move(
-                y_mm_movement_point_negative, 0)
-
-        if self.zone_pickup_cardinal == WEST():
-            logger.log_info("Move around west pick up...")
-            self.__validate_if_pickup_sequence_is_done_and_move(
-                y_mm_movement_point, 180)
-
-    def __validate_if_pickup_sequence_is_done_and_move(self, movement_point,
-                                                       angle):
-        piece_grabbed = False
-        while not piece_grabbed:
-            piece_grabbed, real_x, real_y = self.__move_on_pickup_zone(
-                movement_point, angle)
-
-            if not self.validation_piece_taken_pickup_zone:
-                break
-
-            if piece_grabbed:
-                validate_piece_was_grabbed = self.validate_piece_taken(
-                    real_x, real_y)
-                if validate_piece_was_grabbed is False:
-                    # WIP Refaire une seule itération
-                    self.go_to_zone_pickup()
-                    self.__try_to_move_robot_around_pickup_zone()
-
-                break
-
-            (x, y) = self.robot_mover.fallback_from_cardinality(
-                self.zone_pickup_cardinal)
-            self.comm_pi.sendCoordinates(x, y)
-            self.go_to_zone_pickup()
-
-    def __move_on_pickup_zone(self, moving_point, angle):
-        number_of_increment = NUMBER_OF_INCREMENT_PICKUP_ZONE
-        i = 0
-
-        while i < number_of_increment:
-
-            x, y = self.robot_cam_pixel_to_xy_converter.convert_real_xy_given_angle(
-                moving_point, angle)
-            self.comm_pi.sendCoordinates(x, y)
-
-            piece_grabbed, real_x, real_y = self.grab_piece()
-
-            if piece_grabbed:
-                break
-
-            i += 1
-        return (piece_grabbed, real_x, real_y)
-
-    def validate_piece_taken(self, x, y):
-        self.comm_pi.sendCoordinates(x * -1, y * -1)
-        robot_img = self.comm_pi.getImage()
-
-        try:
-            x, y = detect_piece(
-                robot_img, self.piece_shape, self.piece_color, validation=True)
-            logger.log_critical("VALIDATE PIECE TAKEN - FOUND ONE...")
-            return False
-        except Exception:
-            logger.log_critical("VALIDATE PIECE TAKEN - Yes we grabbed it...")
-            logger.log_critical(traceback.format_exc())
-            return True
-
-    def grab_piece(self):
-        logger.log_info("Trying to grab piece...")
-        robot_img = self.comm_pi.getImage()
-        height, width, channels = robot_img.shape
-
-        try:
-            x, y = detect_piece(robot_img, self.piece_shape, self.piece_color)
-            logger.log_info("Found piece!")
-        except Exception:
-            logger.log_critical(
-                "Could not find piece, continuing to move to detect it...")
-            logger.log_critical(traceback.format_exc())
-            return False, 0, 0
-
-        real_x, real_y = self.robot_mover.move_robot_from_embarked_referential(
-            x, y, self.zone_pickup_cardinal, width, height)
-        if DEBUG:
-            robot_img = self.take_image()
-            cv2.circle(robot_img, (x, y), 5, [255, 255, 255])
-            cv2.imshow("grab piece frame", robot_img)
-            logger.log_info("Real moving point: " + str(real_x) + "," +
-                            str(real_y))
-
-        if real_y < -80:
-            logger.log_critical("Piece point is too far : " + str(real_x) +
-                                ", " + str(real_y))
-            return False, 0, 0
-
-        logger.log_critical("Piece point accepted and sent : " + str(real_x) +
-                            ", " + str(real_y))
-
-        self.comm_pi.sendCoordinates(round(real_x), round(real_y))
-
-        logger.log_info('Activate the arm')
-        time.sleep(0.5)
-        self.comm_pi.moveArm('7800')
-        time.sleep(1.5)
-        logger.log_info('Lifting the arm')
-        self.comm_pi.moveArm('2000')
-
-        # here return true of false to know if piece was really grabbed
-
-        return True, real_x, real_y
-
     def move_robot_around_zone_dep(self):
         comm_ui = Communication_ui()
         comm_ui.SendText('Moving around zone depôt', SEQUENCE_TEXT())
+
+        zoneDepSequence = ZoneDepSequence(self.depot_number, self.comm_pi, self.robot_mover, self.zone_dep_cardinal)
         while True:
-            self.__move_to_point_zone_dep()
-            self.drop_piece()
+            zoneDepSequence.move_to_point_zone_dep()
+            zoneDepSequence.drop_piece()
             (x, y) = self.robot_mover.fallback_from_cardinality(
                 self.zone_dep_cardinal)
 
             if x == -1 and y == -1:
                 logger.log_info('Retrying to approach the zone dep')
-                self.__retry_move_robot_around_zone_dep()
+                zoneDepSequence.retry_move_robot_around_zone_dep()
             else:
                 self.comm_pi.sendCoordinates(x, y)
                 break
-
-    def __retry_move_robot_around_zone_dep(self):
-        logger.log_info('Moving closer to approach the zone dep')
-        (x, y) = self.robot_mover.move_closer_on_plane(self.zone_dep_cardinal)
-        self.comm_pi.sendCoordinates(x, y)
-        # self.move_robot_around_zone_dep()
-
-    def drop_piece(self):
-        logger.log_info('Drop the arm')
-        time.sleep(0.5)
-        self.comm_pi.moveArm('7800')
-        time.sleep(0.5)
-        self.comm_pi.changeCondensateurHigh()
-        time.sleep(0.5)
-        logger.log_info('Lifting the arm')
-        self.comm_pi.moveArm('2000')
-
-    def __detect_x_y_point_zone_dep(self):
-        logger.log_info("Sequence to detect point")
-
-        robot_img = self.comm_pi.getImage()
-        height, width, channels = robot_img.shape
-        x, y = detect_point_zone_dep(robot_img)
-
-        logger.log_info('Drop piece, detected center of first point ' +
-                        str(x) + ', ' + str(y))
-
-        real_x, real_y = self.robot_mover.move_robot_from_embarked_referential(
-            x, y, self.zone_dep_cardinal, width, height)
-
-        return (real_x, real_y)
-
-    def __move_to_point_zone_dep(self):
-        if self.depot_number == ZONE_0:
-            self.__try_send_move_to_zone_dep(1)
-
-        elif self.depot_number == ZONE_1:
-            iteration = 2
-            for i in range(iteration):
-                self.__try_send_move_to_zone_dep(i < iteration - 1)
-
-        elif self.depot_number == ZONE_2:
-            iteration = 3
-            for i in range(iteration):
-                self.__try_send_move_to_zone_dep(i < iteration - 1)
-
-        elif self.depot_number == ZONE_3:
-            iteration = 4
-            for i in range(iteration):
-                self.__try_send_move_to_zone_dep(i < iteration - 1)
-
-        else:
-            logger.log_critical(
-                "No zone dep point given to Sequence to adjust movement...")
-            raise Exception(
-                "No zone dep given to adjust movement to drop piece")
-
-    def __try_send_move_to_zone_dep(self, cond):
-        is_made_move = False
-        while not is_made_move:
-            is_made_move = self.__send_move_to_zone_dep(cond)
-
-    def __send_move_to_zone_dep(self, adjust):
-        (x, y) = self.__detect_x_y_point_zone_dep()
-
-        logger.log_info('DROP PIECE - Attempting a move to ' + str(x) + " " +
-                        str(y))
-
-        if (y < -80):
-            logger.log_info('DROP PIECE - Y is too far, getting closer' +
-                            str(y))
-            self.comm_pi.sendCoordinates(0, -10)
-            return False
-
-        if (x > 20):
-            logger.log_info('DROP PIECE - X is too far, getting closer ' +
-                            str(x))
-            self.comm_pi.sendCoordinates(10, 0)
-            return False
-
-        self.comm_pi.sendCoordinates(round(x), round(y))
-
-        # self.__rotate_robot_on_zone_plane(self.zone_dep_cardinal, 3)
-
-        if adjust:
-            self.comm_pi.sendCoordinates(0, 0)
-
-        return True
-
-    def __rotate_robot_on_zone_dep(self):
-        logger.log_info("Rotate on zone dep plane...")
-        img = self.take_image()
-        rotate_robot_on_zone_plane(img, self.zone_dep_cardinal, self.comm_pi)
-
-    def __rotate_robot_on_zone_pickup(self):
-        logger.log_info("Rotate on pickup zone plane...")
-        img = self.take_image()
-        rotate_robot_on_zone_plane(img, self.zone_pickup_cardinal,
-                                   self.comm_pi)
 
     def end_sequence(self):
         comm_ui = Communication_ui()
         comm_ui.SendText('Sequence is done', SEQUENCE_TEXT())
         self.comm_pi.redLightOn()
         time.sleep(30)
+
+    def end(self):
+        comm_ui = Communication_ui()
+        comm_ui.SendText('Sequence is over and done', SEQUENCE_TEXT())

@@ -89,7 +89,6 @@ class InitSequence():
                     )
 
     def __detect_pickup_zone(self):
-
         i = 0
         while True:
             try:
