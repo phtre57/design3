@@ -135,9 +135,15 @@ class App extends Component {
               <Paper elevation={4} style={paperStyle}>
                 <h4 style={textStyle}>Informations Robot</h4>
                 <div style={textContainer}>
-                  <span className="bold-font">Tension condensateur: <p>potato</p>  </span> 
-                  <span className="bold-font">Statut Robot: {this.state.sequence} </span>
-                  <span className="bold-font">Code QR: {this.state.qrcode} </span>
+                  <span className='bold-font'>
+                    Tension condensateur: {this.state.gettension}{' '}
+                  </span>
+                  <span className='bold-font'>
+                    Statut Robot: {this.state.sequence}{' '}
+                  </span>
+                  <span className='bold-font'>
+                    Code QR: {this.state.qrcode}{' '}
+                  </span>
                 </div>
               </Paper>
               <Paper elevation={4} style={paperStyle}>
@@ -218,7 +224,7 @@ const mainPaper = {
   alignItems: 'center',
   marginRight: '100px',
   marginTop: '10px',
-  paddingBottom: '10px',
+  paddingBottom: '10px'
 };
 
 const toolbar = {
