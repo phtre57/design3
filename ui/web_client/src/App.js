@@ -53,7 +53,7 @@ class App extends Component {
   getTensionPokeOnPi = () => {
     let piSocket = openSocket('http://192.168.0.38:4000');
     piSocket.on('recvTension', resp => {
-      this.setState({ gettension: resp });
+      this.setState({ gettension: resp * 4 });
     });
 
     piSocket.on('recvImage', resp => {
