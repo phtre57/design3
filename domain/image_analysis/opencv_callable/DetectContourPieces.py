@@ -21,7 +21,7 @@ RAIDUS_POSITIVE = True
 
 logger = Logger(__name__)
 
-DEBUG = False
+DEBUG = True
 
 
 def detect_contour_pieces(og_frame, _str_shape):

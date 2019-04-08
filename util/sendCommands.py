@@ -8,6 +8,9 @@ while True:
     if com == 'image':
         comm_pi.getImage()
 
+    if com == 'imageHD':
+        comm_pi.getImageFullHD()
+
     if com == "high":
         comm_pi.changeCondensateurHigh()
 

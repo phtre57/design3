@@ -25,11 +25,11 @@ class DetectContourPiecesTest(unittest.TestCase):
         # str_shape = 'pentagon'
         # self.call_path(path001, str_shape)
 
-        path01 = os.path.join(path, "./samples/sampleio3.jpg")
+        path01 = os.path.join(path, "./samples/HD/circle.jpg")
         str_shape = 'cercle'
         self.call_path(path01, str_shape)
 
-        path01 = os.path.join(path, "./samples/piece43.jpg")
+        path01 = os.path.join(path, "./samples/HD/square.jpg")
         str_shape = 'squaretangle'
         self.call_path(path01, str_shape)
 
