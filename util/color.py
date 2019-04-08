@@ -15,7 +15,7 @@ RED_HSV_HIGH = np.array([0, 255, 255])
 # BLUE_HSV_LOW = np.array([80, 15, 120])
 # BLUE_HSV_HIGH = np.array([140, 255, 255])
 
-BLUE_HSV_LOW = np.array([86, 15, 150])
+BLUE_HSV_LOW = np.array([100, 15, 150])
 BLUE_HSV_HIGH = np.array([140, 255, 255])
 
 # GREEN_HSV_LOW = np.array([40, 40, 60])

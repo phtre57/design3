@@ -19,6 +19,11 @@ io.on('connection', client => {
     MainBaseStationClient.emit('start', 'started');
   });
 
+  client.on('sendStopSignal', resp => {
+    console.log('Stop Signal');
+    UIClient.emit('sendStopSignal', 'Stop');
+  });
+
   // Forward to UI
   client.on('eventFromRobot', data => {
     console.log('eventFromRobot');

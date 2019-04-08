@@ -38,16 +38,9 @@ class PickupZoneSequence:
 
         self.__decision_with_cardinal(SOUTH(), x_mm_movement_point_negative,
                                       -90)
-        print('1')
-
         self.__decision_with_cardinal(NORTH(), x_mm_movement_point, 90)
-        print('1')
-
         self.__decision_with_cardinal(EAST(), y_mm_movement_point_negative, 0)
-        print('1')
-
         self.__decision_with_cardinal(WEST(), y_mm_movement_point, 180)
-        print('1')
 
     def __decision_with_cardinal(self, cardinal, movement, angle):
         if self.zone_pickup_cardinal == cardinal:
@@ -81,7 +74,7 @@ class PickupZoneSequence:
             self.go_to_zone_pickup()
 
     def __validate_piece_taken(self, x, y):
-        self.comm_pi.sendCoordinates(x * -1, y * -1)
+        self.comm_pi.sendCoordinates(x * -1, y * -1.5)
         robot_img = self.comm_pi.getImage()
 
         try:
@@ -98,13 +91,19 @@ class PickupZoneSequence:
         number_of_increment = NUMBER_OF_INCREMENT_PICKUP_ZONE
         i = 0
 
+        piece_grabbed = False
+        real_x = 0
+        real_y = 0
         while i < number_of_increment:
-
-            x, y = self.robot_cam_pixel_to_xy_converter.convert_real_xy_given_angle(
-                moving_point, angle)
-            self.comm_pi.sendCoordinates(x, y)
+            if piece_grabbed is False and real_x == 0 and real_y == 0:
+                x, y = self.robot_cam_pixel_to_xy_converter.convert_real_xy_given_angle(
+                    moving_point, angle)
+                self.comm_pi.sendCoordinates(x, y)
 
             piece_grabbed, real_x, real_y = self.__grab_piece()
+
+            if piece_grabbed is False:
+                self.comm_pi.sendCoordinates(real_x, real_y)
 
             if piece_grabbed:
                 break
@@ -133,6 +132,11 @@ class PickupZoneSequence:
             logger.log_critical("Piece point is too far : " + str(real_x) +
                                 ", " + str(real_y))
             return False, 0, 0
+
+        if (real_x > 20):
+            logger.log_info('DROP PIECE - X is too far, getting closer ' +
+                            str(x))
+            return False, 10, 0
 
         logger.log_critical("Piece point accepted and sent : " + str(real_x) +
                             ", " + str(real_y))

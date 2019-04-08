@@ -113,7 +113,7 @@ class Communication_pi:
                 self.__init()
                 break
 
-            self.sio.emit('teTuSuePins', 'Cherimoya')
+            self.sio.emit('teTuSuePins', 'Cherimole')
             self.sio.sleep(0.2)
             time.sleep(0.2)
 

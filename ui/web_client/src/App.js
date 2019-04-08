@@ -30,6 +30,8 @@ let initialState = {
 class App extends Component {
   state = initialState;
 
+  timerRef = React.createRef();
+
   initialState() {
     initialState.socket = this.state.socket;
     this.setState(initialState);
@@ -47,13 +49,19 @@ class App extends Component {
     this.state.socket.on('event', resp => {
       this.setState({ [resp.dest]: resp.data });
     });
+
+    this.state.socket.on('sendStopSignal', resp => {
+      this.timerRef.current.flipStatus();
+      this.timerRef.current.stopTimer();
+    });
+
     this.getTensionPokeOnPi();
   }
 
   getTensionPokeOnPi = () => {
     let piSocket = openSocket('http://192.168.0.38:4000');
     piSocket.on('recvTension', resp => {
-      this.setState({ gettension: resp });
+      this.setState({ gettension: resp * 4 });
     });
 
     piSocket.on('recvImage', resp => {
@@ -68,7 +76,7 @@ class App extends Component {
 
   startSignal = () => {
     this.initialState();
-    this.state = this.state.socket.emit('start', 'start');
+    this.state.socket.emit('start', 'start');
     console.log('start signal sent');
   };
 
@@ -79,11 +87,11 @@ class App extends Component {
 
   renderImage = image => {
     let imgR = 'data:image/jpg;base64, ' + image;
-    if (image === undefined) {
+    if (image === '') {
       return <img src={logo} width={30} alt='logo' />;
     }
 
-    return <img src={imgR} style={imageStyle} alt='logo' />;
+    return <img src={imgR} alt='logo' />;
   };
 
   openLogPanel = () => {
@@ -127,13 +135,20 @@ class App extends Component {
               <Paper elevation={4} style={paperStyle}>
                 <h4 style={textStyle}>Informations Robot</h4>
                 <div style={textContainer}>
-                  <span>Tension condensateur: {this.state.gettension} </span>
-                  <span>Statut Robot: {this.state.sequence} </span>
-                  <span>Code QR: {this.state.qrcode} </span>
+                  <span className='bold-font'>
+                    Tension condensateur: {this.state.gettension}{' '}
+                  </span>
+                  <span className='bold-font'>
+                    Statut Robot: {this.state.sequence}{' '}
+                  </span>
+                  <span className='bold-font'>
+                    Code QR: {this.state.qrcode}{' '}
+                  </span>
                 </div>
               </Paper>
               <Paper elevation={4} style={paperStyle}>
                 <Timer
+                  ref={this.timerRef}
                   startSignal={this.startSignal}
                   resetSignal={this.resetSignal}
                 />
@@ -141,11 +156,11 @@ class App extends Component {
             </div>
             <div style={container}>
               <Paper elevation={4} style={paperStyle}>
-                <h4 style={textStyle}>Caméra monde</h4>
-                <div> {this.renderImage(this.state.worldcamfeed)} </div>
+                <h4 style={textStyle}>Caméra embarquée (live feed)</h4>
+                <div> {this.renderImage(this.state.embarkedopencv)} </div>
               </Paper>
               <Paper elevation={4} style={paperStyle}>
-                <h4 style={textStyle}>Caméra embarquée</h4>
+                <h4 style={textStyle}>Caméra embarquée (image courante)</h4>
                 <div> {this.renderImage(this.state.embarkedcamfeed)} </div>
               </Paper>
             </div>
@@ -155,8 +170,8 @@ class App extends Component {
                 <div> {this.renderImage(this.state.paths)} </div>
               </Paper>
               <Paper elevation={4} style={paperStyle}>
-                <h4 style={textStyle}>Caméra embarquée (openCV)</h4>
-                <div> {this.renderImage(this.state.embarkedopencv)} </div>
+                <h4 style={textStyle}>Caméra monde (image courante)</h4>
+                <div> {this.renderImage(this.state.worldcamfeed)} </div>
               </Paper>
             </div>
           </Paper>
@@ -195,26 +210,21 @@ const container = {
 };
 
 const mainContainer = {
-  height: 'calc(100% - 64px)',
   display: 'flex',
   flexDirection: 'row',
   justifyContent: 'center',
-  margin: '0px'
+  margin: '0px',
+  overflow: 'auto'
 };
 
 const mainPaper = {
   marginLeft: '100px',
   height: 'calc(100% - 34px)',
-  width: '50%',
+  width: '90%',
   alignItems: 'center',
   marginRight: '100px',
   marginTop: '10px',
   paddingBottom: '10px'
-};
-
-const imageStyle = {
-  // maxWidth: '215px',
-  // maxHeight: '215px'
 };
 
 const toolbar = {

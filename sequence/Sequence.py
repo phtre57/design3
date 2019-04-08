@@ -83,6 +83,7 @@ class Sequence:
         self.comm_pi.moveArm('2000')
 
     def __init_sequence(self):
+        self.comm_pi.changeCondensateurHigh()
         self.comm_pi.redLightOff()
 
         initSequence = InitSequence(X_END_START_ZONE, Y_END_START_ZONE,
@@ -311,8 +312,10 @@ class Sequence:
         comm_ui = Communication_ui()
         comm_ui.SendText('Sequence is done', SEQUENCE_TEXT())
         self.comm_pi.redLightOn()
-        time.sleep(30)
 
     def end(self):
         comm_ui = Communication_ui()
         comm_ui.SendText('Sequence is over and done', SEQUENCE_TEXT())
+        comm_ui = Communication_ui()
+        comm_ui.sendStopSignal()
+        time.sleep(5)

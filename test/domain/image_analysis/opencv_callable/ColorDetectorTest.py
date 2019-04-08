@@ -8,7 +8,7 @@ from domain.image_analysis.opencv_callable.ColorDetector import *
 from image_samples.real_image import *
 from util.color import Color
 
-SHOW = False
+SHOW = True
 
 
 class ColorDetectorTest(unittest.TestCase):
@@ -24,7 +24,7 @@ class ColorDetectorTest(unittest.TestCase):
         path = os.path.normpath(os.path.join(path, os.pardir))
         # path = os.path.join(path, "./image_samples/real_image/pieces.jpg")
         path1 = os.path.join(path, "./samples/sampleio3.jpg")
-        path1 = os.path.join(path, "./test.jpg")
+        # path1 = os.path.join(path, "./test.jpg")
         color = Color()
         color.BLUE()
         self.call_path(path1, color)

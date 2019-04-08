@@ -9,6 +9,7 @@ from util.Logger import Logger
 
 logger = Logger(__name__)
 
+
 class ZoneDepSequence:
     def __init__(self, depot_number, comm_pi, robot_mover, zone_dep_cardinal):
         self.depot_number = depot_number
@@ -40,7 +41,7 @@ class ZoneDepSequence:
                 "No zone dep point given to Sequence to adjust movement...")
             raise Exception(
                 "No zone dep given to adjust movement to drop piece")
-                
+
     def __try_send_move_to_zone_dep(self, cond):
         is_made_move = False
         while not is_made_move:
@@ -55,7 +56,7 @@ class ZoneDepSequence:
         if (y < -80):
             logger.log_info('DROP PIECE - Y is too far, getting closer' +
                             str(y))
-            self.comm_pi.sendCoordinates(0, -10)
+            self.comm_pi.sendCoordinates(0, -20)
             return False
 
         if (x > 20):
@@ -69,7 +70,7 @@ class ZoneDepSequence:
         # self.__rotate_robot_on_zone_plane(self.zone_dep_cardinal, 3)
 
         return True
-    
+
     def __detect_x_y_point_zone_dep(self):
         logger.log_info("Sequence to detect point")
 
