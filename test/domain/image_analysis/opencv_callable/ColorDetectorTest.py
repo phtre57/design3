@@ -8,7 +8,7 @@ from domain.image_analysis.opencv_callable.ColorDetector import *
 from image_samples.real_image import *
 from util.color import Color
 
-SHOW = False
+SHOW = True
 
 
 class ColorDetectorTest(unittest.TestCase):

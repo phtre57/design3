@@ -6,7 +6,7 @@ from domain.image_analysis.opencv_callable.Canny import canny, dilate_mask
 from domain.image_analysis.ShapeUtils import *
 from context.config import COLOR_DETECTOR_DEBUG
 
-RADIUS_LIMIT = 5
+RADIUS_LIMIT = 12
 
 PERI_LIMITER_CHECK = True
 PERI_LIMITER_UPPER = 300
