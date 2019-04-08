@@ -19,9 +19,12 @@ def point_zone_dep_mask(frame):
 
 
 def detect_contour_mask(frame):
+    mask = frame
     kernel = np.ones((2, 2), np.uint8)
     mask = cv2.morphologyEx(frame, cv2.MORPH_OPEN, kernel)
-
+    mask = cv2.morphologyEx(
+        mask, cv2.MORPH_CLOSE,
+        cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (10, 10)))
     return mask
 
 

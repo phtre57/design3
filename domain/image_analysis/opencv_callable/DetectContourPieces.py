@@ -8,20 +8,17 @@ from domain.image_analysis.opencv_callable.ref_shape import *
 from util.Logger import Logger
 
 PERI_LIMITER_CHECK = False
-PERI_LIMITER_UPPER = 160
-PERI_LIMITER_LOWER = 100
 RECT_LIMITER_CHECK = True
-RECT_W_LIMITER = 40
-RECT_H_LIMITER = 40
-RECT_W_LIMITER_UP = 60
-RECT_H_LIMITER_UP = 60
+RECT_W_LIMITER = 180
+RECT_H_LIMITER = 180
+RECT_W_LIMITER_UP = 260
+RECT_H_LIMITER_UP = 260
 RADIUS_LIMITER_CHECK = False
-RADIUS_LIMITER = 90
 RAIDUS_POSITIVE = True
 
 logger = Logger(__name__)
 
-DEBUG = True
+DEBUG = False
 
 
 def detect_contour_pieces(og_frame, _str_shape):
@@ -33,10 +30,22 @@ def detect_contour_pieces(og_frame, _str_shape):
     frame = og_frame.copy()
     frame = frame.copy()
 
-    cv2.rectangle(frame, (240, 0), (320, 240), (0, 0, 0), 110)
-    cv2.rectangle(frame, (0, 200), (320, 240), (0, 0, 0), 110)
+    w, h, c = frame.shape
 
-    edges = canny(frame, detect_contour_mask, 170, 200)
+    factorw = round(w / 240)
+    factorh = round(h / 320)
+
+    cv2.rectangle(frame, (240 * factorh, 0 * factorw),
+                  (320 * factorh, 240 * factorw), (0, 0, 0), 110 * factorh)
+    cv2.rectangle(frame, (0 * factorh, 200 * factorw),
+                  (320 * factorh, 240 * factorw), (0, 0, 0), 110 * factorh)
+
+    edges = canny(frame, detect_contour_mask, 150, 200)
+
+    edges = cv2.dilate(
+        edges,
+        kernel=cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (4, 4)),
+        iterations=1)
 
     if DEBUG:
         cv2.imshow('ok', edges)
@@ -54,12 +63,18 @@ def detect_contour_pieces(og_frame, _str_shape):
     shapeDetector.set_external_cnts(True)
 
     shape = shapeDetector.detect(edges, og_frame.copy())
-    shape.set_frame(shape.frameWithText)
+    shape.set_frame(shape.frameClean)
+
+    if DEBUG:
+        cv2.imshow('ok', shape.frame)
+        cv2.waitKey()
 
     if (len(shape.approx) != 1):
         raise Exception('Detect contour pieces have found multiple shape')
 
-    (x, y) = find_center(shape.approx[0][1], 4, shape)
+    (x, y) = find_center(shape.approx[0][1], 50, shape.frame)
+
+    print(x, y)
 
     return (x, y)
 

@@ -6,7 +6,7 @@ import cv2
 import os
 import inspect
 
-SHOW = False
+SHOW = True
 
 
 class DetectContourPiecesTest(unittest.TestCase):
@@ -25,25 +25,25 @@ class DetectContourPiecesTest(unittest.TestCase):
         # str_shape = 'pentagon'
         # self.call_path(path001, str_shape)
 
-        path01 = os.path.join(path, "./samples/HD/circle.jpg")
-        str_shape = 'cercle'
-        self.call_path(path01, str_shape)
-
-        path01 = os.path.join(path, "./samples/HD/square.jpg")
-        str_shape = 'squaretangle'
-        self.call_path(path01, str_shape)
-
-        # path01 = os.path.join(path, "./samples/failed6.jpg")
-        # str_shape = 'triangle'
+        # path01 = os.path.join(path, "./samples/HD/circle.jpg")
+        # str_shape = 'cercle'
         # self.call_path(path01, str_shape)
 
-        # path1 = os.path.join(path, "./samples/piece40.jpg")
-        # str_shape = 'pentagon'
-        # self.call_path(path1, str_shape)
+        # path01 = os.path.join(path, "./samples/HD/square.jpg")
+        # str_shape = 'carré'
+        # self.call_path(path01, str_shape)
 
-        # path2 = os.path.join(path, "./samples/piece40.jpg")
-        # str_shape = 'triangle'
-        # self.call_path(path2, str_shape)
+        path01 = os.path.join(path, "./samples/HD/triangle.jpg")
+        str_shape = 'triangle'
+        self.call_path(path01, str_shape)
+
+        path1 = os.path.join(path, "./samples/HD/trianglej.jpg")
+        str_shape = 'triangle'
+        self.call_path(path1, str_shape)
+
+        path2 = os.path.join(path, "./samples/HD/pentagon.jpg")
+        str_shape = 'pentagon'
+        self.call_path(path2, str_shape)
 
         # path3 = os.path.join(path, "./samples/piece43.jpg")
         # str_shape = 'circle'
@@ -83,7 +83,7 @@ class DetectContourPiecesTest(unittest.TestCase):
         (x, y) = detect_contour_pieces(frame, str_shape)
 
         if (SHOW):
-            cv2.circle(frame, (x, y), 3, [255, 255, 255])
+            cv2.circle(frame, (x, y), 20, [0, 110, 110])
             cv2.imshow('FROM TEST - SHAPE FRAME', frame)
             cv2.waitKey()
 
