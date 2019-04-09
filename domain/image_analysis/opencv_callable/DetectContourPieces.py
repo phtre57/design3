@@ -21,7 +21,7 @@ logger = Logger(__name__)
 DEBUG = False
 
 
-def detect_contour_pieces(og_frame, _str_shape):
+def detect_contour_pieces(og_frame, _str_shape, validation=False):
     str_shape = translate_str_shape(_str_shape)
 
     logger.log_info('DETECT CONTOUR PIECES received ' + str(_str_shape) +
@@ -74,9 +74,7 @@ def detect_contour_pieces(og_frame, _str_shape):
 
     (x, y) = find_center(shape.approx[0][1], 50, shape.frame)
 
-    print(x, y)
-
-    return (x, y)
+    return (round(x/factorh), round(y/factorw)) #un bijou de master race windows LD (master dynamic programmer)
 
 
 def translate_str_shape(str_shape):
