@@ -85,8 +85,13 @@ class Communication_pi:
                 pass
 
         @self.sio.on('disconnect')
-        def disconnect(message):
+        def disconnect2(message):
             logger.log_info("Disconnected from Pi...")
+            self.sio = socketio.Client()
+            self.sio.connect(self.url)
+
+        @self.sio.on('disconnect')
+        def disconnect():
             self.sio = socketio.Client()
             self.sio.connect(self.url)
 

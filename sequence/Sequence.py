@@ -106,7 +106,7 @@ class Sequence:
         comm_ui = Communication_ui()
         comm_ui.SendImage(img, WORLD_FEED_IMAGE())
 
-    def start(self, scan_for_qr=False):
+    def start(self, scan_for_qr=False, unsecure=False):
         logger.log_info("## Starting path finding")
         create_done = self.__create_smooth_path()
 
@@ -127,7 +127,7 @@ class Sequence:
         pathSequence = PathSequence(self.pathfinding_astar_retry,
                                     self.actual_pathfinding_image, self.X_END,
                                     self.Y_END)
-        return pathSequence.create_smooth_path()
+        return pathSequence.create_smooth_path(unsecure)
 
     def __convert_to_xy(self, smooth_path):
         self.real_path = self.world_cam_pixel_to_xy_converter.convert_to_xy(
@@ -231,8 +231,15 @@ class Sequence:
         self.comm_pi.changeServoHori('2000')
         self.set_end_point(self.zone_pickup_point[0],
                            self.zone_pickup_point[1])
-        self.start()
-        self.__rotate_robot_on_zone_pickup()
+
+        try:
+            self.start()
+            self.__rotate_robot_on_zone_pickup()
+        except NoPathFoundException:
+            logger.log_critical(traceback.format_exc())
+            unsecure_move = True
+            self.start(unsecure_move)
+            pass
 
     def __rotate_robot_on_zone_pickup(self):
         logger.log_info("Rotate on pickup zone plane...")
@@ -269,6 +276,21 @@ class Sequence:
 
             if self.comm_pi.scan_for_qr is False:
                 break
+
+    def snipe_qr(self):
+        self.comm_pi.sendAngle(-35)
+        self.comm_pi.changeServoVert('6000')
+        self.comm_pi.changeServoHori('5500')
+        img = self.comm_pi.getImageFullHD()
+
+        if DEBUG:
+            cv2.imshow("snipe", img)
+            cv2.waitKey(0)
+            cv2.destroyAllWindows()
+
+        values = try_to_decode_qr(img)
+
+        logger.log_info(values[ZONE] + ", " + values[COULEUR] + ", " + values[PIECE])
 
     def go_to_charge_robot(self):
         comm_ui = Communication_ui()
