@@ -10,6 +10,7 @@ import time
 LIVE = False
 SHOW = False
 
+
 class DetectStartZoneTest(unittest.TestCase):
     def setUp(self):
         print("In method ", self._testMethodName)
@@ -81,7 +82,6 @@ class DetectStartZoneTest(unittest.TestCase):
         self.assertEqual(x > 165, True)
         self.assertEqual(y < 250, True)
         self.assertEqual(y > 240, True)
-
 
 
 if __name__ == '__main__':

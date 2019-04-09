@@ -84,18 +84,18 @@ def main_sequence(ui=True):
         robot_cam_pixel_to_xy_converter,
         no_world_cam=False)
     logger.log_info('Sequence start...')
-    #sequence.go_to_start_zone()
-    #sequence.go_to_charge_robot()
-    #sequence.go_to_decode_qr()
-    #sequence.zone_dep_cardinal = 'EAST'
+    # sequence.go_to_start_zone()
+    # sequence.go_to_charge_robot()
+    # sequence.go_to_decode_qr()
+    # sequence.zone_dep_cardinal = 'EAST'
     sequence.piece_color = None
-    sequence.piece_shape = CARRE
+    sequence.piece_shape = CERCLE
     sequence.depot_number = 'Zone 0'
     sequence.go_to_zone_pickup()
     sequence.move_robot_around_pickup_zone(validation=False)
-    #sequence.go_to_zone_dep()
-    #sequence.move_robot_around_zone_dep()
-    #sequence.go_to_start_zone()
+    # sequence.go_to_zone_dep()
+    # sequence.move_robot_around_zone_dep()
+    sequence.go_to_start_zone()
     sequence.end_sequence()
     sequence.end()
 

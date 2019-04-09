@@ -102,9 +102,9 @@ class ShapeDetector:
                     continue
 
             if (self.shape_only is not None and self.shape_only == 'circle'):
-                approx = cv2.approxPolyDP(c, 0.05 * peri, True)
+                approx = cv2.approxPolyDP(c, 0.03 * peri, True)
             else:
-                approx = cv2.approxPolyDP(c, 0.05 * peri, True)
+                approx = cv2.approxPolyDP(c, 0.085 * peri, True)
 
             xRect, yRect, wRect, hRect = cv2.boundingRect(c)
             # ((xRect, yRect), (wRect, hRect), angleRect) = cv2.minAreaRect(c)
@@ -211,6 +211,8 @@ class ShapeDetector:
 
             shapeValidator = ShapeValidator()
             shape = shapeValidator.validate(approx)
+
+            print(len(approx))
 
             if (self.shape_only is not None):
                 if ((self.shape_only == 'squaretangle'

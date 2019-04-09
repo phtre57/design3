@@ -15,6 +15,8 @@ class ShapeValidator:
             self.shape = "square" if ar >= 0.95 and ar <= 1.05 else "rectangle"
         elif len(cnts) == 5:
             self.shape = "pentagon"
+        elif len(cnts) == 6:
+            self.shape = "pentagon"
         else:
             self.shape = "circle"
         return self.shape

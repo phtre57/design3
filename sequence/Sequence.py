@@ -100,8 +100,8 @@ class Sequence:
         cv2.circle(img, ((self.zone_start_point[0] * 2),
                          (self.zone_start_point[1] * 2)), 3, [0, 0, 255])
 
-        # cv2.imshow('ok', img)
-        # cv2.waitKey()
+        cv2.imshow('ok', img)
+        cv2.waitKey()
 
         comm_ui = Communication_ui()
         comm_ui.SendImage(img, WORLD_FEED_IMAGE())
@@ -124,6 +124,8 @@ class Sequence:
 
     def __create_smooth_path(self, unsecure=False):
         self.actual_pathfinding_image = self.take_image()
+        logger.log_info('Pathfinding for point ' + str(self.Y_END) + ' ' +
+                        str(self.X_END))
         pathSequence = PathSequence(self.pathfinding_astar_retry,
                                     self.actual_pathfinding_image, self.X_END,
                                     self.Y_END)
@@ -290,7 +292,8 @@ class Sequence:
 
         values = try_to_decode_qr(img)
 
-        logger.log_info(values[ZONE] + ", " + values[COULEUR] + ", " + values[PIECE])
+        logger.log_info(values[ZONE] + ", " + values[COULEUR] + ", " +
+                        values[PIECE])
 
     def go_to_charge_robot(self):
         comm_ui = Communication_ui()
