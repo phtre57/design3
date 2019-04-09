@@ -76,10 +76,15 @@ class PickupZoneSequence:
     def __validate_piece_taken(self, x, y):
         self.comm_pi.sendCoordinates(x * -1, y * -1.5)
         robot_img = self.comm_pi.getImage()
+        robot_big_img = self.comm_pi.getImageFullHD()
 
         try:
             x, y = detect_piece(
-                robot_img, self.piece_shape, self.piece_color, validation=True)
+                robot_img,
+                robot_big_img,
+                self.piece_shape,
+                self.piece_color,
+                validation=True)
             logger.log_critical("VALIDATE PIECE TAKEN - FOUND ONE...")
             return False
         except Exception:
