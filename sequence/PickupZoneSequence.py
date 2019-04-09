@@ -119,10 +119,13 @@ class PickupZoneSequence:
     def __grab_piece(self):
         logger.log_info("Trying to grab piece...")
         robot_img = self.comm_pi.getImage()
+        robot_big_img = self.comm_pi.getImageFullHD()
+
         height, width, channels = robot_img.shape
 
         try:
-            x, y = detect_piece(robot_img, self.piece_shape, self.piece_color)
+            x, y = detect_piece(robot_img, robot_big_img, self.piece_shape,
+                                self.piece_color)
             logger.log_info("Found piece!")
         except Exception:
             logger.log_critical(
