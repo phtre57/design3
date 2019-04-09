@@ -9,7 +9,7 @@ from util.Logger import Logger
 
 logger = Logger(__name__)
 
-NUMBER_OF_INCREMENT_PICKUP_ZONE = 20
+NUMBER_OF_INCREMENT_PICKUP_ZONE = 30
 
 
 class PickupZoneSequence:
