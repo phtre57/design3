@@ -58,8 +58,13 @@ def get_contour_related_to_center(approx, cX, cY):
 
 
 def find_center(c, radius_limit, frame):
-    if (validate_if_contour_is_too_small(c, radius_limit, frame)):
+    center_or_none = validate_if_contour_is_too_small(c, radius_limit, frame)
+    if (center_or_none is True):
         return (0, 0)
+
+    print(center_or_none)
+
+    return center_or_none
 
     M = cv2.moments(c)
     if (M["m00"] == 0.0):
@@ -83,7 +88,7 @@ def validate_if_contour_is_too_small(c, radius_limit, frame):
     if (radius < radius_limit):
         return True
     else:
-        return False
+        return (round(x), round(y))
 
 
 def find_center_for_zone_dep(frame, c, radius_limit):
