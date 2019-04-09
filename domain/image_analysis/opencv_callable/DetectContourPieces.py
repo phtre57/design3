@@ -74,7 +74,7 @@ def detect_contour_pieces(og_frame, _str_shape, validation=False):
 
     (x, y) = find_center(shape.approx[0][1], 50, shape.frame)
 
-    return (round(x/factorh), round(y/factorw)) #un bijou de master race windows LD (master dynamic programmer)
+    return (round(x/factorh), round(y/factorw)) # un bijou de master race windows LD (master dynamic programmer)
 
 
 def translate_str_shape(str_shape):

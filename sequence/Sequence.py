@@ -216,8 +216,14 @@ class Sequence:
         comm_ui = Communication_ui()
         comm_ui.SendText('Going to zone depôt', SEQUENCE_TEXT())
         self.set_end_point(self.zone_dep_point[0], self.zone_dep_point[1])
-        self.start()
-        self.__rotate_robot_on_zone_dep()
+
+        try:
+            self.start()
+            self.__rotate_robot_on_zone_dep()
+        except NoPathFoundException:
+            logger.log_critical(traceback.format_exc())
+            self.start(unsecure=False)
+            pass
 
     def __rotate_robot_on_zone_dep(self):
         logger.log_info("Rotate on zone dep plane...")
@@ -237,8 +243,7 @@ class Sequence:
             self.__rotate_robot_on_zone_pickup()
         except NoPathFoundException:
             logger.log_critical(traceback.format_exc())
-            unsecure_move = True
-            self.start(unsecure_move)
+            self.start(unsecure=True)
             pass
 
     def __rotate_robot_on_zone_pickup(self):

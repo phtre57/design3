@@ -93,7 +93,7 @@ def main_sequence(ui=True):
     sequence.depot_number = 'Zone 0'
     sequence.go_to_zone_pickup()
     sequence.move_robot_around_pickup_zone(validation=False)
-    #sequence.go_to_zone_dep()
+    sequence.go_to_zone_dep()
     #sequence.move_robot_around_zone_dep()
     #sequence.go_to_start_zone()
     sequence.end_sequence()
