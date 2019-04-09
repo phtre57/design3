@@ -6,7 +6,7 @@ import cv2
 import os
 import inspect
 
-SHOW = False
+SHOW = True
 
 
 class DetectContourPiecesTest(unittest.TestCase):
@@ -22,8 +22,8 @@ class DetectContourPiecesTest(unittest.TestCase):
         # path = os.path.join(path, "./image_samples/real_image/pieces.jpg")
 
         # path1 = os.path.join(path, "./samples/zonedep4.jpg")
-        # path1 = os.path.join(path, "./test.jpg")
-        # self.call_path(path1)
+        path1 = os.path.join(path, "./test.jpg")
+        self.call_path(path1)
 
         path2 = os.path.join(path, "./samples/zonedep5.jpg")
         self.call_path(path2)

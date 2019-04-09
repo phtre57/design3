@@ -74,9 +74,12 @@ class ZoneDepSequence:
     def __detect_x_y_point_zone_dep(self):
         logger.log_info("Sequence to detect point")
 
-        robot_img = self.comm_pi.getImage()
-        height, width, channels = robot_img.shape
-        x, y = detect_point_zone_dep(robot_img)
+        x = -1
+        y = -1
+        while (x == -1 or y == -1):
+            robot_img = self.comm_pi.getImage()
+            height, width, channels = robot_img.shape
+            x, y = detect_point_zone_dep(robot_img)
 
         logger.log_info('Drop piece, detected center of first point ' +
                         str(x) + ', ' + str(y))

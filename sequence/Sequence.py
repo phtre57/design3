@@ -100,8 +100,8 @@ class Sequence:
         cv2.circle(img, ((self.zone_start_point[0] * 2),
                          (self.zone_start_point[1] * 2)), 3, [0, 0, 255])
 
-        # cv2.imshow('ok', img)
-        # cv2.waitKey()
+        cv2.imshow('ok', img)
+        cv2.waitKey()
 
         comm_ui = Communication_ui()
         comm_ui.SendImage(img, WORLD_FEED_IMAGE())

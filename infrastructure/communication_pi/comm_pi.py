@@ -43,6 +43,10 @@ class Communication_pi:
         @self.sio.on('recvImage')
         def recvImage(message):
             logger.log_info("Image received...")
+
+            # logger.log_debug('BASE64 FRAME')
+            # logger.log_debug(message)
+
             frame_data = base64.b64decode(message)
 
             with open('test.jpg', 'wb') as f_output:

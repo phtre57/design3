@@ -212,7 +212,7 @@ class ShapeDetector:
             shapeValidator = ShapeValidator()
             shape = shapeValidator.validate(approx)
 
-            print(len(approx))
+            # print(len(approx))
 
             if (self.shape_only is not None):
                 if ((self.shape_only == 'squaretangle'
