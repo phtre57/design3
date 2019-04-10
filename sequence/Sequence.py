@@ -63,7 +63,8 @@ class Sequence:
         self.world_cam_pixel_to_xy_converter = world_cam_pixel_to_xy_converter
         self.robot_cam_pixel_to_xy_converter = robot_cam_pixel_to_xy_converter
         self.robot_mover = RobotMover(world_cam_pixel_to_xy_converter,
-                                      robot_cam_pixel_to_xy_converter)
+                                      robot_cam_pixel_to_xy_converter,
+                                      image_taker)
         self.real_path = None
         self.starting_point = None
         self.smooth_path = None

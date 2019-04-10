@@ -1,4 +1,5 @@
 import math
+import cv2
 from domain.image_analysis.Cardinal import *
 
 OFFSET_Y_CAM_EMBARKED = 140
@@ -6,9 +7,10 @@ OFFSET_X_CAM_EMBARKED = -30
 
 
 class RobotMover:
-    def __init__(self, world_converter, embarked_converter):
+    def __init__(self, world_converter, embarked_converter, cap):
         self.world_converter = world_converter
         self.embarked_converter = embarked_converter
+        self.cap = cap
 
     def move_robot_from_embarked_referential(self, x, y, cardinal_string,
                                              image_width, image_height):
@@ -59,11 +61,10 @@ class RobotMover:
             return move
 
         if robot_point[0] > closest_point[0] and x_diff > y_diff:
-            if robot_point[0] < closest_point[0]:
-                move = (50, 0)
+            move = (50, 0)
 
-                move = self.__change_referential(move, cardinal_str)
-                return move
+            move = self.__change_referential(move, cardinal_str)
+            return move
 
         if robot_point[1] > closest_point[1] and y_diff > x_diff:
             move = (0, -50)
@@ -109,17 +110,17 @@ class RobotMover:
             return (point[0] * -1, point[1] * -1)
 
         if cardinal_str == SOUTH():
-            return (point[1], point[0] * -1)
+            return (point[1] * -1, point[0])
 
     def __find_closest_obstacle_from_robot(self, robot_point, obstacle_array):
         min_distance = 10000000000
-        closest_pt = ()
+        closest_pt = None
 
         for point in obstacle_array:
             distance = math.sqrt((robot_point[0] - point[0])**2 +
                                  (robot_point[1] - point[1])**2)
-
             if distance < min_distance:
+                min_distance = distance
                 closest_pt = point
 
         return closest_pt

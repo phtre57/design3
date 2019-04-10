@@ -1,14 +1,17 @@
 import cv2
 import numpy as np
 
+from domain.image_analysis.ImageToGridConverter import LENGTH, HEIGHT
+
+
 BLUE_HSV_LOW = np.array([100, 100, 120])
 BLUE_HSV_HIGH = hsv_high = np.array([140, 255, 255])
 
 
 class ObstacleDetector:
-
     def __init__(self, img):
         self.image = img.copy()
+        self.image = cv2.resize(self.image, (LENGTH, HEIGHT))
 
     def find_center_of_obstacle(self):
         hsv = cv2.cvtColor(self.image, cv2.COLOR_BGR2HSV)

@@ -33,6 +33,9 @@ while True:
     if com == "up_bras":
         comm_pi.moveArm('2000')
 
+    if com == "test_bras":
+        comm_pi.moveArm('4000')
+
     if com == "redOn":
         comm_pi.redLightOn()
 
