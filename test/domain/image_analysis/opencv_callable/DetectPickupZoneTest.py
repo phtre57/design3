@@ -6,7 +6,7 @@ import cv2
 import os
 import inspect
 
-LIVE = True
+LIVE = False
 SHOW = True
 
 
@@ -24,7 +24,7 @@ class DetectPickupZoneTest(unittest.TestCase):
         # "./image_samples/real_image/globalmonde1.jpg")
 
         if (LIVE):
-            cap = cv2.VideoCapture(0)
+            cap = cv2.VideoCapture(1)
             ret, frame = cap.read()
             res = detect_pickup_zone(frame)
 
@@ -39,7 +39,7 @@ class DetectPickupZoneTest(unittest.TestCase):
             self.assertEqual(1, 1)
         else:
             # path01 = os.path.join(path, "./samples/sample1.jpg")
-            path01 = os.path.join(path, "./testy.jpg")
+            path01 = os.path.join(path, "./ld.jpg")
             self.call_path(path01)
 
             path1 = os.path.join(path, "./samples/sample2.jpg")
