@@ -1,7 +1,7 @@
 import cv2
 import time
 
-cap = cv2.VideoCapture(1)
+cap = cv2.VideoCapture(0)
 
 while True:
     if cap.isOpened():
@@ -21,4 +21,5 @@ while True:
 
 img = cv2.resize(img, (640, 480))
 cv2.imshow("test", img)
+cv2.imwrite("ld.jpg", img)
 cv2.waitKey(0)

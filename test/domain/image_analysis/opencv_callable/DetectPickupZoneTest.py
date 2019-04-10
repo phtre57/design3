@@ -39,7 +39,7 @@ class DetectPickupZoneTest(unittest.TestCase):
             self.assertEqual(1, 1)
         else:
             # path01 = os.path.join(path, "./samples/sample1.jpg")
-            path01 = os.path.join(path, "./testy.jpg")
+            path01 = os.path.join(path, "./ld.jpg")
             self.call_path(path01)
 
             path1 = os.path.join(path, "./samples/sample2.jpg")

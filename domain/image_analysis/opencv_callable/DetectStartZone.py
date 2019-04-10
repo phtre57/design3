@@ -33,7 +33,7 @@ logger = Logger(__name__)
 def detect_start_zone(og_frame, alpha=1.5):
     frame = og_frame.copy()
     frame = cv2.convertScaleAbs(frame, alpha=alpha, beta=100)
-    
+
     edges = canny(frame, erode_mask)
 
     if (DEBUG):
@@ -64,6 +64,7 @@ def detect_start_zone(og_frame, alpha=1.5):
     cv2.circle(shape.frame, (x, y), 1, [255, 51, 51])
 
     return (x, y)
+
 
 def __decision(shape):
     if (len(shape.approx) == 0):

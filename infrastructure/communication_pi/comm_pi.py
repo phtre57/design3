@@ -23,6 +23,7 @@ class Communication_pi:
         self.tension = None
         self.pinState = 0
         self.url = url
+        self.scan_for_qr = False
         self.__init()
 
     def __init(self):
@@ -42,6 +43,10 @@ class Communication_pi:
         @self.sio.on('recvImage')
         def recvImage(message):
             logger.log_info("Image received...")
+
+            # logger.log_debug('BASE64 FRAME')
+            # logger.log_debug(message)
+
             frame_data = base64.b64decode(message)
 
             with open('test.jpg', 'wb') as f_output:
@@ -84,8 +89,13 @@ class Communication_pi:
                 pass
 
         @self.sio.on('disconnect')
-        def disconnect(message):
+        def disconnect2(message):
             logger.log_info("Disconnected from Pi...")
+            self.sio = socketio.Client()
+            self.sio.connect(self.url)
+
+        @self.sio.on('disconnect')
+        def disconnect():
             self.sio = socketio.Client()
             self.sio.connect(self.url)
 
@@ -154,6 +164,17 @@ class Communication_pi:
         self.waitForPinsSignal()
         time.sleep(0.2)
 
+    def getImageFullHD(self):
+        while True:
+            try:
+                img = self.getImagePiFullHD()
+                return img
+            except Exception:
+                logger.log_critical(
+                    '401 Image not found - Erreur communication avec le pi getImage'
+                )
+                pass
+
     def getImage(self):
         while True:
             try:
@@ -164,6 +185,24 @@ class Communication_pi:
                     '401 Image not found - Erreur communication avec le pi getImage'
                 )
                 pass
+
+    def getImagePiFullHD(self):
+        logger.log_info("Get image du robot...")
+        self.sio.emit('getImageFullHD', 'ok')
+        self.image = None
+
+        t = time.time()
+        while self.image is None:
+            tt = time.time()
+            if (tt - t > 20):
+                self.__init()
+                raise Exception('Image not found')
+                break
+
+            time.sleep(0.01)
+
+        logger.log_info("After wait image du robot...")
+        return self.image
 
     def getImagePi(self):
         logger.log_info("Get image du robot...")

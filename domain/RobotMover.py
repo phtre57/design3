@@ -36,6 +36,20 @@ class RobotMover:
         else:
             return None
 
+    def get_out_of_object(self, cardinal_str):
+        fallback_move = 40
+
+        if cardinal_str == EAST():
+            return fallback_move, 0
+        elif cardinal_str == NORTH():
+            return 50, 0
+        elif cardinal_str == WEST():
+            return fallback_move, 0
+        elif cardinal_str == SOUTH():
+            return 90, 0
+        else:
+            return None
+
     def move_closer_on_plane(self, cardinal_str):
         move = -15
 
