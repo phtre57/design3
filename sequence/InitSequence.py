@@ -52,6 +52,8 @@ class InitSequence():
                 img = self.take_image()
                 i = i + 1
                 if (i > 20):
+                    img = self.take_image()
+                    cv2.imwrite('failed.jpg', img)
                     logger.log_critical(
                         'START ZONE NOT DETECTED, FALL BACK TO HARDCODED')
                     logger.log_debug(traceback.format_exc())
@@ -80,6 +82,8 @@ class InitSequence():
                 logger.log_debug('ZONE DEP WORLD NOT DETECTED RETRYING' +
                                  str(i))
                 if (i > 20):
+                    img = self.take_image()
+                    cv2.imwrite('failed.jpg', img)
                     logger.log_critical(
                         'ZONE DEP WORLD NOT DETECTED PROBLEMS, PROBLEMS, PROBLEMS'
                     )
@@ -102,6 +106,8 @@ class InitSequence():
             except Exception:
                 logger.log_debug('PICKUP ZONE NOT DETECTED RETRYING' + str(i))
                 if (i > 20):
+                    img = self.take_image()
+                    cv2.imwrite('failed.jpg', img)
                     logger.log_critical(
                         'PICKUP ZONE NOT DETECTED PROBLEMS, PROBLEMS, PROBLEMS'
                     )
