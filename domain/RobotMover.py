@@ -1,3 +1,4 @@
+import math
 from domain.image_analysis.Cardinal import *
 
 OFFSET_Y_CAM_EMBARKED = 140
@@ -36,19 +37,35 @@ class RobotMover:
         else:
             return None
 
-    def get_out_of_object(self, cardinal_str):
-        fallback_move = 40
+    def get_out_of_object(self, cardinal_str, obstacle_point_array, robot_point):
 
-        if cardinal_str == EAST():
-            return fallback_move, 0
-        elif cardinal_str == NORTH():
-            return 50, 0
-        elif cardinal_str == WEST():
-            return fallback_move, 0
-        elif cardinal_str == SOUTH():
-            return 90, 0
-        else:
-            return None
+        closest_point = self.__find_closest_obstacle_from_robot(robot_point, obstacle_point_array)
+
+        if robot_point[0] < closest_point[0]:
+            move = (-50, 0)
+
+            move = self.__change_referential(move, cardinal_str)
+            return move
+
+        if robot_point[1] < closest_point[1]:
+            move = (0, 50)
+
+            move = self.__change_referential(move, cardinal_str)
+            return move
+
+        if robot_point[0] > closest_point[0]:
+            if robot_point[0] < closest_point[0]:
+                move = (50, 0)
+
+                move = self.__change_referential(move, cardinal_str)
+                return move
+
+        if robot_point[1] > closest_point[1]:
+            move = (0, -50)
+
+            move = self.__change_referential(move, cardinal_str)
+            return move
+
 
     def move_closer_on_plane(self, cardinal_str):
         move = -15
@@ -76,3 +93,32 @@ class RobotMover:
             return -90
         else:
             return None
+
+    def __change_referential(self, point, cardinal_str):
+        if cardinal_str == EAST():
+            return (point[0] * -1,
+                    point[1])
+
+        if cardinal_str == NORTH():
+            return (point[0] * -1,
+                    point[1])
+
+        if cardinal_str == WEST():
+            return (point[0] -1,
+                    point[1])
+
+        if cardinal_str == SOUTH():
+            return (point[0] * -1,
+                    point[1])
+
+    def __find_closest_obstacle_from_robot(self, robot_point, obstacle_array):
+        min_distance = 10000000000
+        closest_pt = ()
+
+        for point in obstacle_array:
+            distance = math.sqrt((robot_point[0] - point[0])**2 + (robot_point[1] - point[1]**2))
+
+            if distance < min_distance:
+                closest_pt = point
+
+        return closest_pt

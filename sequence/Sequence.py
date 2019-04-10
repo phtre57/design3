@@ -18,6 +18,7 @@ from domain.image_analysis.Cardinal import *
 from domain.RobotMover import *
 from infrastructure.communication_ui.comm_ui import Communication_ui
 from infrastructure.communication_ui.ui_destination import *
+from domain.ObstacleDetector import *
 
 from sequence.InitSequence import InitSequence
 from sequence.PathSequence import PathSequence
@@ -79,7 +80,9 @@ class Sequence:
         self.actual_robot_path = []
         self.actual_pathfinding_image = None
         self.validation_piece_taken_pickup_zone = True
+        self.array_point_obstacle = []
         self.__init_sequence()
+        self.__init_obstacle_point_array()
         self.comm_pi.moveArm('2000')
 
     def __init_sequence(self):
@@ -105,6 +108,13 @@ class Sequence:
 
         comm_ui = Communication_ui()
         comm_ui.SendImage(img, WORLD_FEED_IMAGE())
+
+    def __init_obstacle_point_array(self):
+        img = self.take_image()
+
+        obstacle_detector = ObstacleDetector(img)
+        self.array_point_obstacle = obstacle_detector.find_center_of_obstacle()
+
 
     def start(self, scan_for_qr=False, unsecure=False):
         logger.log_info("## Starting path finding")
@@ -234,8 +244,13 @@ class Sequence:
         except (NoPathFoundException, NoBeginingPointException):
             logger.log_critical(traceback.format_exc())
             logger.log_critical("Ayoye je suis dans l'obstacle...")
+
+            img = self.take_image()
+            robot_detector = RobotDetector(img)
+            robot_point = robot_detector.find_center_of_robot()
+
             x, y = self.robot_mover.get_out_of_object(
-                self.zone_pickup_cardinal)
+                self.zone_pickup_cardinal, self.array_point_obstacle, robot_point)
             self.comm_pi.sendCoordinates(x, y)
             self.start()
             self.__rotate_robot_on_zone_dep()
