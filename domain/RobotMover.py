@@ -96,20 +96,20 @@ class RobotMover:
 
     def __change_referential(self, point, cardinal_str):
         if cardinal_str == EAST():
-            return (point[0] * -1,
+            return (point[0],
                     point[1])
 
         if cardinal_str == NORTH():
-            return (point[0] * -1,
-                    point[1])
+            return (point[1],
+                    point[0] * -1)
 
         if cardinal_str == WEST():
-            return (point[0] -1,
-                    point[1])
+            return (point[0] * -1,
+                    point[1] * -1)
 
         if cardinal_str == SOUTH():
-            return (point[0] * -1,
-                    point[1])
+            return (point[1],
+                    point[0] * -1)
 
     def __find_closest_obstacle_from_robot(self, robot_point, obstacle_array):
         min_distance = 10000000000
