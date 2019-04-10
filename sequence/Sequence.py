@@ -115,7 +115,6 @@ class Sequence:
         obstacle_detector = ObstacleDetector(img)
         self.array_point_obstacle = obstacle_detector.find_center_of_obstacle()
 
-
     def start(self, scan_for_qr=False, unsecure=False):
         logger.log_info("## Starting path finding")
         create_done = self.__create_smooth_path(unsecure)
@@ -228,7 +227,11 @@ class Sequence:
         except (NoPathFoundException, NoBeginingPointException):
             logger.log_critical(traceback.format_exc())
             logger.log_critical("Ayoye je suis dans l'obstacle...")
-            x, y = self.robot_mover.get_out_of_object(self.zone_dep_cardinal)
+            img = self.take_image()
+            robot_detector = RobotDetector(img)
+            robot_point = robot_detector.find_center_of_robot()
+            x, y = self.robot_mover.get_out_of_object(
+                self.zone_dep_cardinal, self.array_point_obstacle, robot_point)
             self.comm_pi.sendCoordinates(x, y)
             self.start()
 
@@ -248,9 +251,9 @@ class Sequence:
             img = self.take_image()
             robot_detector = RobotDetector(img)
             robot_point = robot_detector.find_center_of_robot()
-
             x, y = self.robot_mover.get_out_of_object(
-                self.zone_pickup_cardinal, self.array_point_obstacle, robot_point)
+                self.zone_pickup_cardinal, self.array_point_obstacle,
+                robot_point)
             self.comm_pi.sendCoordinates(x, y)
             self.start()
             self.__rotate_robot_on_zone_dep()

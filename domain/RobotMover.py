@@ -116,7 +116,8 @@ class RobotMover:
         closest_pt = ()
 
         for point in obstacle_array:
-            distance = math.sqrt((robot_point[0] - point[0])**2 + (robot_point[1] - point[1]**2))
+            distance = math.sqrt((robot_point[0] - point[0])**2 +
+                                 (robot_point[1] - point[1])**2)
 
             if distance < min_distance:
                 closest_pt = point
