@@ -218,22 +218,26 @@ class Sequence:
         self.Y_END = y
 
     def go_to_start_zone(self):
-        comm_ui = Communication_ui()
-        comm_ui.SendText('Going to start zone', SEQUENCE_TEXT())
-        logger.log_info('Going to start zone')
-        self.set_end_point(self.zone_start_point[0], self.zone_start_point[1])
-        try:
-            self.start()
-        except (NoPathFoundException, NoBeginingPointException):
-            logger.log_critical(traceback.format_exc())
-            logger.log_critical("Ayoye je suis dans l'obstacle...")
-            img = self.take_image()
-            robot_detector = RobotDetector(img)
-            robot_point = robot_detector.find_center_of_robot()
-            x, y = self.robot_mover.get_out_of_object(
-                self.zone_dep_cardinal, self.array_point_obstacle, robot_point)
-            self.comm_pi.sendCoordinates(x, y)
-            self.start()
+        while True:
+            comm_ui = Communication_ui()
+            comm_ui.SendText('Going to start zone', SEQUENCE_TEXT())
+            logger.log_info('Going to start zone')
+            self.set_end_point(self.zone_start_point[0],
+                               self.zone_start_point[1])
+            try:
+                self.start()
+                break
+            except (NoPathFoundException, NoBeginingPointException):
+                logger.log_critical(traceback.format_exc())
+                logger.log_critical("Ayoye je suis dans l'obstacle...")
+                img = self.take_image()
+                robot_detector = RobotDetector(img)
+                robot_point = robot_detector.find_center_of_robot()
+                x, y = self.robot_mover.get_out_of_object(
+                    self.zone_dep_cardinal, self.array_point_obstacle,
+                    robot_point)
+                self.comm_pi.sendCoordinates(x, y)
+                pass
 
     def go_to_zone_dep(self):
         comm_ui = Communication_ui()

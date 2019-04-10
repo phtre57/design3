@@ -37,12 +37,14 @@ class RobotMover:
         else:
             return None
 
-    def get_out_of_object(self, cardinal_str, obstacle_point_array, robot_point):
+    def get_out_of_object(self, cardinal_str, obstacle_point_array,
+                          robot_point):
 
-        closest_point = self.__find_closest_obstacle_from_robot(robot_point, obstacle_point_array)
+        closest_point = self.__find_closest_obstacle_from_robot(
+            robot_point, obstacle_point_array)
 
         if robot_point[0] < closest_point[0]:
-            move = (-50, 0)
+            move = (50, 0)
 
             move = self.__change_referential(move, cardinal_str)
             return move
@@ -61,11 +63,10 @@ class RobotMover:
                 return move
 
         if robot_point[1] > closest_point[1]:
-            move = (0, -50)
+            move = (0, 50)
 
             move = self.__change_referential(move, cardinal_str)
             return move
-
 
     def move_closer_on_plane(self, cardinal_str):
         move = -15
@@ -96,20 +97,16 @@ class RobotMover:
 
     def __change_referential(self, point, cardinal_str):
         if cardinal_str == EAST():
-            return (point[0],
-                    point[1])
+            return (point[0], point[1])
 
         if cardinal_str == NORTH():
-            return (point[1],
-                    point[0] * -1)
+            return (point[1], point[0] * -1)
 
         if cardinal_str == WEST():
-            return (point[0] * -1,
-                    point[1] * -1)
+            return (point[0] * -1, point[1] * -1)
 
         if cardinal_str == SOUTH():
-            return (point[1],
-                    point[0] * -1)
+            return (point[1], point[0] * -1)
 
     def __find_closest_obstacle_from_robot(self, robot_point, obstacle_array):
         min_distance = 10000000000
