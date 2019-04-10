@@ -88,9 +88,9 @@ def main_sequence(ui=True):
     sequence.go_to_charge_robot()
     sequence.go_to_decode_qr()
     # sequence.zone_dep_cardinal = 'EAST'
-    sequence.piece_color = JAUNE
-    # sequence.piece_shape = TRIANGLE
-    sequence.depot_number = ZONE_3
+    # sequence.piece_color = None
+    # sequence.piece_shape = CARRE
+    # sequence.depot_number = ZONE_3
     sequence.go_to_zone_pickup()
     sequence.move_robot_around_pickup_zone(validation=False)
     sequence.go_to_zone_dep()

@@ -38,7 +38,7 @@ class ShapeDetector:
         self.coord_limiter = None
         self.x_coord_limiter = 0
         self.external_cnts = False
-        self.big_image = False
+        self.validate_shape = False
 
     def detect(self, frame, og_frame):
         frame = frame.copy()
@@ -75,20 +75,51 @@ class ShapeDetector:
         shapes_with_approx = []
 
         for c in cnts:
-
             if DEBUG:
                 frame1 = og_frame.copy()
+                filler = cv2.convexHull(c)
+                cv2.fillConvexPoly(frame1, filler, (233, 0, 255))
                 cv2.drawContours(frame1, c, -1, (0, 255, 0), 3)
                 cv2.imshow('CNTS1', frame1)
                 cv2.waitKey()
 
+            frameShape = og_frame.copy()
+            if (self.validate_shape):
+                filler = cv2.convexHull(c)
+                cv2.fillConvexPoly(frameShape, filler, (233, 0, 255))
+                lower = np.array([230, 0, 250])
+                upper = np.array([235, 0, 255])
+                frameShape = cv2.inRange(frameShape, lower, upper)
+                if DEBUG:
+                    cv2.imshow('FrameShape', frameShape)
+                    cv2.waitKey()
+
+                cntsMask = cv2.findContours(frameShape.copy(), cv2.RETR_TREE,
+                                            cv2.CHAIN_APPROX_SIMPLE)
+                cntsMask = imutils.grab_contours(cntsMask)
+                for cMask in cntsMask:
+                    peri = cv2.arcLength(cMask, True)
+                    if (peri > 5):
+                        c = cMask
+                        break
+
+                frame1 = og_frame.copy()
+                filler = cv2.convexHull(c)
+                cv2.fillConvexPoly(frame1, filler, (135, 135, 210))
+                cv2.drawContours(frame1, c, -1, (0, 255, 0), 3)
+                if DEBUG:
+                    cv2.imshow('FrameShape', frame1)
+                    cv2.waitKey()
+
             if self.comparator_cnts is not None:
+                raise ('Not supported anymore')
                 dist = cv2.matchShapes(c, self.comparator_cnts, 1, 0)
                 if DEBUG:
                     print('dist ', dist)
 
             shape = "unidentified"
             peri = cv2.arcLength(c, True)
+
             if DEBUG:
                 print("Wave")
                 print(peri)
@@ -104,7 +135,7 @@ class ShapeDetector:
             if (self.shape_only is not None and self.shape_only == 'circle'):
                 approx = cv2.approxPolyDP(c, 0.03 * peri, True)
             else:
-                approx = cv2.approxPolyDP(c, 0.085 * peri, True)
+                approx = cv2.approxPolyDP(c, 0.03 * peri, True)
 
             xRect, yRect, wRect, hRect = cv2.boundingRect(c)
             # ((xRect, yRect), (wRect, hRect), angleRect) = cv2.minAreaRect(c)
@@ -226,6 +257,7 @@ class ShapeDetector:
                         print('SKIPPED NOT THE RIGHT SHAPE')
                     continue
 
+            print(len(approx))
             logger.log_info('SHAPE DETECTOR - DETECTED A ' + str(shape))
 
             self.shapes.append(shape)
@@ -282,5 +314,5 @@ class ShapeDetector:
     def set_external_cnts(self, v):
         self.external_cnts = v
 
-    def set_big_image(self, v):
-        self.big_image = v
+    def set_validate_shape(self, v):
+        self.validate_shape = v

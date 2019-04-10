@@ -37,16 +37,16 @@ class RobotMover:
             return None
 
     def get_out_of_object(self, cardinal_str):
-        fallback_move = 35
+        fallback_move = 40
 
         if cardinal_str == EAST():
             return fallback_move, 0
         elif cardinal_str == NORTH():
-            return fallback_move, 0
+            return 50, 0
         elif cardinal_str == WEST():
             return fallback_move, 0
         elif cardinal_str == SOUTH():
-            return fallback_move * 2, 0
+            return 90, 0
         else:
             return None
 

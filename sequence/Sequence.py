@@ -216,10 +216,11 @@ class Sequence:
         try:
             self.start()
         except (NoPathFoundException, NoBeginingPointException):
-            logger.log_critical("Fallback to unsecure pathfinding")
             logger.log_critical(traceback.format_exc())
-            self.start(unsecure=True)
-            pass
+            logger.log_critical("Ayoye je suis dans l'obstacle...")
+            x, y = self.robot_mover.get_out_of_object(self.zone_dep_cardinal)
+            self.comm_pi.sendCoordinates(x, y)
+            self.start()
 
     def go_to_zone_dep(self):
         comm_ui = Communication_ui()
@@ -233,7 +234,11 @@ class Sequence:
         except (NoPathFoundException, NoBeginingPointException):
             logger.log_critical(traceback.format_exc())
             logger.log_critical("Ayoye je suis dans l'obstacle...")
-            self.robot_mover.get_out_of_object(self.zone_pickup_cardinal)
+            x, y = self.robot_mover.get_out_of_object(
+                self.zone_pickup_cardinal)
+            self.comm_pi.sendCoordinates(x, y)
+            self.start()
+            self.__rotate_robot_on_zone_dep()
 
     def __rotate_robot_on_zone_dep(self):
         logger.log_info("Rotate on zone dep plane...")
@@ -248,15 +253,8 @@ class Sequence:
         self.comm_pi.changeServoHori('2000')
         self.set_end_point(self.zone_pickup_point[0],
                            self.zone_pickup_point[1])
-
-        try:
-            self.start()
-            self.__rotate_robot_on_zone_pickup()
-        except (NoPathFoundException, NoBeginingPointException):
-            logger.log_critical("Fallback to unsecure pathfinding")
-            logger.log_critical(traceback.format_exc())
-            self.start(unsecure=True)
-            pass
+        self.start()
+        self.__rotate_robot_on_zone_pickup()
 
     def __rotate_robot_on_zone_pickup(self):
         logger.log_info("Rotate on pickup zone plane...")
