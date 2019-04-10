@@ -211,20 +211,29 @@ class Sequence:
     def go_to_start_zone(self):
         comm_ui = Communication_ui()
         comm_ui.SendText('Going to start zone', SEQUENCE_TEXT())
+        logger.log_info('Going to start zone')
         self.set_end_point(self.zone_start_point[0], self.zone_start_point[1])
-        self.start()
+        try:
+            self.start()
+        except (NoPathFoundException, NoBeginingPointException):
+            logger.log_critical("Fallback to unsecure pathfinding")
+            logger.log_critical(traceback.format_exc())
+            self.start(unsecure=True)
+            pass
 
     def go_to_zone_dep(self):
         comm_ui = Communication_ui()
         comm_ui.SendText('Going to zone depôt', SEQUENCE_TEXT())
+        logger.log_info('Going to zone depôt')
         self.set_end_point(self.zone_dep_point[0], self.zone_dep_point[1])
 
         try:
             self.start()
             self.__rotate_robot_on_zone_dep()
-        except NoPathFoundException:
+        except (NoPathFoundException, NoBeginingPointException):
             logger.log_critical(traceback.format_exc())
-            self.start(unsecure=False)
+            logger.log_critical("Ayoye je suis dans l'obstacle...")
+            self.robot_mover.get_out_of_object(self.zone_pickup_cardinal)
             pass
 
     def __rotate_robot_on_zone_dep(self):
@@ -235,6 +244,7 @@ class Sequence:
     def go_to_zone_pickup(self):
         comm_ui = Communication_ui()
         comm_ui.SendText('Going to zone pickup', SEQUENCE_TEXT())
+        logger.log_info('Going to zone pickup')
         self.comm_pi.changeServoVert('6000')
         self.comm_pi.changeServoHori('2000')
         self.set_end_point(self.zone_pickup_point[0],
@@ -243,7 +253,8 @@ class Sequence:
         try:
             self.start()
             self.__rotate_robot_on_zone_pickup()
-        except NoPathFoundException:
+        except (NoPathFoundException, NoBeginingPointException):
+            logger.log_critical("Fallback to unsecure pathfinding")
             logger.log_critical(traceback.format_exc())
             self.start(unsecure=True)
             pass
