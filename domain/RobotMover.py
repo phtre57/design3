@@ -43,27 +43,30 @@ class RobotMover:
         closest_point = self.__find_closest_obstacle_from_robot(
             robot_point, obstacle_point_array)
 
-        if robot_point[0] < closest_point[0]:
-            move = (50, 0)
+        x_diff = abs(robot_point[0] - closest_point[0])
+        y_diff = abs(robot_point[1] - closest_point[1])
+
+        if robot_point[0] < closest_point[0] and x_diff > y_diff:
+            move = (-50, 0)
 
             move = self.__change_referential(move, cardinal_str)
             return move
 
-        if robot_point[1] < closest_point[1]:
+        if robot_point[1] < closest_point[1] and y_diff > x_diff:
             move = (0, 50)
 
             move = self.__change_referential(move, cardinal_str)
             return move
 
-        if robot_point[0] > closest_point[0]:
+        if robot_point[0] > closest_point[0] and x_diff > y_diff:
             if robot_point[0] < closest_point[0]:
                 move = (50, 0)
 
                 move = self.__change_referential(move, cardinal_str)
                 return move
 
-        if robot_point[1] > closest_point[1]:
-            move = (0, 50)
+        if robot_point[1] > closest_point[1] and y_diff > x_diff:
+            move = (0, -50)
 
             move = self.__change_referential(move, cardinal_str)
             return move
