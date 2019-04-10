@@ -40,19 +40,30 @@ def detect_contour_pieces(og_frame, _str_shape, validation=False):
     cv2.rectangle(frame, (0 * factorh, 200 * factorw),
                   (320 * factorh, 240 * factorw), (0, 0, 0), 110 * factorh)
 
-    edges = canny(frame, detect_contour_mask, 225, 300)
+    edges = canny(frame, detect_contour_mask, 150, 300)
 
-    edges = cv2.dilate(
-        edges,
-        kernel=cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (10, 10)),
-        iterations=1)
+    edges = cv2.morphologyEx(
+        edges, cv2.MORPH_GRADIENT,
+        cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (5, 5)))
 
     edges = cv2.morphologyEx(
         edges, cv2.MORPH_OPEN,
-        cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (3, 3)))
+        cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (2, 2)))
 
-    kernelerode = np.ones((3, 3), np.uint8)
-    edges = cv2.erode(edges, kernelerode, iterations=3)
+    if DEBUG:
+        cv2.imshow('ok', edges)
+        cv2.waitKey()
+
+    edges = cv2.morphologyEx(
+        edges, cv2.MORPH_CROSS,
+        cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (8, 8)))
+
+    if DEBUG:
+        cv2.imshow('ok', edges)
+        cv2.waitKey()
+
+    kernelerode = np.ones((5, 5), np.uint8)
+    edges = cv2.erode(edges, kernelerode, iterations=1)
 
     if DEBUG:
         cv2.imshow('ok', edges)
@@ -68,6 +79,7 @@ def detect_contour_pieces(og_frame, _str_shape, validation=False):
         w_rect_limit_up=RECT_W_LIMITER_UP)
     shapeDetector.set_shape_only(str_shape)
     shapeDetector.set_external_cnts(True)
+    shapeDetector.set_validate_shape(True)
 
     shape = shapeDetector.detect(edges, og_frame.copy())
     shape.set_frame(shape.frameClean)
@@ -76,7 +88,10 @@ def detect_contour_pieces(og_frame, _str_shape, validation=False):
         cv2.imshow('ok', shape.frame)
         cv2.waitKey()
 
-    if (len(shape.approx) != 1):
+    if (len(shape.approx) == 0):
+        raise Exception('No contour is detected')
+
+    if (len(shape.approx) > 1):
         raise Exception('Detect contour pieces have found multiple shape')
 
     (x, y) = find_center(shape.approx[0][1], 50, shape.frame)

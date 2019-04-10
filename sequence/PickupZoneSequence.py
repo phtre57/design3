@@ -75,12 +75,10 @@ class PickupZoneSequence:
 
     def __validate_piece_taken(self, x, y):
         self.comm_pi.sendCoordinates(x * -1, y * -1.5)
-        robot_img = self.comm_pi.getImage()
         robot_big_img = self.comm_pi.getImageFullHD()
 
         try:
             x, y = detect_piece(
-                robot_img,
                 robot_big_img,
                 self.piece_shape,
                 self.piece_color,
@@ -118,13 +116,12 @@ class PickupZoneSequence:
 
     def __grab_piece(self):
         logger.log_info("Trying to grab piece...")
-        robot_img = self.comm_pi.getImage()
         robot_big_img = self.comm_pi.getImageFullHD()
 
-        height, width, channels = robot_img.shape
+        # height, width, channels = robot_big_img.shape
 
         try:
-            x, y = detect_piece(robot_img, robot_big_img, self.piece_shape,
+            x, y = detect_piece(robot_big_img, self.piece_shape,
                                 self.piece_color)
             logger.log_info("Found piece!")
         except Exception:
@@ -134,7 +131,7 @@ class PickupZoneSequence:
             return False, 0, 0
 
         real_x, real_y = self.robot_mover.move_robot_from_embarked_referential(
-            x, y, self.zone_pickup_cardinal, width, height)
+            x, y, self.zone_pickup_cardinal, 320, 240)
 
         if real_y < -80:
             logger.log_critical("Piece point is too far : " + str(real_x) +

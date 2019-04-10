@@ -8,8 +8,8 @@ def canny(frame, maskFunc, lower=100, upper=200):
 
     mask = maskFunc(frame)
 
-    cv2.imshow('ok', mask)
-    cv2.waitKey()
+    # cv2.imshow('ok', mask)
+    # cv2.waitKey()
 
     return cv2.Canny(mask, lower, upper)
 
