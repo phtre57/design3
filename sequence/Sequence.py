@@ -234,7 +234,6 @@ class Sequence:
             logger.log_critical(traceback.format_exc())
             logger.log_critical("Ayoye je suis dans l'obstacle...")
             self.robot_mover.get_out_of_object(self.zone_pickup_cardinal)
-            pass
 
     def __rotate_robot_on_zone_dep(self):
         logger.log_info("Rotate on zone dep plane...")
