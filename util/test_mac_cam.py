@@ -21,4 +21,5 @@ while True:
 
 img = cv2.resize(img, (640, 480))
 cv2.imshow("test", img)
+cv2.imwrite("ld.jpg", img)
 cv2.waitKey(0)

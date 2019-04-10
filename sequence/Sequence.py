@@ -108,7 +108,7 @@ class Sequence:
 
     def start(self, scan_for_qr=False, unsecure=False):
         logger.log_info("## Starting path finding")
-        create_done = self.__create_smooth_path()
+        create_done = self.__create_smooth_path(unsecure)
 
         if (create_done is None):
             return

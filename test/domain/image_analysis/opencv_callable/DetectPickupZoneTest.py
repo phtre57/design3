@@ -6,7 +6,7 @@ import cv2
 import os
 import inspect
 
-LIVE = False
+LIVE = True
 SHOW = True
 
 
@@ -24,7 +24,7 @@ class DetectPickupZoneTest(unittest.TestCase):
         # "./image_samples/real_image/globalmonde1.jpg")
 
         if (LIVE):
-            cap = cv2.VideoCapture(1)
+            cap = cv2.VideoCapture(0)
             ret, frame = cap.read()
             res = detect_pickup_zone(frame)
 
