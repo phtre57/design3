@@ -8,6 +8,9 @@ def canny(frame, maskFunc, lower=100, upper=200):
 
     mask = maskFunc(frame)
 
+    cv2.imshow('ok', mask)
+    cv2.waitKey()
+
     return cv2.Canny(mask, lower, upper)
 
 
@@ -22,9 +25,11 @@ def detect_contour_mask(frame):
     mask = frame
     kernel = np.ones((2, 2), np.uint8)
     mask = cv2.morphologyEx(frame, cv2.MORPH_OPEN, kernel)
-    mask = cv2.morphologyEx(
-        mask, cv2.MORPH_CLOSE,
-        cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (10, 10)))
+    kernelerode = np.ones((2, 2), np.uint8)
+    mask = cv2.erode(mask, kernelerode, iterations=1)
+    # mask = cv2.morphologyEx(
+    # mask, cv2.MORPH_CLOSE,
+    # cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (10, 10)))
     return mask
 
 

@@ -11,8 +11,8 @@ PERI_LIMITER_CHECK = False
 RECT_LIMITER_CHECK = True
 RECT_W_LIMITER = 180
 RECT_H_LIMITER = 180
-RECT_W_LIMITER_UP = 260
-RECT_H_LIMITER_UP = 260
+RECT_W_LIMITER_UP = 310
+RECT_H_LIMITER_UP = 310
 RADIUS_LIMITER_CHECK = False
 RAIDUS_POSITIVE = True
 
@@ -40,12 +40,19 @@ def detect_contour_pieces(og_frame, _str_shape, validation=False):
     cv2.rectangle(frame, (0 * factorh, 200 * factorw),
                   (320 * factorh, 240 * factorw), (0, 0, 0), 110 * factorh)
 
-    edges = canny(frame, detect_contour_mask, 150, 200)
+    edges = canny(frame, detect_contour_mask, 225, 300)
 
     edges = cv2.dilate(
         edges,
-        kernel=cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (4, 4)),
+        kernel=cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (10, 10)),
         iterations=1)
+
+    edges = cv2.morphologyEx(
+        edges, cv2.MORPH_OPEN,
+        cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (3, 3)))
+
+    kernelerode = np.ones((3, 3), np.uint8)
+    edges = cv2.erode(edges, kernelerode, iterations=3)
 
     if DEBUG:
         cv2.imshow('ok', edges)
@@ -74,7 +81,8 @@ def detect_contour_pieces(og_frame, _str_shape, validation=False):
 
     (x, y) = find_center(shape.approx[0][1], 50, shape.frame)
 
-    return (round(x/factorh), round(y/factorw)) # un bijou de master race windows LD (master dynamic programmer)
+    return (round(x / factorh), round(y / factorw)
+            )  # un bijou de master race windows LD (master dynamic programmer)
 
 
 def translate_str_shape(str_shape):
