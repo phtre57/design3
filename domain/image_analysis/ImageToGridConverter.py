@@ -121,6 +121,22 @@ class ImageToGridConverter(object):
                 M = cv2.moments(contour)
                 x_center_of_contour = int(M["m10"] / M["m00"])
                 y_center_of_contour = int(M["m01"] / M["m00"])
+
+                correction_factor = 1
+                x = x_center_of_contour - (LENGTH / 2)
+                if (x < 0):
+                    correction_factor = -1
+
+                CAMERA_HEIGHT = 2010
+                OBSTACLE_HEIGHT = 350 * 1.1
+
+                top_angle = np.arctan(x / CAMERA_HEIGHT)
+                correction = np.tan(top_angle) * OBSTACLE_HEIGHT
+
+                x_center_of_contour -= (correction * correction_factor)
+
+                x_center_of_contour = int(round(x_center_of_contour))
+
                 coord_array.append((x_center_of_contour, y_center_of_contour))
             except Exception:
                 continue

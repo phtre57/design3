@@ -1,18 +1,24 @@
 import time
 
 from util.Logger import Logger
+from sequence.DrawSequence import draw_robot_on_image
+from domain.image_analysis_pathfinding.RobotDetector import RobotDetector
 
 logger = Logger(__name__)
 
-TENSION_THRESHOLD = 11
+TENSION_THRESHOLD = 20
 
 CHARGE_STATION_MOVE = (-370, -370)
 
 
 class ChargeSequence:
-    def __init__(self, comm_pi, send_rotation_angle):
+    def __init__(self, comm_pi, send_rotation_angle,
+                 world_cam_pixel_to_xy_converter, image_taker):
         self.comm_pi = comm_pi
         self.send_rotation_angle = send_rotation_angle
+        self.world_cam_pixel_to_xy_converter = world_cam_pixel_to_xy_converter
+        self.image_taker = image_taker
+        self.img = None
 
     def start(self):
         decision_tension = self.__is_current_tension_too_high_to_charge()
@@ -33,10 +39,26 @@ class ChargeSequence:
         else:
             return False
 
+    def take_image(self):
+        logger.log_info("Capture d'image de la camera monde en cours...")
+
+        while True:
+            ret, self.img = self.image_taker.read()
+            if ret:
+                break
+
+        return self.img
+
     def __go_to_c_charge_station(self):
         self.send_rotation_angle()
         time.sleep(0.5)
         iteration = 7
+
+        img = self.take_image()
+        robot_detector = RobotDetector(img)
+        robot_point = robot_detector.find_center_of_robot()
+        actual_robot_path = [robot_point]
+
         for i in range(iteration):
             if (i % 2 == 0):
                 self.send_rotation_angle()
@@ -44,6 +66,11 @@ class ChargeSequence:
             self.comm_pi.sendCoordinates(
                 round(CHARGE_STATION_MOVE[0] / iteration),
                 round(CHARGE_STATION_MOVE[1] / iteration))
+
+            img = self.take_image()
+            actual_robot_path = draw_robot_on_image(
+                img, self.world_cam_pixel_to_xy_converter, actual_robot_path)
+
             time.sleep(0.2)
 
         time.sleep(1)
@@ -86,7 +113,17 @@ class ChargeSequence:
         logger.log_info("Robot is charged now!")
 
     def __go_back_from_charge_station(self):
+        img = self.take_image()
+        robot_detector = RobotDetector(img)
+        robot_point = robot_detector.find_center_of_robot()
+        actual_robot_path = [robot_point]
+
         time.sleep(0.5)
         self.comm_pi.sendCoordinates(CHARGE_STATION_MOVE[0] * -1,
                                      CHARGE_STATION_MOVE[1] * -1)
+
+        img = self.take_image()
+        actual_robot_path = draw_robot_on_image(
+            img, self.world_cam_pixel_to_xy_converter, actual_robot_path)
+
         time.sleep(1)

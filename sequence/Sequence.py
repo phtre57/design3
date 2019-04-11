@@ -104,8 +104,8 @@ class Sequence:
         cv2.circle(img, ((self.zone_start_point[0] * 2),
                          (self.zone_start_point[1] * 2)), 3, [0, 0, 255])
 
-        cv2.imshow('ok', img)
-        cv2.waitKey()
+        # cv2.imshow('ok', img)
+        # cv2.waitKey()
 
         comm_ui = Communication_ui()
         comm_ui.SendImage(img, WORLD_FEED_IMAGE())
@@ -222,8 +222,7 @@ class Sequence:
         comm_ui = Communication_ui()
         comm_ui.SendText('Going to start zone', SEQUENCE_TEXT())
         logger.log_info('Going to start zone')
-        self.set_end_point(self.zone_start_point[0],
-                               self.zone_start_point[1])
+        self.set_end_point(self.zone_start_point[0], self.zone_start_point[1])
 
         self.__try_go_to_decided_zone()
 
@@ -262,7 +261,8 @@ class Sequence:
                 robot_point = robot_detector.find_center_of_robot()
                 robot_angle = robot_detector.find_angle_of_robot()
 
-                x, y = self.robot_mover.get_out_of_object(robot_angle, robot_point, self.array_point_obstacle)
+                x, y = self.robot_mover.get_out_of_object(
+                    robot_angle, robot_point, self.array_point_obstacle)
                 self.comm_pi.sendCoordinates(x, y)
                 pass
 
@@ -327,8 +327,9 @@ class Sequence:
         comm_ui = Communication_ui()
         comm_ui.SendText('Going to charge robot', SEQUENCE_TEXT())
 
-        chargeSequence = ChargeSequence(self.comm_pi,
-                                        self.__send_rotation_angle)
+        chargeSequence = ChargeSequence(
+            self.comm_pi, self.__send_rotation_angle,
+            self.world_cam_pixel_to_xy_converter, self.image_taker)
         chargeSequence.start()
 
     def move_robot_around_pickup_zone(self, validation=True):

@@ -11,7 +11,7 @@
     "cov": "coverage run -m unittest discover . \"*Test.py\"",
     "report": "coverage report -m",
     "main": "python -m main",
-    "start": "node ui/node_server/index.js",
+    "start": "forever ui/node_server/index.js",
     "client": "cd ./ui/web_client && yarn start",
     "test-l": "python -O -m main --d True",
     "test-large": "python -O -m test.LargeTest.MovingRobotTestLarge",

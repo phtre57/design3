@@ -24,6 +24,7 @@ class Communication_ui():
 
     def SendImage(self, frame, dest):
         if (__debug__):
+            frame = cv2.resize(frame, (320, 240))
             _, buffer = cv2.imencode('.jpg', frame)
             encoded = base64.b64encode(buffer)
             self.sio.emit('eventFromRobot', {
