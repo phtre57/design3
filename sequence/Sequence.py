@@ -219,54 +219,13 @@ class Sequence:
         self.Y_END = y
 
     def go_to_start_zone(self):
-        while True:
-            comm_ui = Communication_ui()
-            comm_ui.SendText('Going to start zone', SEQUENCE_TEXT())
-            logger.log_info('Going to start zone')
-            self.set_end_point(self.zone_start_point[0],
-                               self.zone_start_point[1])
-            try:
-                self.start()
-                break
-            except (NoPathFoundException, NoBeginingPointException):
-                logger.log_critical(traceback.format_exc())
-                logger.log_critical("Ayoye je suis dans l'obstacle...")
-                img = self.take_image()
-                robot_detector = RobotDetector(img)
-                robot_point = robot_detector.find_center_of_robot()
-                x, y = self.robot_mover.get_out_of_object(
-                    self.zone_dep_cardinal, self.array_point_obstacle,
-                    robot_point)
-                self.comm_pi.sendCoordinates(x, y)
-                pass
-
-    def go_to_zone_dep(self):
         comm_ui = Communication_ui()
-        comm_ui.SendText('Going to zone depôt', SEQUENCE_TEXT())
-        logger.log_info('Going to zone depôt')
-        self.set_end_point(self.zone_dep_point[0], self.zone_dep_point[1])
+        comm_ui.SendText('Going to start zone', SEQUENCE_TEXT())
+        logger.log_info('Going to start zone')
+        self.set_end_point(self.zone_start_point[0],
+                               self.zone_start_point[1])
 
-        try:
-            self.start()
-            self.__rotate_robot_on_zone_dep()
-        except (NoPathFoundException, NoBeginingPointException):
-            logger.log_critical(traceback.format_exc())
-            logger.log_critical("Ayoye je suis dans l'obstacle...")
-
-            img = self.take_image()
-            robot_detector = RobotDetector(img)
-            robot_point = robot_detector.find_center_of_robot()
-            x, y = self.robot_mover.get_out_of_object(
-                self.zone_pickup_cardinal, self.array_point_obstacle,
-                robot_point)
-            self.comm_pi.sendCoordinates(x, y)
-            self.start()
-            self.__rotate_robot_on_zone_dep()
-
-    def __rotate_robot_on_zone_dep(self):
-        logger.log_info("Rotate on zone dep plane...")
-        rotate_robot_on_zone_plane(self.image_taker, self.zone_dep_cardinal,
-                                   self.comm_pi)
+        self.__try_go_to_decided_zone()
 
     def go_to_zone_pickup(self):
         comm_ui = Communication_ui()
@@ -276,8 +235,43 @@ class Sequence:
         self.comm_pi.changeServoHori('2000')
         self.set_end_point(self.zone_pickup_point[0],
                            self.zone_pickup_point[1])
-        self.start()
+
+        self.__try_go_to_decided_zone()
         self.__rotate_robot_on_zone_pickup()
+
+    def go_to_zone_dep(self):
+        comm_ui = Communication_ui()
+        comm_ui.SendText('Going to zone depôt', SEQUENCE_TEXT())
+        logger.log_info('Going to zone depôt')
+        self.set_end_point(self.zone_dep_point[0], self.zone_dep_point[1])
+
+        self.__try_go_to_decided_zone()
+        self.__rotate_robot_on_zone_dep()
+
+    def __try_go_to_decided_zone(self):
+        while True:
+            try:
+                self.start()
+                break
+            except NoBeginingPointException:
+                logger.log_critical(traceback.format_exc())
+                logger.log_critical("Ayoye je suis dans l'obstacle...")
+
+                img = self.take_image()
+                robot_detector = RobotDetector(img)
+                robot_point = robot_detector.find_center_of_robot()
+                robot_angle = robot_detector.find_angle_of_robot()
+
+                x, y = self.robot_mover.get_out_of_object(
+                    robot_angle, self.array_point_obstacle,
+                    robot_point)
+                self.comm_pi.sendCoordinates(x, y)
+                pass
+
+    def __rotate_robot_on_zone_dep(self):
+        logger.log_info("Rotate on zone dep plane...")
+        rotate_robot_on_zone_plane(self.image_taker, self.zone_dep_cardinal,
+                                   self.comm_pi)
 
     def __rotate_robot_on_zone_pickup(self):
         logger.log_info("Rotate on pickup zone plane...")

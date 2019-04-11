@@ -7,7 +7,7 @@ OFFSET_X_CAM_EMBARKED = -30
 
 
 class RobotMover:
-    def __init__(self, world_converter, embarked_converter, cap):
+    def __init__(self, world_converter=None, embarked_converter=None, cap=None):
         self.world_converter = world_converter
         self.embarked_converter = embarked_converter
         self.cap = cap
@@ -39,8 +39,27 @@ class RobotMover:
         else:
             return None
 
-    def get_out_of_object(self, cardinal_str, obstacle_point_array,
+    def angle_to_cardinal(self, angle):
+
+        if -10 < angle < 10:
+            return EAST()
+
+        elif 80 < angle < 100:
+            return NORTH()
+
+        elif -100 < angle < -80:
+            return SOUTH()
+
+        elif 170 < angle <= 180 or -180 <= angle < -170:
+            return WEST()
+
+        else:
+            return None
+
+    def get_out_of_object(self, angle, obstacle_point_array,
                           robot_point):
+
+        cardinal_str = self.angle_to_cardinal(angle)
 
         closest_point = self.__find_closest_obstacle_from_robot(
             robot_point, obstacle_point_array)
