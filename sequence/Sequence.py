@@ -262,9 +262,7 @@ class Sequence:
                 robot_point = robot_detector.find_center_of_robot()
                 robot_angle = robot_detector.find_angle_of_robot()
 
-                x, y = self.robot_mover.get_out_of_object(
-                    robot_angle, self.array_point_obstacle,
-                    robot_point)
+                x, y = self.robot_mover.get_out_of_object(robot_angle, robot_point, self.array_point_obstacle)
                 self.comm_pi.sendCoordinates(x, y)
                 pass
 

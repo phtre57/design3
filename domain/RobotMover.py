@@ -56,10 +56,9 @@ class RobotMover:
         else:
             return None
 
-    def get_out_of_object(self, angle, obstacle_point_array,
-                          robot_point):
+    def get_out_of_object(self, robot_angle, robot_point, obstacle_point_array):
 
-        cardinal_str = self.angle_to_cardinal(angle)
+        cardinal_str = self.angle_to_cardinal(robot_angle)
 
         closest_point = self.__find_closest_obstacle_from_robot(
             robot_point, obstacle_point_array)
