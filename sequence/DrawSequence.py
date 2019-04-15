@@ -5,7 +5,7 @@ from infrastructure.communication_ui.ui_destination import *
 from domain.image_analysis_pathfinding.PixelToXYCoordinatesConverter import *
 from domain.image_analysis_pathfinding.RobotDetector import RobotDetector
 
-SHOW_PATH = True
+SHOW_PATH = False
 
 
 def draw_robot_on_path_image(actual_pathfinding_image, actual_robot_path,
