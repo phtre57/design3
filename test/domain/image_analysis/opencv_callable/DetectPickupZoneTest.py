@@ -6,7 +6,7 @@ import cv2
 import os
 import inspect
 
-LIVE = False
+LIVE = True
 SHOW = True
 
 
@@ -116,7 +116,7 @@ class DetectPickupZoneTest(unittest.TestCase):
 
         res = detect_pickup_zone(frame)
 
-        cv2.circle(frame, res['point'], 1, [255, 51, 51])
+        cv2.circle(frame, res['point'], 3, [255, 51, 51])
 
         if (SHOW):
             cv2.imshow('SHAPE FRAME', frame)

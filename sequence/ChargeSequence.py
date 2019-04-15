@@ -3,6 +3,8 @@ import time
 from util.Logger import Logger
 from sequence.DrawSequence import draw_robot_on_image
 from domain.image_analysis_pathfinding.RobotDetector import RobotDetector
+from infrastructure.communication_ui.comm_ui import Communication_ui
+from infrastructure.communication_ui.ui_destination import *
 
 logger = Logger(__name__)
 
@@ -93,7 +95,8 @@ class ChargeSequence:
                 if derivative_tension > 5:
                     break
 
-                if tension > base_tension + 0.05:
+                if tension > base_tension + 0.02:
+                    base_tension = tension
                     derivative_tension += 1
 
             if tension > base_tension:
@@ -101,14 +104,19 @@ class ChargeSequence:
 
             increment += 1
 
+        comm_ui = Communication_ui()
+        comm_ui.SendText('Charging robot now, electric feeeeel babyyy',
+                         SEQUENCE_TEXT())
         logger.log_info("Charging robot waiting for that electric feel now...")
 
         while True:
             time.sleep(0.3)
             tension = self.comm_pi.getTension()
             logger.log_info('Tension now while charging ' + str(tension))
-            if tension > 4 * 4:
-                break
+            if tension > 4 * 4 and tension < 30:
+                tension = self.comm_pi.getTension()
+                if tension > 4 * 4 and tension < 30:
+                    break
 
         logger.log_info("Robot is charged now!")
 

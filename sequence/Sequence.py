@@ -252,7 +252,7 @@ class Sequence:
             try:
                 self.start()
                 break
-            except NoBeginingPointException:
+            except (NoBeginingPointException, NoPathFoundException):
                 logger.log_critical(traceback.format_exc())
                 logger.log_critical("Ayoye je suis dans l'obstacle...")
 

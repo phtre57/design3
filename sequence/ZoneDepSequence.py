@@ -74,12 +74,10 @@ class ZoneDepSequence:
     def __detect_x_y_point_zone_dep(self):
         logger.log_info("Sequence to detect point")
 
-        x = -1
-        y = -1
-        while (x == -1 or y == -1):
-            robot_img = self.comm_pi.getImage()
-            height, width, channels = robot_img.shape
-            x, y = detect_point_zone_dep(robot_img)
+        time.sleep(0.5)
+        robot_img = self.comm_pi.getImage()
+        height, width, channels = robot_img.shape
+        x, y = detect_point_zone_dep(robot_img)
 
         logger.log_info('Drop piece, detected center of first point ' +
                         str(x) + ', ' + str(y))
@@ -90,6 +88,10 @@ class ZoneDepSequence:
         return (real_x, real_y)
 
     def drop_piece(self):
+        comm_ui = Communication_ui()
+        comm_ui.SendText('MOMENT DE LA TOUCHETTE ZONEDEP', SEQUENCE_TEXT())
+        time.sleep(5)
+
         logger.log_info('Drop the arm')
         time.sleep(0.5)
         self.comm_pi.moveArm('7800')

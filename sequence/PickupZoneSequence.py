@@ -148,6 +148,10 @@ class PickupZoneSequence:
 
         self.comm_pi.sendCoordinates(round(real_x), round(real_y))
 
+        comm_ui = Communication_ui()
+        comm_ui.SendText('MOMENT DE LA TOUCHETTE PICKUPZONE', SEQUENCE_TEXT())
+        time.sleep(5)
+
         logger.log_info('Activate the arm')
         time.sleep(0.5)
         self.comm_pi.moveArm('7800')

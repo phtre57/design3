@@ -13,9 +13,9 @@ PERI_LIMITER_CHECK = False
 PERI_LIMITER_UPPER = 100000
 PERI_LIMITER_LOWER = 150
 RECT_LIMITER_CHECK = True
-RECT_W_LIMITER = 85
-RECT_H_LIMITER = 15
-RECT_W_LIMITER_UP = 100
+RECT_W_LIMITER = 82
+RECT_H_LIMITER = 25
+RECT_W_LIMITER_UP = 95
 RECT_H_LIMITER_UP = 42
 RADIUS_LIMITER_CHECK = True
 RADIUS_LIMITER = 150
@@ -146,6 +146,7 @@ def __find_and_analyse_every_contour(edges, adjust_offset_func,
                 frame1 = og_frame.copy()
                 frame1 = cv2.convertScaleAbs(frame1, alpha=0, beta=0)
                 filler = cv2.convexHull(new_k)
+                print(xRect, yRect, wRect, hRect)
                 cv2.fillConvexPoly(frame1, filler, 255)
                 cv2.imshow('DEBUG CONTOUR', frame1)
                 cv2.waitKey()
