@@ -6,7 +6,7 @@ import cv2
 import os
 import inspect
 
-LIVE = True
+LIVE = False
 SHOW = True
 
 

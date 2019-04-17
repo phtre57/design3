@@ -24,7 +24,9 @@ let initialState = {
   worldcamfeed: '',
   embarkedcamfeed: '',
   embarkedopencv: '',
-  paths: ''
+  paths: '',
+  pathfindingworldcam: '',
+  imagerandom: ''
 };
 
 class App extends Component {
@@ -172,6 +174,14 @@ class App extends Component {
               <Paper elevation={4} style={paperStyle}>
                 <h4 style={textStyle}>Caméra monde (image courante)</h4>
                 <div> {this.renderImage(this.state.worldcamfeed)} </div>
+              </Paper>
+              <Paper elevation={4} style={paperStyle}>
+                <h4 style={textStyle}>Pathfinding</h4>
+                <div> {this.renderImage(this.state.pathfindingworldcam)} </div>
+              </Paper>
+              <Paper elevation={4} style={paperStyle}>
+                <h4 style={textStyle}>Init Sequence</h4>
+                <div> {this.renderImage(this.state.imagerandom)} </div>
               </Paper>
             </div>
           </Paper>

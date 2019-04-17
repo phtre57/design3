@@ -29,7 +29,7 @@ comm_pi = Communication_pi()
 logger = Logger(__name__)
 
 CANCER_MAC_USER = False
-SOURCE_CAM = 0
+SOURCE_CAM = 1
 
 
 def start_cam():
@@ -88,9 +88,9 @@ def main_sequence(ui=True):
     sequence.go_to_charge_robot()
     sequence.go_to_decode_qr()
     # sequence.zone_dep_cardinal = 'EAST'
-    sequence.piece_color = JAUNE
-    sequence.piece_shape = None
-    sequence.depot_number = ZONE_2
+    sequence.piece_color = None
+    sequence.piece_shape = TRIANGLE
+    sequence.depot_number = ZONE_0
     sequence.go_to_zone_pickup()
     sequence.move_robot_around_pickup_zone(validation=False)
     sequence.go_to_zone_dep()

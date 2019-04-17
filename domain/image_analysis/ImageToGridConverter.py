@@ -23,9 +23,9 @@ LEFT_OBSTACLE_BORDER = 42
 CIRCLE_OBSTACLE_RADIUS = 43
 
 X_WALL_LEFT_CORNER = 20
-X_WALL_RIGHT_CORNER = 300
-Y_WALL_UP_CORNER = 60
-Y_WALL_DOWN_CORNER = 180
+X_WALL_RIGHT_CORNER = 302
+Y_WALL_UP_CORNER = 58
+Y_WALL_DOWN_CORNER = 187
 
 BLUE_HSV_LOW = np.array([100, 100, 120])
 BLUE_HSV_HIGH = hsv_high = np.array([140, 255, 255])
@@ -62,8 +62,8 @@ class ImageToGridConverter(object):
 
         self.__mark_table_wall()
         self.mark_obstacle_in_grid_from_image()
-        self.show()
         self.mark_starting_point(x_start, y_start)
+        self.show()
 
     def show(self):
         if DEBUG:
@@ -127,15 +127,23 @@ class ImageToGridConverter(object):
                 if (x < 0):
                     correction_factor = -1
 
+                y_correction_factor = 1
+                y = y_center_of_contour - (HEIGHT / 2)
+
                 CAMERA_HEIGHT = 2010
-                OBSTACLE_HEIGHT = 350 * 1.1
+                OBSTACLE_HEIGHT = 350 * 0.65
 
                 top_angle = np.arctan(x / CAMERA_HEIGHT)
                 correction = np.tan(top_angle) * OBSTACLE_HEIGHT
 
-                x_center_of_contour -= (correction * correction_factor)
+                top_angle = np.arctan(y / CAMERA_HEIGHT)
+                y_correction = np.tan(top_angle) * OBSTACLE_HEIGHT
 
+                x_center_of_contour -= (correction * correction_factor)
                 x_center_of_contour = int(round(x_center_of_contour))
+
+                y_center_of_contour -= (y_correction * y_correction_factor)
+                y_center_of_contour = int(round(y_center_of_contour))
 
                 coord_array.append((x_center_of_contour, y_center_of_contour))
             except Exception:

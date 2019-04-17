@@ -9,6 +9,8 @@ from domain.image_analysis.ImageToGridConverter import *
 from sequence.DrawSequence import *
 from domain.image_analysis_pathfinding.RobotDetector import RobotDetector
 from sequence.UtilSequence import find_current_center_robot
+from infrastructure.communication_ui.comm_ui import Communication_ui
+from infrastructure.communication_ui.ui_destination import *
 from util.Logger import Logger
 
 logger = Logger(__name__)
@@ -40,6 +42,9 @@ class PathSequence:
         grid_converter = ImageToGridConverter(
             center_and_image['image'], center_and_image['center'][0],
             center_and_image['center'][1], self.X_END, self.Y_END)
+
+        comm_ui = Communication_ui()
+        comm_ui.SendImage(grid_converter.image, PATHFINDING_WORLD_CAM())
 
         astar = Astar(grid_converter.grid, HEIGHT, LENGTH)
         path = astar.find_path()

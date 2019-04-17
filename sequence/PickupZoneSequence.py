@@ -76,8 +76,8 @@ class PickupZoneSequence:
 
     def __validate_piece_taken(self, x, y):
         self.comm_pi.sendCoordinates(x * -1, y * -1.5)
+        time.sleep(0.5)
         robot_big_img = self.comm_pi.getImageFullHD()
-
         try:
             x, y = detect_piece(
                 robot_big_img,
@@ -117,6 +117,7 @@ class PickupZoneSequence:
 
     def __grab_piece(self):
         logger.log_info("Trying to grab piece...")
+        time.sleep(0.5)
         robot_big_img = self.comm_pi.getImageFullHD()
 
         # height, width, channels = robot_big_img.shape
@@ -131,6 +132,8 @@ class PickupZoneSequence:
 
             logger.log_info("Found piece!")
         except Exception:
+            comm_ui = Communication_ui()
+            comm_ui.SendImage(robot_big_img, EMBARKED_FEED_IMAGE())
             logger.log_critical(
                 "Could not find piece, continuing to move to detect it...")
             logger.log_critical(traceback.format_exc())

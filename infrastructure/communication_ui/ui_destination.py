@@ -18,6 +18,14 @@ def WORLD_FEED_IMAGE():
     return 'worldcamfeed'
 
 
+def PATHFINDING_WORLD_CAM():
+    return 'pathfindingworldcam'
+
+
+def IMAGE_RANDOM():
+    return 'imagerandom'
+
+
 def EMBARKED_FEED_IMAGE():
     return 'embarkedcamfeed'
 

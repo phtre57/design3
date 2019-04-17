@@ -190,18 +190,18 @@ def __find_and_analyse_every_contour(edges, adjust_offset_func,
 def adjust_start_zone_offset_upside_down(point, wRect, hRect, width):
     if (point[0] > width / 2):
         return (point[0] - OFFSET_PATHFINDING_EAST + round(wRect / 2),
-                point[1] - 20, EAST())
+                point[1] - 15, EAST())
     else:
         return (point[0] + OFFSET_PATHFINDING_WEST + round(wRect / 2),
-                point[1] + round(hRect) + 20, WEST())
+                point[1] + round(hRect) + 15, WEST())
 
 
 def adjust_start_zone_offset(point, wRect, hRect, height):
     if (point[1] > height / 2):
-        return (point[0] + round(wRect) + 20,
+        return (point[0] + round(wRect) + 15,
                 point[1] - OFFSET_PATHFINDING_SOUTH + round(hRect / 2),
                 SOUTH())
     else:
-        return (point[0] - 20,
+        return (point[0] - 15,
                 point[1] + OFFSET_PATHFINDING_NORTH + round(hRect / 2),
                 NORTH())
