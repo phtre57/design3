@@ -153,6 +153,8 @@ def __find_and_analyse_every_contour(edges, adjust_offset_func,
 
             if flipped:
                 # Flipped verification, it's normal
+                if xRect < 450:
+                    continue
                 if (abs(wRect) < RECT_H_LIMITER
                         or abs(hRect) < RECT_W_LIMITER):
                     continue
@@ -160,6 +162,8 @@ def __find_and_analyse_every_contour(edges, adjust_offset_func,
                         or abs(hRect) > RECT_W_LIMITER_UP):
                     continue
             else:
+                if yRect < 300 and yRect > 100:
+                    continue
                 if (abs(wRect) < RECT_W_LIMITER
                         or abs(hRect) < RECT_H_LIMITER):
                     continue

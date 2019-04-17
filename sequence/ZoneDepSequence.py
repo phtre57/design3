@@ -1,5 +1,6 @@
 import time
 import traceback
+import cv2
 
 from domain.QRCodeDictionnary import *
 from domain.image_analysis.opencv_callable.DetectPointZoneDep import detect_point_zone_dep
@@ -78,6 +79,10 @@ class ZoneDepSequence:
         robot_img = self.comm_pi.getImage()
         height, width, channels = robot_img.shape
         x, y = detect_point_zone_dep(robot_img)
+
+        robot_img = cv2.circle(robot_img, (x, y), 20, [110, 110, 110], -1)
+        comm_ui = Communication_ui()
+        comm_ui.SendImage(robot_img, EMBARKED_FEED_IMAGE())
 
         logger.log_info('Drop piece, detected center of first point ' +
                         str(x) + ', ' + str(y))

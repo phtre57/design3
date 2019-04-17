@@ -120,14 +120,26 @@ class Sequence:
         logger.log_info("## Starting path finding")
         create_done = self.__create_smooth_path(unsecure)
 
+        img = self.take_image()
+        comm_ui = Communication_ui()
+        comm_ui.SendImage(img, WORLD_FEED_IMAGE())
+
         if (create_done is None):
             return
 
         logger.log_info("## Rotating robot")
         self.__send_rotation_angle()
 
+        img = self.take_image()
+        comm_ui = Communication_ui()
+        comm_ui.SendImage(img, WORLD_FEED_IMAGE())
+
         logger.log_info("## Convert to X Y")
         self.__convert_to_xy(create_done)
+
+        img = self.take_image()
+        comm_ui = Communication_ui()
+        comm_ui.SendImage(img, WORLD_FEED_IMAGE())
 
         logger.log_info("## Send coordinates")
         self.__send_coordinates(create_done, scan_for_qr)
@@ -164,6 +176,9 @@ class Sequence:
                     self.piece_color = info_qr['color']
                     self.depot_number = info_qr['zone']
                     self.comm_pi.scan_for_qr = False
+
+                    comm_ui = Communication_ui()
+                    comm_ui.SendImage(imgqr, EMBARKED_FEED_IMAGE())
                     break
 
             while True:
@@ -224,7 +239,15 @@ class Sequence:
         logger.log_info('Going to start zone')
         self.set_end_point(self.zone_start_point[0], self.zone_start_point[1])
 
+        img = self.take_image()
+        comm_ui = Communication_ui()
+        comm_ui.SendImage(img, WORLD_FEED_IMAGE())
+
         self.__try_go_to_decided_zone()
+
+        img = self.take_image()
+        comm_ui = Communication_ui()
+        comm_ui.SendImage(img, WORLD_FEED_IMAGE())
 
     def go_to_zone_pickup(self):
         comm_ui = Communication_ui()
@@ -235,8 +258,16 @@ class Sequence:
         self.set_end_point(self.zone_pickup_point[0],
                            self.zone_pickup_point[1])
 
+        img = self.take_image()
+        comm_ui = Communication_ui()
+        comm_ui.SendImage(img, WORLD_FEED_IMAGE())
+
         self.__try_go_to_decided_zone()
         self.__rotate_robot_on_zone_pickup()
+
+        img = self.take_image()
+        comm_ui = Communication_ui()
+        comm_ui.SendImage(img, WORLD_FEED_IMAGE())
 
     def go_to_zone_dep(self):
         comm_ui = Communication_ui()
@@ -244,8 +275,16 @@ class Sequence:
         logger.log_info('Going to zone depôt')
         self.set_end_point(self.zone_dep_point[0], self.zone_dep_point[1])
 
+        img = self.take_image()
+        comm_ui = Communication_ui()
+        comm_ui.SendImage(img, WORLD_FEED_IMAGE())
+
         self.__try_go_to_decided_zone()
         self.__rotate_robot_on_zone_dep()
+
+        img = self.take_image()
+        comm_ui = Communication_ui()
+        comm_ui.SendImage(img, WORLD_FEED_IMAGE())
 
     def __try_go_to_decided_zone(self):
         while True:
@@ -282,6 +321,10 @@ class Sequence:
         self.comm_pi.changeServoVert('6000')
         self.comm_pi.changeServoHori('5500')
 
+        img = self.take_image()
+        comm_ui = Communication_ui()
+        comm_ui.SendImage(img, WORLD_FEED_IMAGE())
+
         self.comm_pi.scan_for_qr = True
 
         for y in Y_ARRAY_FOR_QR_STRATEGY:
@@ -295,6 +338,10 @@ class Sequence:
                         # self.piece_shape = info_qr['shape']
                         # self.piece_color = info_qr['color']
                         # self.depot_number = info_qr['zone']
+                        img = self.take_image()
+                        comm_ui = Communication_ui()
+                        comm_ui.SendImage(img, WORLD_FEED_IMAGE())
+
                         break
                 except Exception as ex:
                     logger.log_error(ex)
@@ -327,19 +374,42 @@ class Sequence:
         comm_ui = Communication_ui()
         comm_ui.SendText('Going to charge robot', SEQUENCE_TEXT())
 
+        img = self.take_image()
+        comm_ui = Communication_ui()
+        comm_ui.SendImage(img, WORLD_FEED_IMAGE())
+
         chargeSequence = ChargeSequence(
             self.comm_pi, self.__send_rotation_angle,
             self.world_cam_pixel_to_xy_converter, self.image_taker)
         chargeSequence.start()
+
+        img = self.take_image()
+        comm_ui = Communication_ui()
+        comm_ui.SendImage(img, WORLD_FEED_IMAGE())
 
     def move_robot_around_pickup_zone(self, validation=True):
         pickupZoneSequence = PickupZoneSequence(
             validation, self.comm_pi, self.zone_pickup_cardinal,
             self.robot_cam_pixel_to_xy_converter, self.robot_mover,
             self.go_to_zone_pickup, self.piece_shape, self.piece_color)
+
+        img = self.take_image()
+        comm_ui = Communication_ui()
+        comm_ui.SendImage(img, WORLD_FEED_IMAGE())
+
         pickupZoneSequence.try_to_move_robot_around_pickup_zone()
+
+        img = self.take_image()
+        comm_ui = Communication_ui()
+        comm_ui.SendImage(img, WORLD_FEED_IMAGE())
+
         (x, y) = self.robot_mover.fallback_from_cardinality(
             self.zone_pickup_cardinal)
+
+        img = self.take_image()
+        comm_ui = Communication_ui()
+        comm_ui.SendImage(img, WORLD_FEED_IMAGE())
+
         self.comm_pi.sendCoordinates(x, y)
 
     def move_robot_around_zone_dep(self):
@@ -350,10 +420,23 @@ class Sequence:
                                           self.robot_mover,
                                           self.zone_dep_cardinal)
         while True:
+            img = self.take_image()
+            comm_ui = Communication_ui()
+            comm_ui.SendImage(img, WORLD_FEED_IMAGE())
+
             zoneDepSequence.move_to_point_zone_dep()
             zoneDepSequence.drop_piece()
+
+            img = self.take_image()
+            comm_ui = Communication_ui()
+            comm_ui.SendImage(img, WORLD_FEED_IMAGE())
+
             (x, y) = self.robot_mover.fallback_from_cardinality(
                 self.zone_dep_cardinal)
+
+            img = self.take_image()
+            comm_ui = Communication_ui()
+            comm_ui.SendImage(img, WORLD_FEED_IMAGE())
 
             if x == -1 and y == -1:
                 logger.log_info('Retrying to approach the zone dep')

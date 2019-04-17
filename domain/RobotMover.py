@@ -7,7 +7,8 @@ OFFSET_X_CAM_EMBARKED = -30
 
 
 class RobotMover:
-    def __init__(self, world_converter=None, embarked_converter=None, cap=None):
+    def __init__(self, world_converter=None, embarked_converter=None,
+                 cap=None):
         self.world_converter = world_converter
         self.embarked_converter = embarked_converter
         self.cap = cap
@@ -35,7 +36,7 @@ class RobotMover:
         elif cardinal_str == WEST():
             return fallback_move, 0
         elif cardinal_str == SOUTH():
-            return fallback_move * 2, 0
+            return fallback_move * 1.2, 0
         else:
             return None
 
@@ -56,7 +57,8 @@ class RobotMover:
         else:
             return None
 
-    def get_out_of_object(self, robot_angle, robot_point, obstacle_point_array):
+    def get_out_of_object(self, robot_angle, robot_point,
+                          obstacle_point_array):
 
         cardinal_str = self.angle_to_cardinal(robot_angle)
 

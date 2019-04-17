@@ -56,8 +56,8 @@ class Communication_pi:
 
             img = cv2.imread('./test.jpg')
 
-            comm_ui = Communication_ui()
-            comm_ui.SendImage(img, EMBARKED_FEED_IMAGE())
+            # comm_ui = Communication_ui()
+            # comm_ui.SendImage(img, EMBARKED_FEED_IMAGE())
 
             logger.log_info("self.img changed...")
             self.image = img

@@ -1,5 +1,6 @@
 import time
 import traceback
+import cv2
 
 from domain.image_analysis.Cardinal import *
 from domain.image_analysis.opencv_callable.DetectPiece import detect_piece
@@ -123,6 +124,11 @@ class PickupZoneSequence:
         try:
             x, y = detect_piece(robot_big_img, self.piece_shape,
                                 self.piece_color)
+            robot_big_img = cv2.circle(robot_big_img, (x * 5, y * 5), 20,
+                                       [110, 110, 110], -1)
+            comm_ui = Communication_ui()
+            comm_ui.SendImage(robot_big_img, EMBARKED_FEED_IMAGE())
+
             logger.log_info("Found piece!")
         except Exception:
             logger.log_critical(

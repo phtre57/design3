@@ -1,0 +1,5 @@
+Centrer la table
+
+Vérifier les fallback move SOUTH ET NORTH, voir si tout est ok.
+
+Vérifier la luminosité au fond de la table.
